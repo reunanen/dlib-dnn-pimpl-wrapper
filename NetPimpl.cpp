@@ -82,3 +82,10 @@ NetPimpl::output_type NetPimpl::operator() (const NetPimpl::input_type& input) c
 {
     return pimpl->anet(input);
 }
+
+std::string NetPimpl::Serialize() const
+{
+    std::ostringstream oss;
+    dlib::serialize(oss) << pimpl->anet;
+    return oss.str();
+}

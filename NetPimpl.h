@@ -5,9 +5,9 @@
 class NetPimpl
 {
 public:
-    typedef dlib::matrix<dlib::rgb_pixel> input_type;
-    typedef unsigned long training_label_type;
-    typedef unsigned long output_type;
+    typedef dlib::matrix<float> input_type;
+    typedef dlib::matrix<float> training_label_type;
+    typedef dlib::matrix<float> output_type;
     typedef dlib::sgd solver_type;
 
     NetPimpl(const solver_type& solver = dlib::sgd(0.0001, 0.9));
@@ -25,6 +25,8 @@ public:
     void WaitForTrainingToFinishAndUseNet();
 
     output_type operator() (const input_type& input) const;
+
+    std::string Serialize() const;
 
 private:
     struct Impl;
