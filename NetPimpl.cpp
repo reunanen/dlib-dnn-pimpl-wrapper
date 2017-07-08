@@ -3,22 +3,16 @@
 
 struct NetPimpl::Impl
 {
-    Impl(const NetPimpl::solver_type& solver)
-        : trainer(net, solver)
-    {}
+    std::unique_ptr<net_type> net;
+    std::unique_ptr<dlib::dnn_trainer<net_type>> trainer;
 
-    net_type net;
-    dlib::dnn_trainer<net_type> trainer;
-
-    anet_type anet;
-
-    bool dirty = false; // Has training been started, but the updated net not copied to anet yet?
+    std::unique_ptr<net_type> cleanNet;
+    std::unique_ptr<anet_type> anet;
 };
 
-NetPimpl::NetPimpl(const NetPimpl::solver_type& solver)
+NetPimpl::NetPimpl()
 {
-    pimpl = new NetPimpl::Impl(solver);
-    pimpl->trainer.be_verbose(); // TODO: remove
+    pimpl = new NetPimpl::Impl();
 }
 
 NetPimpl::~NetPimpl()
@@ -26,66 +20,72 @@ NetPimpl::~NetPimpl()
     delete pimpl;
 }
 
+void NetPimpl::InitializeForTraining(const solver_type& solver)
+{
+    pimpl->net = std::make_unique<net_type>();
+    pimpl->trainer = std::make_unique<dlib::dnn_trainer<net_type>>(*pimpl->net, solver);
+    pimpl->trainer->be_verbose(); // TODO: remove
+}
+
 void NetPimpl::SetLearningRate(double learningRate)
 {
-    pimpl->trainer.set_learning_rate(learningRate);
+    pimpl->trainer->set_learning_rate(learningRate);
 }
 
 void NetPimpl::SetMinLearningRate(double minLearningRate)
 {
-    pimpl->trainer.set_min_learning_rate(minLearningRate);
+    pimpl->trainer->set_min_learning_rate(minLearningRate);
 }
 
 void NetPimpl::SetIterationsWithoutProgressThreshold(unsigned long threshold)
 {
-    pimpl->trainer.set_iterations_without_progress_threshold(threshold);
+    pimpl->trainer->set_iterations_without_progress_threshold(threshold);
 }
 
 void NetPimpl::SetSynchronizationFile(const std::string& filename, std::chrono::seconds time_between_syncs)
 {
-    pimpl->trainer.set_synchronization_file(filename, time_between_syncs);
+    pimpl->trainer->set_synchronization_file(filename, time_between_syncs);
 }
 
 void NetPimpl::StartTraining(const std::vector<NetPimpl::input_type>& inputs, const std::vector<NetPimpl::training_label_type>& training_labels)
 {
-    assert(!pimpl->dirty);
-    pimpl->trainer.train_one_step(inputs, training_labels);
-    pimpl->dirty = true;
+    pimpl->trainer->train_one_step(inputs, training_labels);
 }
 
-bool NetPimpl::IsTrainingStarted() const
+void NetPimpl::GetNet()
 {
-    return pimpl->dirty;
-}
-
-bool NetPimpl::IsStillTraining() const
-{
-    assert(pimpl->dirty);
-    return pimpl->trainer.is_training();
-}
-
-bool NetPimpl::IsTraining() const
-{
-    return pimpl->dirty && pimpl->trainer.is_training();
-}
-
-void NetPimpl::WaitForTrainingToFinishAndUseNet()
-{
-    if (pimpl->dirty) {
-        pimpl->trainer.get_net();
-        pimpl->anet = pimpl->net;
-        pimpl->dirty = false;
+    pimpl->trainer->get_net();
+    if (!pimpl->cleanNet.get()) {
+        pimpl->cleanNet = std::make_unique<net_type>();
     }
+    *pimpl->cleanNet = *pimpl->net;
+    pimpl->cleanNet->clean();
+    if (!pimpl->anet.get()) {
+        pimpl->anet = std::make_unique<anet_type>();
+    }
+    *pimpl->anet = *pimpl->cleanNet;
 }
 
 NetPimpl::output_type NetPimpl::operator() (const NetPimpl::input_type& input) const
 {
-    return pimpl->anet(input);
+    if (!pimpl->anet.get()) {
+        pimpl->anet = std::make_unique<anet_type>();
+    }
+    return (*pimpl->anet)(input);
 }
 
-std::string NetPimpl::Serialize() const
+void NetPimpl::Serialize(std::ostream& out) const
 {
-    std::ostringstream oss;
-    dlib::serialize(oss) << pimpl->anet;
-    return oss.str();
+    if (!pimpl->anet.get()) {
+        pimpl->anet = std::make_unique<anet_type>();
+    }
+    dlib::serialize(out) << *pimpl->anet;
+}
+
+void NetPimpl::Deserialize(std::istream& in) const
+{
+    if (!pimpl->anet.get()) {
+        pimpl->anet = std::make_unique<anet_type>();
+    }
+    dlib::deserialize(in) >> *pimpl->anet;
 }

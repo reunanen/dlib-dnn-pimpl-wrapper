@@ -10,8 +10,10 @@ public:
     typedef dlib::matrix<float> output_type;
     typedef dlib::sgd solver_type;
 
-    NetPimpl(const solver_type& solver = dlib::sgd(0.0001, 0.9));
+    NetPimpl();
     virtual ~NetPimpl();
+
+    void InitializeForTraining(const solver_type& solver = dlib::sgd(0.0001, 0.9));
 
     void SetLearningRate(double learningRate);
     void SetMinLearningRate(double minLearningRate);
@@ -19,14 +21,12 @@ public:
     void SetSynchronizationFile(const std::string& filename, std::chrono::seconds time_between_syncs = std::chrono::minutes(15));
 
     void StartTraining(const std::vector<input_type>& inputs, const std::vector<training_label_type>& training_labels);
-    bool IsTrainingStarted() const;
-    bool IsStillTraining() const;
-    bool IsTraining() const;
-    void WaitForTrainingToFinishAndUseNet();
+    void GetNet();
 
     output_type operator() (const input_type& input) const;
 
-    std::string Serialize() const;
+    void Serialize(std::ostream& out) const;
+    void Deserialize(std::istream& in) const;
 
 private:
     struct Impl;
