@@ -22,6 +22,7 @@ namespace NetPimpl
         void SetMinLearningRate(double minLearningRate);
         void SetIterationsWithoutProgressThreshold(unsigned long threshold);
         void SetSynchronizationFile(const std::string& filename, std::chrono::seconds time_between_syncs = std::chrono::minutes(15));
+        void BeVerbose();
 
         void StartTraining(const std::vector<input_type>& inputs, const std::vector<training_label_type>& training_labels);
 

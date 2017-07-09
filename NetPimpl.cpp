@@ -28,7 +28,6 @@ void TrainingNet::Initialize(const solver_type& solver)
 {
     pimpl->net = std::make_unique<net_type>();
     pimpl->trainer = std::make_unique<dlib::dnn_trainer<net_type>>(*pimpl->net, solver);
-    pimpl->trainer->be_verbose(); // TODO: remove
 }
 
 void TrainingNet::SetLearningRate(double learningRate)
@@ -49,6 +48,11 @@ void TrainingNet::SetIterationsWithoutProgressThreshold(unsigned long threshold)
 void TrainingNet::SetSynchronizationFile(const std::string& filename, std::chrono::seconds time_between_syncs)
 {
     pimpl->trainer->set_synchronization_file(filename, time_between_syncs);
+}
+
+void TrainingNet::BeVerbose()
+{
+    pimpl->trainer->be_verbose();
 }
 
 void TrainingNet::StartTraining(const std::vector<input_type>& inputs, const std::vector<training_label_type>& training_labels)
