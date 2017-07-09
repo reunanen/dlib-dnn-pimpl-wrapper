@@ -79,7 +79,7 @@ void NetPimpl::Serialize(std::ostream& out) const
     if (!pimpl->anet.get()) {
         pimpl->anet = std::make_unique<anet_type>();
     }
-    dlib::serialize(out) << *pimpl->anet;
+    dlib::serialize(*pimpl->anet, out);
 }
 
 void NetPimpl::Deserialize(std::istream& in) const
@@ -87,5 +87,5 @@ void NetPimpl::Deserialize(std::istream& in) const
     if (!pimpl->anet.get()) {
         pimpl->anet = std::make_unique<anet_type>();
     }
-    dlib::deserialize(in) >> *pimpl->anet;
+    dlib::deserialize(*pimpl->anet, in);
 }
