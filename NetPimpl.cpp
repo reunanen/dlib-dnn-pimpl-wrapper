@@ -97,7 +97,24 @@ RuntimeNet& RuntimeNet::operator= (const TrainingNet& trainingNet)
 
 output_type RuntimeNet::operator() (const input_type& input) const
 {
-    return pimpl->anet(input);
+    const auto result = pimpl->anet(input);
+
+    //std::cout << pimpl->anet << std::endl;
+
+    const auto& output75 = dlib::layer<75>(pimpl->anet).get_output();
+    if (output75.num_samples() == 1 && output75.nr() == 1 && output75.nc() == 1 && output75.k() == 64) {
+        ; // ok!
+    }
+    else {
+        std::ostringstream oss;
+        oss << "Unexpected output size from layer 75:" << std::endl
+            << " - num_samples = " << output75.num_samples() << std::endl
+            << " - nr          = " << output75.nr() << std::endl
+            << " - nc          = " << output75.nc() << std::endl
+            << " - k           = " << output75.k() << std::endl;
+    }
+
+    return result;
 }
 
 void RuntimeNet::Serialize(std::ostream& out) const
