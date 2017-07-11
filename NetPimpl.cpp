@@ -70,6 +70,10 @@ RuntimeNet TrainingNet::GetRuntimeNet() const
 RuntimeNet::RuntimeNet()
 {
     pimpl = new RuntimeNet::Impl();
+
+    dlib::matrix<float> input(448, 448);
+    const auto result = pimpl->anet(input);
+    std::cout << pimpl->anet << std::endl;
 }
 
 RuntimeNet::~RuntimeNet()
@@ -101,6 +105,7 @@ output_type RuntimeNet::operator() (const input_type& input) const
 
     //std::cout << pimpl->anet << std::endl;
 
+#if 0
     const auto& output75 = dlib::layer<75>(pimpl->anet).get_output();
     if (output75.num_samples() == 1 && output75.nr() == 1 && output75.nc() == 1 && output75.k() == 64) {
         ; // ok!
@@ -113,6 +118,7 @@ output_type RuntimeNet::operator() (const input_type& input) const
             << " - nc          = " << output75.nc() << std::endl
             << " - k           = " << output75.k() << std::endl;
     }
+#endif
 
     return result;
 }

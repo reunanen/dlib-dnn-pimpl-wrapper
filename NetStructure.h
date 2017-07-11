@@ -30,43 +30,43 @@ template <int N, typename SUBNET> using ares_up = dlib::relu<residual_up<block, 
 
 // ----------------------------------------------------------------------------------------
 
-template <typename SUBNET> using level1 = res<64, /*res<8,*/ res_down<64, SUBNET>/*>*/>;
-template <typename SUBNET> using level2 = res<32, /*res<8, res<8, res<8, res<8,*/ res_down<32, SUBNET>/*>>>>*/>;
-template <typename SUBNET> using level3 = res<16, /*res<8, res<8,*/ res_down<16, SUBNET>/*>>*/>;
-template <typename SUBNET> using level4 = res<8, /*res<8,*/ res_down<8, SUBNET>/*>*/>;
+template <typename SUBNET> using level1 = res<512, res<512, res_down<512, SUBNET>>>;
+template <typename SUBNET> using level2 = res<256, res<256, res<256, res<256, res<256, res_down<256, SUBNET>>>>>>;
+template <typename SUBNET> using level3 = res<128, res<128, res<128, res_down<128, SUBNET>>>>;
+template <typename SUBNET> using level4 = res<64, res<64, res_down<64, SUBNET>>>;
 
-template <typename SUBNET> using alevel1 = ares<64, /*ares<8,*/ ares_down<64, SUBNET>/*>*/>;
-template <typename SUBNET> using alevel2 = ares<32, /*ares<8, ares<8, ares<8, ares<8,*/ ares_down<32, SUBNET>/*>>>>*/>;
-template <typename SUBNET> using alevel3 = ares<16, /*ares<8, ares<8,*/ ares_down<16, SUBNET>/*>>*/>;
-template <typename SUBNET> using alevel4 = ares<8, /*ares<8,*/ ares_down<8, SUBNET>/*>*/>;
+template <typename SUBNET> using alevel1 = ares<512, ares<512, ares_down<512, SUBNET>>>;
+template <typename SUBNET> using alevel2 = ares<256, ares<256, ares<256, ares<256, ares<256, ares_down<256, SUBNET>>>>>>;
+template <typename SUBNET> using alevel3 = ares<128, ares<128, ares<128, ares_down<128, SUBNET>>>>;
+template <typename SUBNET> using alevel4 = ares<64, ares<64, ares_down<64, SUBNET>>>;
 
-template <typename SUBNET> using level1t = res<64, /*res<8,*/ res_up<64, SUBNET>/*>*/>;
-template <typename SUBNET> using level2t = res<32, /*res<8, res<8, res<8, res<8,*/ res_up<32, SUBNET>/*>>>>*/>;
-template <typename SUBNET> using level3t = res<16, /*res<8, res<8,*/ res_up<16, SUBNET>/*>>*/>;
-template <typename SUBNET> using level4t = res<8, /*res<8,*/ res_up<8, SUBNET>/*>*/>;
+template <typename SUBNET> using level1t = res<512, res<512, res_up<512, SUBNET>>>;
+template <typename SUBNET> using level2t = res<256, res<256, res<256, res<256, res<256, res_up<256, SUBNET>>>>>>;
+template <typename SUBNET> using level3t = res<128, res<128, res<128, res_up<128, SUBNET>>>>;
+template <typename SUBNET> using level4t = res<64, res<64, res_up<64, SUBNET>>>;
 
-template <typename SUBNET> using alevel1t = ares<64, /*ares<8,*/ ares_up<64, SUBNET>/*>*/>;
-template <typename SUBNET> using alevel2t = ares<32, /*ares<8, ares<8, ares<8, ares<8,*/ ares_up<32, SUBNET>/*>>>>*/>;
-template <typename SUBNET> using alevel3t = ares<16, /*ares<8, ares<8,*/ ares_up<16, SUBNET>/*>>*/>;
-template <typename SUBNET> using alevel4t = ares<8, /*ares<8,*/ ares_up<8, SUBNET>/*>*/>;
+template <typename SUBNET> using alevel1t = ares<512, ares<512, ares_up<512, SUBNET>>>;
+template <typename SUBNET> using alevel2t = ares<256, ares<256, ares<256, ares<256, ares<256, ares_up<256, SUBNET>>>>>>;
+template <typename SUBNET> using alevel3t = ares<128, ares<128, ares<128, ares_up<128, SUBNET>>>>;
+template <typename SUBNET> using alevel4t = ares<64, ares<64, ares_up<64, SUBNET>>>;
 
 // training network type
 using net_type = dlib::loss_mean_squared_per_pixel<
     dlib::bn_con<dlib::cont<1, 7, 7, 3, 3,
-    dlib::relu<dlib::bn_con<dlib::cont<8, 7, 7, 3, 3,
+    dlib::relu<dlib::bn_con<dlib::cont<32, 7, 7, 3, 3,
     level4t<level3t<level2t<level1t<
     level1<level2<level3<level4<
-    dlib::max_pool<7, 7, 3, 3, dlib::relu<dlib::bn_con<dlib::con<8, 7, 7, 3, 3,
+    dlib::max_pool<7, 7, 3, 3, dlib::relu<dlib::bn_con<dlib::con<32, 7, 7, 3, 3,
     dlib::input<dlib::matrix<float>>
     >>>>>>>>>>>>>>>>>>;
 
 // testing network type (replaced batch normalization with fixed affine transforms)
 using anet_type = dlib::loss_mean_squared_per_pixel<
     dlib::affine<dlib::cont<1, 7, 7, 3, 3,
-    dlib::relu<dlib::affine<dlib::cont<8, 7, 7, 3, 3,
+    dlib::relu<dlib::affine<dlib::cont<32, 7, 7, 3, 3,
     alevel4t<alevel3t<alevel2t<alevel1t<
     alevel1<alevel2<alevel3<alevel4<
-    dlib::max_pool<7, 7, 3, 3, dlib::relu<dlib::affine<dlib::con<8, 7, 7, 3, 3,
+    dlib::max_pool<7, 7, 3, 3, dlib::relu<dlib::affine<dlib::con<32, 7, 7, 3, 3,
     dlib::input<dlib::matrix<float>>
     >>>>>>>>>>>>>>>>>>;
 
