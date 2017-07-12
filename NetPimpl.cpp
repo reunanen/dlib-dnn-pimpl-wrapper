@@ -28,6 +28,9 @@ void TrainingNet::Initialize(const solver_type& solver)
 {
     pimpl->net = std::make_unique<net_type>();
     pimpl->trainer = std::make_unique<dlib::dnn_trainer<net_type>>(*pimpl->net, solver);
+
+    //const std::vector<dlib::matrix<float>> sample{ dlib::matrix<float>(561, 561) };
+    //pimpl->trainer->train_one_step(sample, sample);
 }
 
 void TrainingNet::SetLearningRate(double learningRate)
@@ -70,10 +73,23 @@ RuntimeNet TrainingNet::GetRuntimeNet() const
 RuntimeNet::RuntimeNet()
 {
     pimpl = new RuntimeNet::Impl();
+    //std::cout << pimpl->anet << std::endl;
 
-    dlib::matrix<float> input(448, 448);
-    const auto result = pimpl->anet(input);
-    std::cout << pimpl->anet << std::endl;
+#if 0
+    pimpl->anet(dlib::matrix<float>(561, 561));
+    const auto& output6 = dlib::layer<6>(pimpl->anet).get_output();
+    if (output6.num_samples() == 1 && output6.nr() == 1 && output6.nc() == 1 && output6.k() == 64) {
+        ; // ok!
+    }
+    else {
+        std::ostringstream oss;
+        oss << "Unexpected output size from layer 6:" << std::endl
+            << " - num_samples = " << output6.num_samples() << std::endl
+            << " - nr          = " << output6.nr() << std::endl
+            << " - nc          = " << output6.nc() << std::endl
+            << " - k           = " << output6.k() << std::endl;
+    }
+#endif
 }
 
 RuntimeNet::~RuntimeNet()
@@ -101,26 +117,7 @@ RuntimeNet& RuntimeNet::operator= (const TrainingNet& trainingNet)
 
 output_type RuntimeNet::operator() (const input_type& input) const
 {
-    const auto result = pimpl->anet(input);
-
-    //std::cout << pimpl->anet << std::endl;
-
-#if 0
-    const auto& output75 = dlib::layer<75>(pimpl->anet).get_output();
-    if (output75.num_samples() == 1 && output75.nr() == 1 && output75.nc() == 1 && output75.k() == 64) {
-        ; // ok!
-    }
-    else {
-        std::ostringstream oss;
-        oss << "Unexpected output size from layer 75:" << std::endl
-            << " - num_samples = " << output75.num_samples() << std::endl
-            << " - nr          = " << output75.nr() << std::endl
-            << " - nc          = " << output75.nc() << std::endl
-            << " - k           = " << output75.k() << std::endl;
-    }
-#endif
-
-    return result;
+    return pimpl->anet(input);
 }
 
 void RuntimeNet::Serialize(std::ostream& out) const

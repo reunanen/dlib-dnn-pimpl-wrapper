@@ -4,6 +4,7 @@
 
 #ifndef __INTELLISENSE__
 
+#if 0
 // ----------------------------------------------------------------------------------------
 
 template <template <int, template<typename>class, int, typename> class block, int N, template<typename>class BN, typename SUBNET>
@@ -49,26 +50,33 @@ template <typename SUBNET> using alevel1t = ares<512, ares<512, ares_up<512, SUB
 template <typename SUBNET> using alevel2t = ares<256, ares<256, ares<256, ares<256, ares<256, ares_up<256, SUBNET>>>>>>;
 template <typename SUBNET> using alevel3t = ares<128, ares<128, ares<128, ares_up<128, SUBNET>>>>;
 template <typename SUBNET> using alevel4t = ares<64, ares<64, ares_up<64, SUBNET>>>;
+#endif
 
 // training network type
 using net_type = dlib::loss_mean_squared_per_pixel<
-    dlib::bn_con<dlib::cont<1, 7, 7, 3, 3,
-    dlib::relu<dlib::bn_con<dlib::cont<32, 7, 7, 3, 3,
-    level4t<level3t<level2t<level1t<
-    level1<level2<level3<level4<
-    dlib::max_pool<7, 7, 3, 3, dlib::relu<dlib::bn_con<dlib::con<32, 7, 7, 3, 3,
+    dlib::bn_con<dlib::cont<1, 15, 15, 3, 3,
+    dlib::relu<dlib::bn_con<dlib::cont<32, 15, 15, 3, 3,
+    dlib::relu<dlib::bn_con<dlib::cont<64, 15, 15, 3, 3,
+    dlib::relu<dlib::bn_con<dlib::cont<128, 15, 15, 3, 3,
+    dlib::relu<dlib::bn_con<dlib::con<256, 15, 15, 3, 3,
+    dlib::relu<dlib::bn_con<dlib::con<128, 15, 15, 3, 3,
+    dlib::relu<dlib::bn_con<dlib::con<64, 15, 15, 3, 3,
+    dlib::relu<dlib::bn_con<dlib::con<32, 15, 15, 3, 3,
     dlib::input<dlib::matrix<float>>
-    >>>>>>>>>>>>>>>>>>;
+    >>>>>>>>>>>>>>>>>>>>>>>>;
 
 // testing network type (replaced batch normalization with fixed affine transforms)
 using anet_type = dlib::loss_mean_squared_per_pixel<
-    dlib::affine<dlib::cont<1, 7, 7, 3, 3,
-    dlib::relu<dlib::affine<dlib::cont<32, 7, 7, 3, 3,
-    alevel4t<alevel3t<alevel2t<alevel1t<
-    alevel1<alevel2<alevel3<alevel4<
-    dlib::max_pool<7, 7, 3, 3, dlib::relu<dlib::affine<dlib::con<32, 7, 7, 3, 3,
+    dlib::affine<dlib::cont<1, 15, 15, 3, 3,
+    dlib::relu<dlib::affine<dlib::cont<32, 15, 15, 3, 3,
+    dlib::relu<dlib::affine<dlib::cont<64, 15, 15, 3, 3,
+    dlib::relu<dlib::affine<dlib::cont<128, 15, 15, 3, 3,
+    dlib::relu<dlib::affine<dlib::con<256, 15, 15, 3, 3,
+    dlib::relu<dlib::affine<dlib::con<128, 15, 15, 3, 3,
+    dlib::relu<dlib::affine<dlib::con<64, 15, 15, 3, 3,
+    dlib::relu<dlib::affine<dlib::con<32, 15, 15, 3, 3,
     dlib::input<dlib::matrix<float>>
-    >>>>>>>>>>>>>>>>>>;
+    >>>>>>>>>>>>>>>>>>>>>>>>;
 
 // ----------------------------------------------------------------------------------------
 
