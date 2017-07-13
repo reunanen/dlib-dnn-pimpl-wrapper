@@ -70,6 +70,16 @@ RuntimeNet TrainingNet::GetRuntimeNet() const
     return runtimeNet;
 }
 
+void TrainingNet::Serialize(std::ostream& out) const
+{
+    dlib::serialize(*pimpl->net, out);
+}
+
+void TrainingNet::Deserialize(std::istream& in)
+{
+    dlib::deserialize(*pimpl->net, in);
+}
+
 RuntimeNet::RuntimeNet()
 {
     pimpl = new RuntimeNet::Impl();
@@ -125,7 +135,7 @@ void RuntimeNet::Serialize(std::ostream& out) const
     dlib::serialize(pimpl->anet, out);
 }
 
-void RuntimeNet::Deserialize(std::istream& in) const
+void RuntimeNet::Deserialize(std::istream& in)
 {
     dlib::deserialize(pimpl->anet, in);
 }

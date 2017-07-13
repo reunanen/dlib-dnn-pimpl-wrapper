@@ -34,6 +34,9 @@ namespace NetPimpl
 
         RuntimeNet GetRuntimeNet() const; // may block
 
+        void Serialize(std::ostream& out) const;
+        void Deserialize(std::istream& in);
+
     private:
         TrainingNet(const TrainingNet&) = delete;
         TrainingNet& operator= (const TrainingNet&) = delete;
@@ -57,7 +60,7 @@ namespace NetPimpl
         output_type operator() (const input_type& input) const;
 
         void Serialize(std::ostream& out) const;
-        void Deserialize(std::istream& in) const;
+        void Deserialize(std::istream& in);
 
     private:
         struct Impl;
