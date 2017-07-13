@@ -6,7 +6,7 @@ namespace NetPimpl {
 struct TrainingNet::Impl
 {
     std::unique_ptr<net_type> net;
-    std::unique_ptr<dlib::dnn_trainer<net_type>> trainer;
+    std::unique_ptr<dlib::dnn_trainer<net_type, solver_type>> trainer;
 };
 
 struct RuntimeNet::Impl
@@ -27,7 +27,7 @@ TrainingNet::~TrainingNet()
 void TrainingNet::Initialize(const solver_type& solver)
 {
     pimpl->net = std::make_unique<net_type>();
-    pimpl->trainer = std::make_unique<dlib::dnn_trainer<net_type>>(*pimpl->net, solver);
+    pimpl->trainer = std::make_unique<dlib::dnn_trainer<net_type, solver_type>>(*pimpl->net, solver);
 
     //const std::vector<dlib::matrix<float>> sample{ dlib::matrix<float>(561, 561) };
     //pimpl->trainer->train_one_step(sample, sample);

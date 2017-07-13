@@ -7,7 +7,13 @@ namespace NetPimpl
     typedef dlib::matrix<float> input_type;
     typedef dlib::matrix<float> training_label_type;
     typedef dlib::matrix<float> output_type;
+#if 0
+    typedef dlib::adam solver_type;
+    const auto GetDefaultSolver = []() { return dlib::adam(0.001, 0.9, 0.999); };
+#else
     typedef dlib::sgd solver_type;
+    const auto GetDefaultSolver = []() { return dlib::sgd(0.001, 0.9); };
+#endif
 
     class RuntimeNet;
 
@@ -16,7 +22,7 @@ namespace NetPimpl
         TrainingNet();
         virtual ~TrainingNet();
 
-        void Initialize(const solver_type& solver = dlib::sgd(0.0001, 0.9));
+        void Initialize(const solver_type& solver = GetDefaultSolver());
 
         void SetLearningRate(double learningRate);
         void SetMinLearningRate(double minLearningRate);
