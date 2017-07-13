@@ -54,27 +54,27 @@ template <typename SUBNET> using alevel4t = ares<64, ares<64, ares_up<64, SUBNET
 
 // training network type
 using net_type = dlib::loss_mean_squared_per_pixel<
-    dlib::bn_con<dlib::cont<1, 15, 15, 3, 3,
-    dlib::relu<dlib::bn_con<dlib::cont<32, 15, 15, 3, 3,
-    dlib::relu<dlib::bn_con<dlib::cont<64, 15, 15, 3, 3,
-    dlib::relu<dlib::bn_con<dlib::cont<128, 15, 15, 3, 3,
-    dlib::relu<dlib::bn_con<dlib::con<256, 15, 15, 3, 3,
-    dlib::relu<dlib::bn_con<dlib::con<128, 15, 15, 3, 3,
-    dlib::relu<dlib::bn_con<dlib::con<64, 15, 15, 3, 3,
-    dlib::relu<dlib::bn_con<dlib::con<32, 15, 15, 3, 3,
+    dlib::bn_con<dlib::cont<1, 7, 7, 3, 3,
+    dlib::relu<dlib::bn_con<dlib::cont<64, 7, 7, 3, 3,
+    dlib::relu<dlib::bn_con<dlib::cont<128, 7, 7, 3, 3,
+    dlib::relu<dlib::bn_con<dlib::cont<256, 7, 7, 3, 3,
+    dlib::relu<dlib::bn_con<dlib::con<512, 7, 7, 3, 3,
+    dlib::relu<dlib::bn_con<dlib::con<256, 7, 7, 3, 3,
+    dlib::relu<dlib::bn_con<dlib::con<128, 7, 7, 3, 3,
+    dlib::relu<dlib::bn_con<dlib::con<64, 7, 7, 3, 3,
     dlib::input<dlib::matrix<float>>
     >>>>>>>>>>>>>>>>>>>>>>>>;
 
 // testing network type (replaced batch normalization with fixed affine transforms)
 using anet_type = dlib::loss_mean_squared_per_pixel<
-    dlib::affine<dlib::cont<1, 15, 15, 3, 3,
-    dlib::relu<dlib::affine<dlib::cont<32, 15, 15, 3, 3,
-    dlib::relu<dlib::affine<dlib::cont<64, 15, 15, 3, 3,
-    dlib::relu<dlib::affine<dlib::cont<128, 15, 15, 3, 3,
-    dlib::relu<dlib::affine<dlib::con<256, 15, 15, 3, 3,
-    dlib::relu<dlib::affine<dlib::con<128, 15, 15, 3, 3,
-    dlib::relu<dlib::affine<dlib::con<64, 15, 15, 3, 3,
-    dlib::relu<dlib::affine<dlib::con<32, 15, 15, 3, 3,
+    dlib::affine<dlib::cont<1, 7, 7, 3, 3,
+    dlib::relu<dlib::affine<dlib::cont<64, 7, 7, 3, 3,
+    dlib::relu<dlib::affine<dlib::cont<128, 7, 7, 3, 3,
+    dlib::relu<dlib::affine<dlib::cont<256, 7, 7, 3, 3,
+    dlib::relu<dlib::affine<dlib::con<512, 7, 7, 3, 3,
+    dlib::relu<dlib::affine<dlib::con<256, 7, 7, 3, 3,
+    dlib::relu<dlib::affine<dlib::con<128, 7, 7, 3, 3,
+    dlib::relu<dlib::affine<dlib::con<64, 7, 7, 3, 3,
     dlib::input<dlib::matrix<float>>
     >>>>>>>>>>>>>>>>>>>>>>>>;
 
