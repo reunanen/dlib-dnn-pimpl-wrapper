@@ -38,6 +38,9 @@ namespace NetPimpl
         void Serialize(std::ostream& out) const;
         void Deserialize(std::istream& in);
 
+        void Serialize(const std::string& filename) const;
+        void Deserialize(const std::string& filename);
+
     private:
         TrainingNet(const TrainingNet&) = delete;
         TrainingNet& operator= (const TrainingNet&) = delete;
@@ -65,6 +68,9 @@ namespace NetPimpl
 
         void Serialize(std::ostream& out) const;
         void Deserialize(std::istream& in);
+
+        void Serialize(const std::string& filename) const;
+        void Deserialize(const std::string& filename);
 
     private:
         struct Impl;

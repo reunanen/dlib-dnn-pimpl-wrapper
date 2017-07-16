@@ -80,6 +80,16 @@ void TrainingNet::Deserialize(std::istream& in)
     dlib::deserialize(*pimpl->net, in);
 }
 
+void TrainingNet::Serialize(const std::string& filename) const
+{
+    Serialize(std::ofstream(filename, std::ios::binary));
+}
+
+void TrainingNet::Deserialize(const std::string& filename)
+{
+    Deserialize(std::ifstream(filename, std::ios::binary));
+}
+
 RuntimeNet::RuntimeNet()
 {
     pimpl = new RuntimeNet::Impl();
@@ -165,6 +175,16 @@ void RuntimeNet::Serialize(std::ostream& out) const
 void RuntimeNet::Deserialize(std::istream& in)
 {
     dlib::deserialize(pimpl->anet, in);
+}
+
+void RuntimeNet::Serialize(const std::string& filename) const
+{
+    Serialize(std::ofstream(filename, std::ios::binary));
+}
+
+void RuntimeNet::Deserialize(const std::string& filename)
+{
+    Deserialize(std::ifstream(filename, std::ios::binary));
 }
 
 }
