@@ -1,6 +1,7 @@
 #pragma once
 
 #include <dlib/dnn.h>
+#include <vector>
 
 namespace NetPimpl
 {
@@ -58,6 +59,9 @@ namespace NetPimpl
         RuntimeNet& operator= (const TrainingNet& trainingNet); // may block
 
         output_type operator() (const input_type& input) const;
+
+        // Get even the activation of the bottleneck layer - autoencoder only
+        std::pair<output_type, std::vector<float>> Process(const input_type& input) const;
 
         void Serialize(std::ostream& out) const;
         void Deserialize(std::istream& in);

@@ -130,6 +130,33 @@ output_type RuntimeNet::operator() (const input_type& input) const
     return pimpl->anet(input);
 }
 
+std::pair<output_type, std::vector<float>> RuntimeNet::Process(const input_type& input) const
+{
+    std::pair<output_type, std::vector<float>> result;
+
+    result.first = pimpl->anet(input);
+
+    const auto& bottleneckOutput = dlib::layer<12>(pimpl->anet).get_output();
+    if (bottleneckOutput.k() != 256 || bottleneckOutput.num_samples() != 1 || bottleneckOutput.nr() != 1 || bottleneckOutput.nc() != 1) {
+        std::ostringstream oss;
+        oss << "Unexpected bottleneck output size:" << std::endl
+            << " - num_samples = " << bottleneckOutput.num_samples() << std::endl
+            << " - k           = " << bottleneckOutput.k() << std::endl
+            << " - nr          = " << bottleneckOutput.nr() << std::endl
+            << " - nc          = " << bottleneckOutput.nc();
+        throw std::runtime_error(oss.str());
+    }
+
+    const float* out = bottleneckOutput.host();
+    result.second.resize(bottleneckOutput.k());
+
+    for (long k = 0, end = bottleneckOutput.k(); k < end; ++k) {
+        result.second[k] = out[k];
+    }
+
+    return result;
+}
+
 void RuntimeNet::Serialize(std::ostream& out) const
 {
     dlib::serialize(pimpl->anet, out);
