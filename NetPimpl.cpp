@@ -38,14 +38,14 @@ void TrainingNet::SetLearningRate(double learningRate)
     pimpl->trainer->set_learning_rate(learningRate);
 }
 
-void TrainingNet::SetMinLearningRate(double minLearningRate)
-{
-    pimpl->trainer->set_min_learning_rate(minLearningRate);
-}
-
 void TrainingNet::SetIterationsWithoutProgressThreshold(unsigned long threshold)
 {
     pimpl->trainer->set_iterations_without_progress_threshold(threshold);
+}
+
+void TrainingNet::SetLearningRateShrinkFactor(double learningRateShrinkFactor)
+{
+    pimpl->trainer->set_min_learning_rate(learningRateShrinkFactor);
 }
 
 void TrainingNet::SetSynchronizationFile(const std::string& filename, std::chrono::seconds time_between_syncs)

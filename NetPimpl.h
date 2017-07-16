@@ -25,8 +25,8 @@ namespace NetPimpl
         void Initialize(const solver_type& solver = GetDefaultSolver());
 
         void SetLearningRate(double learningRate);
-        void SetMinLearningRate(double minLearningRate);
         void SetIterationsWithoutProgressThreshold(unsigned long threshold);
+        void SetLearningRateShrinkFactor(double learningRateShrinkFactor);
         void SetSynchronizationFile(const std::string& filename, std::chrono::seconds time_between_syncs = std::chrono::minutes(15));
         void BeVerbose();
 
