@@ -13,6 +13,7 @@ struct NetPimpl::Impl
     anet_type anet;
 
     bool dirty = false; // Has training been started, but the updated net not copied to anet yet?
+    std::future<net_type> getNetFuture;
 };
 
 NetPimpl::NetPimpl(const NetPimpl::solver_type& solver)
@@ -51,6 +52,7 @@ void NetPimpl::StartTraining(const std::vector<NetPimpl::input_type>& inputs, co
     assert(!pimpl->dirty);
     pimpl->trainer.train_one_step(inputs, training_labels);
     pimpl->dirty = true;
+    pimpl->getNetFuture = std::async(std::launch::async, [this]() { return pimpl->trainer.get_net(); });
 }
 
 bool NetPimpl::IsTrainingStarted() const
@@ -61,12 +63,12 @@ bool NetPimpl::IsTrainingStarted() const
 bool NetPimpl::IsStillTraining() const
 {
     assert(pimpl->dirty);
-    return pimpl->trainer.is_training();
+    return pimpl->getNetFuture.wait_for(std::chrono::seconds(0)) != std::future_status::ready;
 }
 
 bool NetPimpl::IsTraining() const
 {
-    return pimpl->dirty && pimpl->trainer.is_training();
+    return pimpl->dirty && IsStillTraining();
 }
 
 void NetPimpl::WaitForTrainingToFinishAndUseNet()
