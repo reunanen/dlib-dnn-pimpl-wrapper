@@ -19,7 +19,7 @@ struct NetPimpl::Impl
 NetPimpl::NetPimpl(const NetPimpl::solver_type& solver)
 {
     pimpl = new NetPimpl::Impl(solver);
-    pimpl->trainer.be_verbose(); // TODO: remove
+    pimpl->trainer.be_verbose(); // TODO: make optional
 }
 
 NetPimpl::~NetPimpl()
