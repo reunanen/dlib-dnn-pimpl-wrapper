@@ -28,9 +28,11 @@ void TrainingNet::Initialize(const solver_type& solver)
 {
     pimpl->net = std::make_unique<net_type>();
     pimpl->trainer = std::make_unique<dlib::dnn_trainer<net_type, solver_type>>(*pimpl->net, solver);
+}
 
-    //const std::vector<dlib::matrix<float>> sample{ dlib::matrix<float>(561, 561) };
-    //pimpl->trainer->train_one_step(sample, sample);
+void TrainingNet::SetClassCount(unsigned short classCount)
+{
+    pimpl->net->subnet().subnet().layer_details().set_num_filters(classCount);
 }
 
 void TrainingNet::SetLearningRate(double learningRate)
@@ -61,6 +63,11 @@ void TrainingNet::BeVerbose()
 void TrainingNet::StartTraining(const std::vector<input_type>& inputs, const std::vector<training_label_type>& training_labels)
 {
     pimpl->trainer->train_one_step(inputs, training_labels);
+}
+
+double TrainingNet::GetLearningRate() const
+{
+    return pimpl->trainer->get_learning_rate();
 }
 
 RuntimeNet TrainingNet::GetRuntimeNet() const
@@ -140,31 +147,9 @@ output_type RuntimeNet::operator() (const input_type& input) const
     return pimpl->anet(input);
 }
 
-std::pair<output_type, std::vector<float>> RuntimeNet::Process(const input_type& input) const
+output_type RuntimeNet::Process(const input_type& input) const
 {
-    std::pair<output_type, std::vector<float>> result;
-
-    result.first = pimpl->anet(input);
-
-    const auto& bottleneckOutput = dlib::layer<12>(pimpl->anet).get_output();
-    if (bottleneckOutput.k() != 256 || bottleneckOutput.num_samples() != 1 || bottleneckOutput.nr() != 1 || bottleneckOutput.nc() != 1) {
-        std::ostringstream oss;
-        oss << "Unexpected bottleneck output size:" << std::endl
-            << " - num_samples = " << bottleneckOutput.num_samples() << std::endl
-            << " - k           = " << bottleneckOutput.k() << std::endl
-            << " - nr          = " << bottleneckOutput.nr() << std::endl
-            << " - nc          = " << bottleneckOutput.nc();
-        throw std::runtime_error(oss.str());
-    }
-
-    const float* out = bottleneckOutput.host();
-    result.second.resize(bottleneckOutput.k());
-
-    for (long k = 0, end = bottleneckOutput.k(); k < end; ++k) {
-        result.second[k] = out[k];
-    }
-
-    return result;
+    return pimpl->anet(input);
 }
 
 void RuntimeNet::Serialize(std::ostream& out) const
