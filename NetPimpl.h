@@ -5,7 +5,7 @@
 
 namespace NetPimpl
 {
-    typedef dlib::matrix<dlib::rgb_pixel> input_type;
+    typedef dlib::matrix<uint8_t> input_type;
     typedef dlib::matrix<uint16_t> training_label_type;
     typedef dlib::matrix<uint16_t> output_type;
 #if 0
