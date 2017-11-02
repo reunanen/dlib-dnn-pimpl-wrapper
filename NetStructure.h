@@ -58,12 +58,14 @@ using net_type = dlib::loss_mean_squared_per_pixel<
     dlib::relu<dlib::bn_con<dlib::cont<32, 7, 7, 3, 3,
     dlib::relu<dlib::bn_con<dlib::cont<64, 7, 7, 3, 3,
     dlib::relu<dlib::bn_con<dlib::cont<128, 7, 7, 3, 3,
+    dlib::relu<dlib::bn_con<dlib::cont<256, 7, 7, 3, 3,
+    dlib::relu<dlib::bn_con<dlib::con<512, 7, 7, 3, 3,
     dlib::relu<dlib::bn_con<dlib::con<256, 7, 7, 3, 3,
     dlib::relu<dlib::bn_con<dlib::con<128, 7, 7, 3, 3,
     dlib::relu<dlib::bn_con<dlib::con<64, 7, 7, 3, 3,
     dlib::relu<dlib::bn_con<dlib::con<32, 7, 7, 3, 3,
     dlib::input<dlib::matrix<float>>
-    >>>>>>>>>>>>>>>>>>>>>>>>;
+    >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>;
 
 // testing network type (replaced batch normalization with fixed affine transforms)
 using anet_type = dlib::loss_mean_squared_per_pixel<
@@ -71,12 +73,14 @@ using anet_type = dlib::loss_mean_squared_per_pixel<
     dlib::relu<dlib::affine<dlib::cont<32, 7, 7, 3, 3,
     dlib::relu<dlib::affine<dlib::cont<64, 7, 7, 3, 3,
     dlib::relu<dlib::affine<dlib::cont<128, 7, 7, 3, 3,
+    dlib::relu<dlib::affine<dlib::cont<256, 7, 7, 3, 3,
+    dlib::relu<dlib::affine<dlib::con<512, 7, 7, 3, 3,
     dlib::relu<dlib::affine<dlib::con<256, 7, 7, 3, 3,
     dlib::relu<dlib::affine<dlib::con<128, 7, 7, 3, 3,
     dlib::relu<dlib::affine<dlib::con<64, 7, 7, 3, 3,
     dlib::relu<dlib::affine<dlib::con<32, 7, 7, 3, 3,
     dlib::input<dlib::matrix<float>>
-    >>>>>>>>>>>>>>>>>>>>>>>>;
+    >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>;
 
 // ----------------------------------------------------------------------------------------
 

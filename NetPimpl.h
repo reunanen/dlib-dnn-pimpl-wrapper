@@ -31,6 +31,7 @@ namespace NetPimpl
         void SetSynchronizationFile(const std::string& filename, std::chrono::seconds time_between_syncs = std::chrono::minutes(15));
         void BeVerbose();
 
+        static int GetRequiredInputDimension();
         void StartTraining(const std::vector<input_type>& inputs, const std::vector<training_label_type>& training_labels);
 
         RuntimeNet GetRuntimeNet() const; // may block

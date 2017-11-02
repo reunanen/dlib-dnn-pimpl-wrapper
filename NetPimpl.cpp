@@ -58,6 +58,23 @@ void TrainingNet::BeVerbose()
     pimpl->trainer->be_verbose();
 }
 
+int CalcO(int W, int K, int S, int P = 0)
+{
+    return (W - K + 2 * P) / S + 1;
+}
+
+int CalcI(int W, int K, int S, int P = 0)
+{
+    return (W - 1) * S - 2 * P + K;
+}
+
+int TrainingNet::GetRequiredInputDimension()
+{
+    // TODO: calculate this more automatically?
+    const int inputDim = CalcI(CalcI(CalcI(CalcI(CalcI(1, 7, 3), 7, 3), 7, 3), 7, 3), 7, 3);
+    return inputDim;
+}
+
 void TrainingNet::StartTraining(const std::vector<input_type>& inputs, const std::vector<training_label_type>& training_labels)
 {
     pimpl->trainer->train_one_step(inputs, training_labels);
