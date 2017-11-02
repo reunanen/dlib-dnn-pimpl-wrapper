@@ -71,7 +71,7 @@ int CalcI(int W, int K, int S, int P = 0)
 int TrainingNet::GetRequiredInputDimension()
 {
     // TODO: calculate this more automatically?
-    const int inputDim = CalcI(CalcI(CalcI(CalcI(CalcI(1, 7, 3), 7, 3), 7, 3), 7, 3), 7, 3);
+    const int inputDim = CalcI(CalcI(CalcI(CalcI(CalcI(1, 3, 2), 7, 3), 7, 3), 7, 3), 7, 3);
     return inputDim;
 }
 
@@ -148,7 +148,7 @@ RuntimeNet& RuntimeNet::operator= (const RuntimeNet& that)
 
 RuntimeNet& RuntimeNet::operator= (const TrainingNet& trainingNet)
 {
-    pimpl->anet = trainingNet.pimpl->trainer->get_net(); // may block
+    pimpl->anet = trainingNet.pimpl->trainer->get_net(dlib::force_flush_to_disk::no); // may block
     return *this;
 }
 
