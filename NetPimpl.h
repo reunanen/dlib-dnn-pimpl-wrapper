@@ -28,6 +28,8 @@ namespace NetPimpl
         void SetClassCount(unsigned short classCount);
         void SetLearningRate(double learningRate);
         void SetIterationsWithoutProgressThreshold(unsigned long threshold);
+        void SetPreviousLossValuesDumpAmount(unsigned long dump_amount);
+        void SetAllBatchNormalizationRunningStatsWindowSizes(unsigned long window_size);
         void SetLearningRateShrinkFactor(double learningRateShrinkFactor);
         void SetSynchronizationFile(const std::string& filename, std::chrono::seconds time_between_syncs = std::chrono::minutes(15));
         void BeVerbose();

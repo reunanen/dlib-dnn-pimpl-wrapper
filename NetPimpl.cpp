@@ -47,6 +47,16 @@ void TrainingNet::SetIterationsWithoutProgressThreshold(unsigned long threshold)
     pimpl->trainer->set_iterations_without_progress_threshold(threshold);
 }
 
+void TrainingNet::SetPreviousLossValuesDumpAmount(unsigned long dump_amount)
+{
+    pimpl->trainer->set_previous_loss_values_dump_amount(dump_amount);
+}
+
+void TrainingNet::SetAllBatchNormalizationRunningStatsWindowSizes(unsigned long window_size)
+{
+    dlib::set_all_bn_running_stats_window_sizes(*pimpl->net, window_size);
+}
+
 void TrainingNet::SetLearningRateShrinkFactor(double learningRateShrinkFactor)
 {
     pimpl->trainer->set_min_learning_rate(learningRateShrinkFactor);
