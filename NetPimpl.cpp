@@ -27,6 +27,9 @@ TrainingNet::~TrainingNet()
 
 void TrainingNet::Initialize(const solver_type& solver)
 {
+    if (pimpl->trainer) {
+        pimpl->trainer->get_net(dlib::force_flush_to_disk::no); // may block
+    }
     pimpl->net = std::make_unique<net_type>();
     pimpl->trainer = std::make_unique<dlib::dnn_trainer<net_type, solver_type>>(*pimpl->net, solver);
 }
