@@ -106,7 +106,7 @@ using net_type = dlib::loss_multiclass_log_per_pixel<
     level4t<level3t</*level2t<level1t<
     level1<level2<*/level3<level4<
     dlib::max_pool<3, 3, 2, 2, dlib::relu<dlib::bn_con<dlib::con<16, 7, 7, 2, 2,
-    dlib::input<dlib::matrix<float>>
+    dlib::input_grayscale_image
     >>>>>>>>>>>/*>>>>*/;
 
 // inference network type (replaced batch normalization with fixed affine transforms)
@@ -115,7 +115,7 @@ using anet_type = dlib::loss_multiclass_log_per_pixel<
     alevel4t<alevel3t</*alevel2t<alevel1t<
     alevel1<alevel2<*/alevel3<alevel4<
     dlib::max_pool<3, 3, 2, 2, dlib::relu<dlib::affine<dlib::con<16, 7, 7, 2, 2,
-    dlib::input<dlib::matrix<float>>
+    dlib::input_grayscale_image
     >>>>>>>>>>>/*>>>>*/;
 
 #endif
