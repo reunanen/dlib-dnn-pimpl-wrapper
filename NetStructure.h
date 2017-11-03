@@ -32,9 +32,31 @@ template <int N, typename SUBNET> using ares_up = dlib::relu<residual_up<block, 
 
 constexpr long default_class_count = 2;
 
-#if 0
+#if 1
 
 #if 1
+template <typename SUBNET> using level1 = res<256, res_down<256, SUBNET>>;
+template <typename SUBNET> using level2 = res<128, res_down<128, SUBNET>>;
+template <typename SUBNET> using level3 = res<64, res_down<64, SUBNET>>;
+template <typename SUBNET> using level4 = res<32, res<32, SUBNET>>;
+
+template <typename SUBNET> using alevel1 = ares<256, ares_down<256, SUBNET>>;
+template <typename SUBNET> using alevel2 = ares<128, ares_down<128, SUBNET>>;
+template <typename SUBNET> using alevel3 = ares<64, ares_down<64, SUBNET>>;
+template <typename SUBNET> using alevel4 = ares<32, ares<32, SUBNET>>;
+
+template <typename SUBNET> using level1t = res<256, res_up<256, SUBNET>>;
+template <typename SUBNET> using level2t = res<128, res_up<128, SUBNET>>;
+template <typename SUBNET> using level3t = res<64, res_up<64, SUBNET>>;
+template <typename SUBNET> using level4t = res<32, res_up<32, SUBNET>>;
+
+template <typename SUBNET> using alevel1t = ares<256, ares_up<256, SUBNET>>;
+template <typename SUBNET> using alevel2t = ares<128, ares_up<128, SUBNET>>;
+template <typename SUBNET> using alevel3t = ares<64, ares_up<64, SUBNET>>;
+template <typename SUBNET> using alevel4t = ares<32, ares_up<32, SUBNET>>;
+#endif
+
+#if 0
 template <typename SUBNET> using level1 = res<512, res_down<512, SUBNET>>;
 template <typename SUBNET> using level2 = res<256, res_down<256, SUBNET>>;
 template <typename SUBNET> using level3 = res<128, res_down<128, SUBNET>>;
@@ -81,24 +103,24 @@ template <typename SUBNET> using alevel4t = ares<64, ares<64, ares_up<64, SUBNET
 // training network type
 using net_type = dlib::loss_multiclass_log_per_pixel<
     dlib::bn_con<dlib::cont<default_class_count, 7, 7, 2, 2,
-    level4t<level3t<level2t<level1t<
-    level1<level2<level3<level4<
-    dlib::max_pool<3, 3, 2, 2, dlib::relu<dlib::bn_con<dlib::con<64, 7, 7, 2, 2,
-    dlib::input_grayscale_image
-    >>>>>>>>>>>>>>>;
+    level4t<level3t</*level2t<level1t<
+    level1<level2<*/level3<level4<
+    dlib::max_pool<3, 3, 2, 2, dlib::relu<dlib::bn_con<dlib::con<16, 7, 7, 2, 2,
+    dlib::input<dlib::matrix<float>>
+    >>>>>>>>>>>/*>>>>*/;
 
 // inference network type (replaced batch normalization with fixed affine transforms)
 using anet_type = dlib::loss_multiclass_log_per_pixel<
     dlib::affine<dlib::cont<default_class_count, 7, 7, 2, 2,
-    alevel4t<alevel3t<alevel2t<alevel1t<
-    alevel1<alevel2<alevel3<alevel4<
-    dlib::max_pool<3, 3, 2, 2, dlib::relu<dlib::affine<dlib::con<64, 7, 7, 2, 2,
-    dlib::input_grayscale_image
-    >>>>>>>>>>>>>>>;
+    alevel4t<alevel3t</*alevel2t<alevel1t<
+    alevel1<alevel2<*/alevel3<alevel4<
+    dlib::max_pool<3, 3, 2, 2, dlib::relu<dlib::affine<dlib::con<16, 7, 7, 2, 2,
+    dlib::input<dlib::matrix<float>>
+    >>>>>>>>>>>/*>>>>*/;
 
 #endif
 
-#if 1
+#if 0
 
 template <int N, int K, int S, typename SUBNET> using down = dlib::con<N, K, K, S, S, SUBNET>;
 template <int N, int K, int S, typename SUBNET> using up = dlib::cont<N, K, K, S, S, SUBNET>;
@@ -114,14 +136,14 @@ template <int N, int K, int S, typename SUBNET> using buprelu = dlib::relu<bup<N
 template <int N, int K, int S, typename SUBNET> using auprelu = dlib::relu<aup<N, K, S, SUBNET>>;
 
 using net_type = dlib::loss_multiclass_log_per_pixel<
-                    bup<default_class_count,7,3,buprelu<16,5,2,buprelu<32,3,2,buprelu<64,3,2,buprelu<128,3,2,buprelu<256,3,2,
-                    bdownrelu<256,3,2,bdownrelu<128,3,2,bdownrelu<64,3,2,bdownrelu<32,3,2,bdownrelu<16,5,2,bdownrelu<8,7,2,
-                    dlib::input_grayscale_image>>>>>>>>>>>>>;
+                    bup<default_class_count,7,3,buprelu<32,7,3,buprelu<64,7,3,buprelu<128,7,3,buprelu<256,7,3,
+                    bdownrelu<1024,7,3,bdownrelu<256,7,3,bdownrelu<128,7,3,bdownrelu<64,7,3,bdownrelu<32,7,3,
+                    dlib::input_grayscale_image>>>>>>>>>>>;
 
 using anet_type = dlib::loss_multiclass_log_per_pixel<
-                    aup<default_class_count,7,3,auprelu<16,5,2,auprelu<32,3,2,auprelu<64,3,2,auprelu<128,3,2,auprelu<256,3,2,
-                    adownrelu<256,3,2,adownrelu<128,3,2,adownrelu<64,3,2,adownrelu<32,3,2,adownrelu<16,5,2,adownrelu<8,7,3,
-                    dlib::input_grayscale_image>>>>>>>>>>>>>;
+                    aup<default_class_count,7,3,auprelu<32,7,3,auprelu<64,7,3,auprelu<128,7,3,auprelu<256,7,3,
+                    adownrelu<1024,7,3,adownrelu<256,7,3,adownrelu<128,7,3,adownrelu<64,7,3,adownrelu<32,7,3,
+                    dlib::input_grayscale_image>>>>>>>>>>>;
 
 #endif
 
