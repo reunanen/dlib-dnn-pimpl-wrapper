@@ -174,6 +174,8 @@ struct NetOutputs {
     };
 };
 
+static_assert(NetInputs<1>::count == 727, "Unexpected net input count");
+
 #endif
 
 #endif // __INTELLISENSE__
