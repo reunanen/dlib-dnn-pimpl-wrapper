@@ -151,30 +151,30 @@ template <int N, int K, int S, typename SUBNET> using buprelu = dlib::relu<bup<N
 template <int N, int K, int S, typename SUBNET> using auprelu = dlib::relu<aup<N, K, S, SUBNET>>;
 
 using net_type = dlib::loss_multiclass_log_per_pixel<
-                    bup<default_class_count,7,3,buprelu<32,7,3,buprelu<64,7,3,buprelu<128,7,3,buprelu<256,7,3,
-                    bdownrelu<1024,7,3,bdownrelu<256,7,3,bdownrelu<128,7,3,bdownrelu<64,7,3,bdownrelu<32,7,3,
+                    bup<default_class_count,5,2,buprelu<8,3,2,buprelu<32,7,3,buprelu<64,7,3,buprelu<128,7,3,
+                    bdownrelu<128,7,3,bdownrelu<64,7,3,bdownrelu<32,7,3,dlib::max_pool<3,3,2,2,bdownrelu<8,5,2,
                     dlib::input_grayscale_image>>>>>>>>>>>;
 
 using anet_type = dlib::loss_multiclass_log_per_pixel<
-                    aup<default_class_count,7,3,auprelu<32,7,3,auprelu<64,7,3,auprelu<128,7,3,auprelu<256,7,3,
-                    adownrelu<1024,7,3,adownrelu<256,7,3,adownrelu<128,7,3,adownrelu<64,7,3,adownrelu<32,7,3,
+                    aup<default_class_count,5,2,auprelu<8,3,2,auprelu<32,7,3,auprelu<64,7,3,auprelu<128,7,3,
+                    adownrelu<128,7,3,adownrelu<64,7,3,adownrelu<32,7,3,dlib::max_pool<3,3,2,2,adownrelu<8,5,2,
                     dlib::input_grayscale_image>>>>>>>>>>>;
 
 // The definitions below need to match the network architecture above
 template<int W>
 struct NetInputs {
     enum {
-        count = Inputs<5,W,7,3>::count
+        count = Inputs<1,Inputs<1,Inputs<3,W,7,3>::count,3,2>::count,5,2>::count
     };
 };
 template<int W>
 struct NetOutputs {
     enum {
-        count = Outputs<5,W,7,3>::count
+        count = Outputs<3,Outputs<1,Outputs<1,W,5,2>::count,3,2>::count,7,3>::count
     };
 };
 
-static_assert(NetInputs<1>::count == 727, "Unexpected net input count");
+static_assert(NetInputs<1>::count == 321, "Unexpected net input count");
 
 #endif
 
