@@ -168,14 +168,14 @@ RuntimeNet& RuntimeNet::operator= (const TrainingNet& trainingNet)
     return *this;
 }
 
-output_type RuntimeNet::operator() (const input_type& input) const
+output_type RuntimeNet::operator() (const input_type& input, const std::vector<double>& gainFactors) const
 {
-    return pimpl->anet(input);
+    return pimpl->anet.process(input, gainFactors);
 }
 
-output_type RuntimeNet::Process(const input_type& input) const
+output_type RuntimeNet::Process(const input_type& input, const std::vector<double>& gainFactors) const
 {
-    return pimpl->anet(input);
+    return pimpl->anet.process(input, gainFactors);
 }
 
 void RuntimeNet::Serialize(std::ostream& out) const
