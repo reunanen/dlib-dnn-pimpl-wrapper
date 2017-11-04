@@ -135,7 +135,7 @@ struct NetOutputs {
 
 #endif
 
-#if 1
+#if 0
 
 template <int N, int K, int S, typename SUBNET> using down = dlib::con<N, K, K, S, S, SUBNET>;
 template <int N, int K, int S, typename SUBNET> using up = dlib::cont<N, K, K, S, S, SUBNET>;
@@ -175,6 +175,56 @@ struct NetOutputs {
 };
 
 static_assert(NetInputs<1>::count == 321, "Unexpected net input count");
+
+#endif
+
+#if 1
+
+// training network type
+using net_type = dlib::loss_multiclass_log_per_pixel<
+    dlib::bn_con<dlib::cont<default_class_count, 7, 7, 3, 3,
+    dlib::relu<dlib::bn_con<dlib::cont<64, 7, 7, 3, 3,
+    dlib::relu<dlib::bn_con<dlib::cont<128, 7, 7, 3, 3,
+    dlib::relu<dlib::bn_con<dlib::cont<256, 5, 5, 2, 2,
+    dlib::relu<dlib::bn_con<dlib::cont<512, 3, 3, 2, 2,
+    dlib::relu<dlib::bn_con<dlib::con<2048, 3, 3, 2, 2,
+    dlib::relu<dlib::bn_con<dlib::con<512, 5, 5, 2, 2,
+    dlib::relu<dlib::bn_con<dlib::con<256, 7, 7, 3, 3,
+    dlib::relu<dlib::bn_con<dlib::con<128, 7, 7, 3, 3,
+    dlib::relu<dlib::bn_con<dlib::con<64, 7, 7, 3, 3,
+    dlib::input_grayscale_image
+    >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>;
+
+// testing network type (replaced batch normalization with fixed affine transforms)
+using anet_type = dlib::loss_multiclass_log_per_pixel<
+    dlib::affine<dlib::cont<default_class_count, 7, 7, 3, 3,
+    dlib::relu<dlib::affine<dlib::cont<64, 7, 7, 3, 3,
+    dlib::relu<dlib::affine<dlib::cont<128, 7, 7, 3, 3,
+    dlib::relu<dlib::affine<dlib::cont<256, 5, 5, 2, 2,
+    dlib::relu<dlib::affine<dlib::cont<512, 3, 3, 2, 2,
+    dlib::relu<dlib::affine<dlib::con<2048, 3, 3, 2, 2,
+    dlib::relu<dlib::affine<dlib::con<512, 5, 5, 2, 2,
+    dlib::relu<dlib::affine<dlib::con<256, 7, 7, 3, 3,
+    dlib::relu<dlib::affine<dlib::con<128, 7, 7, 3, 3,
+    dlib::relu<dlib::affine<dlib::con<64, 7, 7, 3, 3,
+    dlib::input_grayscale_image
+    >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>;
+
+// The definitions below need to match the network architecture above
+template<int W>
+struct NetInputs {
+    enum {
+        count = Inputs<3, Inputs<1, Inputs<1, W, 3, 2>::count, 5, 2>::count, 7, 3>::count
+    };
+};
+template<int W>
+struct NetOutputs {
+    enum {
+        count = Outputs<1, Outputs<1, Outputs<3, W, 7, 3>::count, 5, 2>::count, 3, 2>::count
+    };
+};
+
+static_assert(NetInputs<1>::count == 295, "Unexpected net input count");
 
 #endif
 
