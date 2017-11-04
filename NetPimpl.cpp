@@ -1,6 +1,5 @@
 #include "NetPimpl.h"
 #include "NetStructure.h"
-#include "NetDimensions.h"
 
 namespace NetPimpl {
 

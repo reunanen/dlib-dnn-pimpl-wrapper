@@ -1,6 +1,7 @@
 #pragma once
 
 #include <dlib/dnn.h>
+#include "NetDimensions.h"
 
 // ----------------------------------------------------------------------------------------
 
@@ -32,7 +33,7 @@ template <int N, typename SUBNET> using ares_up = dlib::relu<residual_up<block, 
 
 constexpr long default_class_count = 2;
 
-#if 1
+#if 0
 
 #if 1
 template <typename SUBNET> using level1 = res<256, res_down<256, SUBNET>>;
@@ -103,24 +104,38 @@ template <typename SUBNET> using alevel4t = ares<64, ares<64, ares_up<64, SUBNET
 // training network type
 using net_type = dlib::loss_multiclass_log_per_pixel<
     dlib::bn_con<dlib::cont<default_class_count, 7, 7, 2, 2,
-    level4t<level3t</*level2t<level1t<
-    level1<level2<*/level3<level4<
+    level4t<level3t<level2t<level1t<
+    level1<level2<level3<level4<
     dlib::max_pool<3, 3, 2, 2, dlib::relu<dlib::bn_con<dlib::con<16, 7, 7, 2, 2,
     dlib::input_grayscale_image
-    >>>>>>>>>>>/*>>>>*/;
+    >>>>>>>>>>>>>>>;
 
 // inference network type (replaced batch normalization with fixed affine transforms)
 using anet_type = dlib::loss_multiclass_log_per_pixel<
     dlib::affine<dlib::cont<default_class_count, 7, 7, 2, 2,
-    alevel4t<alevel3t</*alevel2t<alevel1t<
-    alevel1<alevel2<*/alevel3<alevel4<
+    alevel4t<alevel3t<alevel2t<alevel1t<
+    alevel1<alevel2<alevel3<alevel4<
     dlib::max_pool<3, 3, 2, 2, dlib::relu<dlib::affine<dlib::con<16, 7, 7, 2, 2,
     dlib::input_grayscale_image
-    >>>>>>>>>>>/*>>>>*/;
+    >>>>>>>>>>>>>>>;
+
+// The definitions below need to match the network architecture above
+template<int W>
+struct NetInputs {
+    enum {
+        count = Inputs<1,Inputs<4,W,3,2>::count,7,2>::count
+    };
+};
+template<int W>
+struct NetOutputs {
+    enum {
+        count = Outputs<4,Outputs<1,W,7,2>::count,3,2>::count
+    };
+};
 
 #endif
 
-#if 0
+#if 1
 
 template <int N, int K, int S, typename SUBNET> using down = dlib::con<N, K, K, S, S, SUBNET>;
 template <int N, int K, int S, typename SUBNET> using up = dlib::cont<N, K, K, S, S, SUBNET>;
@@ -144,6 +159,20 @@ using anet_type = dlib::loss_multiclass_log_per_pixel<
                     aup<default_class_count,7,3,auprelu<32,7,3,auprelu<64,7,3,auprelu<128,7,3,auprelu<256,7,3,
                     adownrelu<1024,7,3,adownrelu<256,7,3,adownrelu<128,7,3,adownrelu<64,7,3,adownrelu<32,7,3,
                     dlib::input_grayscale_image>>>>>>>>>>>;
+
+// The definitions below need to match the network architecture above
+template<int W>
+struct NetInputs {
+    enum {
+        count = Inputs<5,W,7,3>::count
+    };
+};
+template<int W>
+struct NetOutputs {
+    enum {
+        count = Outputs<5,W,7,3>::count
+    };
+};
 
 #endif
 
