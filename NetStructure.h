@@ -181,7 +181,7 @@ static_assert(NetInputs<1>::count == 321, "Unexpected net input count");
 #if 1
 
 // training network type
-using net_type = dlib::loss_multiclass_log_per_pixel<
+using net_type = dlib::loss_multiclass_log_per_pixel_weighted<
     dlib::bn_con<dlib::cont<default_class_count, 7, 7, 3, 3,
     dlib::relu<dlib::bn_con<dlib::cont<64, 7, 7, 3, 3,
     dlib::relu<dlib::bn_con<dlib::cont<128, 7, 7, 3, 3,
@@ -196,7 +196,7 @@ using net_type = dlib::loss_multiclass_log_per_pixel<
     >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>;
 
 // testing network type (replaced batch normalization with fixed affine transforms)
-using anet_type = dlib::loss_multiclass_log_per_pixel<
+using anet_type = dlib::loss_multiclass_log_per_pixel_weighted<
     dlib::affine<dlib::cont<default_class_count, 7, 7, 3, 3,
     dlib::relu<dlib::affine<dlib::cont<64, 7, 7, 3, 3,
     dlib::relu<dlib::affine<dlib::cont<128, 7, 7, 3, 3,
@@ -225,6 +225,56 @@ struct NetOutputs {
 };
 
 static_assert(NetInputs<1>::count == 295, "Unexpected net input count");
+
+#endif
+
+#if 0
+
+// training network type
+using net_type = dlib::loss_multiclass_log_per_pixel_weighted<
+    dlib::bn_con<dlib::cont<default_class_count, 7, 7, 2, 2,
+    dlib::relu<dlib::bn_con<dlib::cont<256, 3, 3, 2, 2,
+    dlib::relu<dlib::bn_con<dlib::cont<256, 3, 3, 2, 2,
+    dlib::relu<dlib::bn_con<dlib::cont<256, 3, 3, 2, 2,
+    dlib::relu<dlib::bn_con<dlib::cont<256, 3, 3, 2, 2,
+    dlib::relu<dlib::bn_con<dlib::cont<256, 3, 3, 2, 2,
+    res<256, res_down<256,
+    res<128, res_down<128,
+    res<64, res_down<64,
+    res<32, res_down<32,
+    dlib::max_pool<3, 3, 2, 2, dlib::relu<dlib::bn_con<dlib::con<16, 7, 7, 2, 2,
+    dlib::input_grayscale_image
+    >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>;
+
+// inference network type (replaced batch normalization with fixed affine transforms)
+using anet_type = dlib::loss_multiclass_log_per_pixel_weighted<
+    dlib::affine<dlib::cont<default_class_count, 7, 7, 2, 2,
+    dlib::relu<dlib::affine<dlib::cont<256, 3, 3, 2, 2,
+    dlib::relu<dlib::affine<dlib::cont<256, 3, 3, 2, 2,
+    dlib::relu<dlib::affine<dlib::cont<256, 3, 3, 2, 2,
+    dlib::relu<dlib::affine<dlib::cont<256, 3, 3, 2, 2,
+    dlib::relu<dlib::affine<dlib::cont<256, 3, 3, 2, 2,
+    ares<256, ares_down<256,
+    ares<128, ares_down<128,
+    ares<64, ares_down<64,
+    ares<32, ares_down<32,
+    dlib::max_pool<3, 3, 2, 2, dlib::relu<dlib::affine<dlib::con<16, 7, 7, 2, 2,
+    dlib::input_grayscale_image
+    >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>;
+
+// The definitions below need to match the network architecture above
+template<int W>
+struct NetInputs {
+    enum {
+        count = Inputs<1, Inputs<5, W, 3, 2>::count, 7, 2>::count
+    };
+};
+template<int W>
+struct NetOutputs {
+    enum {
+        count = Outputs<5, Outputs<1, W, 7, 2>::count, 3, 2>::count
+    };
+};
 
 #endif
 

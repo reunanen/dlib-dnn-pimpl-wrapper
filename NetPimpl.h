@@ -6,7 +6,7 @@
 namespace NetPimpl
 {
     typedef dlib::matrix<uint8_t> input_type;
-    typedef dlib::matrix<uint16_t> training_label_type;
+    typedef dlib::matrix<dlib::loss_multiclass_log_per_pixel_weighted_::weighted_label> training_label_type;
     typedef dlib::matrix<uint16_t> output_type;
 #if 0
     typedef dlib::adam solver_type;
