@@ -33,40 +33,44 @@ template <int N, typename SUBNET> using ares_up = dlib::relu<residual_up<block, 
 
 constexpr long default_class_count = 2;
 
-#if 0
-
 #if 1
-template <typename SUBNET> using level1 = res<256, res_down<256, SUBNET>>;
-template <typename SUBNET> using level2 = res<128, res_down<128, SUBNET>>;
-template <typename SUBNET> using level3 = res<64, res_down<64, SUBNET>>;
-template <typename SUBNET> using level4 = res<32, res<32, SUBNET>>;
 
-template <typename SUBNET> using alevel1 = ares<256, ares_down<256, SUBNET>>;
-template <typename SUBNET> using alevel2 = ares<128, ares_down<128, SUBNET>>;
-template <typename SUBNET> using alevel3 = ares<64, ares_down<64, SUBNET>>;
-template <typename SUBNET> using alevel4 = ares<32, ares<32, SUBNET>>;
+#if 0
+template <typename SUBNET> using level1 = res_down<256, SUBNET>;
+template <typename SUBNET> using level2 = res_down<128, SUBNET>;
+template <typename SUBNET> using level3 = res_down<64, SUBNET>;
+template <typename SUBNET> using level4 = res_down<32, SUBNET>;
+template <typename SUBNET> using level5 = res<16, SUBNET>;
 
-template <typename SUBNET> using level1t = res<256, res_up<256, SUBNET>>;
-template <typename SUBNET> using level2t = res<128, res_up<128, SUBNET>>;
-template <typename SUBNET> using level3t = res<64, res_up<64, SUBNET>>;
-template <typename SUBNET> using level4t = res<32, res_up<32, SUBNET>>;
+template <typename SUBNET> using alevel1 = ares_down<256, SUBNET>;
+template <typename SUBNET> using alevel2 = ares_down<128, SUBNET>;
+template <typename SUBNET> using alevel3 = ares_down<64, SUBNET>;
+template <typename SUBNET> using alevel4 = ares_down<32, SUBNET>;
+template <typename SUBNET> using alevel5 = ares<16, SUBNET>;
 
-template <typename SUBNET> using alevel1t = ares<256, ares_up<256, SUBNET>>;
-template <typename SUBNET> using alevel2t = ares<128, ares_up<128, SUBNET>>;
-template <typename SUBNET> using alevel3t = ares<64, ares_up<64, SUBNET>>;
-template <typename SUBNET> using alevel4t = ares<32, ares_up<32, SUBNET>>;
+template <typename SUBNET> using level1t = res_up<256, SUBNET>;
+template <typename SUBNET> using level2t = res_up<128, SUBNET>;
+template <typename SUBNET> using level3t = res_up<64, SUBNET>;
+template <typename SUBNET> using level4t = res_up<32, SUBNET>;
+template <typename SUBNET> using level5t = res_up<16, SUBNET>;
+
+template <typename SUBNET> using alevel1t = ares_up<256, SUBNET>;
+template <typename SUBNET> using alevel2t = ares_up<128, SUBNET>;
+template <typename SUBNET> using alevel3t = ares_up<64, SUBNET>;
+template <typename SUBNET> using alevel4t = ares_up<32, SUBNET>;
+template <typename SUBNET> using alevel5t = ares_up<16, SUBNET>;
 #endif
 
-#if 0
+#if 1
 template <typename SUBNET> using level1 = res<512, res_down<512, SUBNET>>;
 template <typename SUBNET> using level2 = res<256, res_down<256, SUBNET>>;
 template <typename SUBNET> using level3 = res<128, res_down<128, SUBNET>>;
-template <typename SUBNET> using level4 = res<64, res<64, SUBNET>>;
+template <typename SUBNET> using level4 = res<64, res_down<64, SUBNET>>;
 
 template <typename SUBNET> using alevel1 = ares<512, ares_down<512, SUBNET>>;
 template <typename SUBNET> using alevel2 = ares<256, ares_down<256, SUBNET>>;
 template <typename SUBNET> using alevel3 = ares<128, ares_down<128, SUBNET>>;
-template <typename SUBNET> using alevel4 = ares<64, ares<64, SUBNET>>;
+template <typename SUBNET> using alevel4 = ares<64, ares_down<64, SUBNET>>;
 
 template <typename SUBNET> using level1t = res<512, res_up<512, SUBNET>>;
 template <typename SUBNET> using level2t = res<256, res_up<256, SUBNET>>;
@@ -101,37 +105,79 @@ template <typename SUBNET> using alevel3t = ares<128, ares<128, ares<128, ares_u
 template <typename SUBNET> using alevel4t = ares<64, ares<64, ares_up<64, SUBNET>>>;
 #endif
 
+#if 1
 // training network type
-using net_type = dlib::loss_multiclass_log_per_pixel<
-    dlib::bn_con<dlib::cont<default_class_count, 7, 7, 2, 2,
+using net_type = dlib::loss_multiclass_log_per_pixel_weighted<
+    dlib::bn_con<dlib::cont<default_class_count,5,5,1,1,/*res<64,*/
     level4t<level3t<level2t<level1t<
     level1<level2<level3<level4<
-    dlib::max_pool<3, 3, 2, 2, dlib::relu<dlib::bn_con<dlib::con<16, 7, 7, 2, 2,
-    dlib::input_grayscale_image
-    >>>>>>>>>>>>>>>;
+    /*dlib::max_pool<3,3,2,2,dlib::relu<dlib::bn_con<dlib::con<64,5,5,2,2,*/
+    dlib::input_rgb_image
+    >>>>>>>>>>>/*>>>>>*/;
 
 // inference network type (replaced batch normalization with fixed affine transforms)
-using anet_type = dlib::loss_multiclass_log_per_pixel<
-    dlib::affine<dlib::cont<default_class_count, 7, 7, 2, 2,
+using anet_type = dlib::loss_multiclass_log_per_pixel_weighted<
+    dlib::affine<dlib::cont<default_class_count,5,5,1,1,/*ares<64,*/
     alevel4t<alevel3t<alevel2t<alevel1t<
     alevel1<alevel2<alevel3<alevel4<
-    dlib::max_pool<3, 3, 2, 2, dlib::relu<dlib::affine<dlib::con<16, 7, 7, 2, 2,
-    dlib::input_grayscale_image
-    >>>>>>>>>>>>>>>;
+    /*dlib::max_pool<3,3,2,2,dlib::relu<dlib::affine<dlib::con<64,5,5,2,2,*/
+    dlib::input_rgb_image
+    >>>>>>>>>>>/*>>>>>*/;
 
 // The definitions below need to match the network architecture above
 template<int W>
 struct NetInputs {
     enum {
-        count = Inputs<1,Inputs<4,W,3,2>::count,7,2>::count
+        //count = Inputs<1,Inputs<4,W,3,2>::count,5,2>::count
+        count = Inputs<4,W,3,2>::count
     };
 };
 template<int W>
 struct NetOutputs {
     enum {
-        count = Outputs<4,Outputs<1,W,7,2>::count,3,2>::count
+        count = Outputs<4,W,3,2>::count
     };
 };
+
+//static_assert(NetInputs<1>::count == 67, "Unexpected net input count");
+static_assert(NetInputs<1>::count == 31, "Unexpected net input count");
+#endif
+
+#if 0
+// training network type
+using net_type = dlib::loss_multiclass_log_per_pixel_weighted<
+    dlib::bn_con<dlib::cont<default_class_count,7,7,2,2,res<64,
+    level4t<level3t<
+    level3<level4<
+    dlib::max_pool<3,3,2,2,dlib::relu<dlib::bn_con<dlib::con<32,7,7,2,2,
+    dlib::input_rgb_image
+    >>>>>>>>>>>>;
+
+// inference network type (replaced batch normalization with fixed affine transforms)
+using anet_type = dlib::loss_multiclass_log_per_pixel_weighted<
+    dlib::affine<dlib::cont<default_class_count,7,7,2,2,ares<64,
+    alevel4t<alevel3t<
+    alevel3<alevel4<
+    dlib::max_pool<3,3,2,2,dlib::relu<dlib::affine<dlib::con<32,7,7,2,2,
+    dlib::input_rgb_image
+    >>>>>>>>>>>>;
+
+// The definitions below need to match the network architecture above
+template<int W>
+struct NetInputs {
+    enum {
+        count = Inputs<1,Inputs<2,W,3,2>::count,7,2>::count
+    };
+};
+template<int W>
+struct NetOutputs {
+    enum {
+        count = Outputs<2,Outputs<1,W,7,2>::count,3,2>::count
+    };
+};
+
+static_assert(NetInputs<1>::count == 11, "Unexpected net input count");
+#endif
 
 #endif
 
@@ -150,12 +196,12 @@ template <int N, int K, int S, typename SUBNET> using aup = dlib::affine<up<N, K
 template <int N, int K, int S, typename SUBNET> using buprelu = dlib::relu<bup<N, K, S, SUBNET>>;
 template <int N, int K, int S, typename SUBNET> using auprelu = dlib::relu<aup<N, K, S, SUBNET>>;
 
-using net_type = dlib::loss_multiclass_log_per_pixel<
+using net_type = dlib::loss_multiclass_log_per_pixel_weighted<
                     bup<default_class_count,5,2,buprelu<8,3,2,buprelu<32,7,3,buprelu<64,7,3,buprelu<128,7,3,
                     bdownrelu<128,7,3,bdownrelu<64,7,3,bdownrelu<32,7,3,dlib::max_pool<3,3,2,2,bdownrelu<8,5,2,
                     dlib::input_grayscale_image>>>>>>>>>>>;
 
-using anet_type = dlib::loss_multiclass_log_per_pixel<
+using anet_type = dlib::loss_multiclass_log_per_pixel_weighted<
                     aup<default_class_count,5,2,auprelu<8,3,2,auprelu<32,7,3,auprelu<64,7,3,auprelu<128,7,3,
                     adownrelu<128,7,3,adownrelu<64,7,3,adownrelu<32,7,3,dlib::max_pool<3,3,2,2,adownrelu<8,5,2,
                     dlib::input_grayscale_image>>>>>>>>>>>;
@@ -228,33 +274,33 @@ static_assert(NetInputs<1>::count == 295, "Unexpected net input count");
 
 #endif
 
-#if 1
+#if 0
 
 // training network type
 using net_type = dlib::loss_multiclass_log_per_pixel_weighted<
     dlib::bn_con<dlib::cont<default_class_count, 7, 7, 2, 2,
-    res<64,
+    res<16,
+    dlib::relu<dlib::bn_con<dlib::cont<32, 3, 3, 2, 2,
     dlib::relu<dlib::bn_con<dlib::cont<64, 3, 3, 2, 2,
-    dlib::relu<dlib::bn_con<dlib::cont<128, 3, 3, 2, 2,
-    dlib::relu<dlib::bn_con<dlib::cont<256, 7, 7, 2, 2,
-    dlib::relu<dlib::bn_con<dlib::con<128, 7, 7, 2, 2,
-    res_down<64,
+    dlib::relu<dlib::bn_con<dlib::cont<128, 7, 7, 2, 2,
+    dlib::relu<dlib::bn_con<dlib::con<64, 7, 7, 2, 2,
+    res_down<32,
     dlib::max_pool<3, 3, 2, 2,
-    dlib::relu<dlib::bn_con<dlib::con<32, 7, 7, 2, 2,
+    dlib::relu<dlib::bn_con<dlib::con<8, 7, 7, 2, 2,
     dlib::input_grayscale_image
     >>>>>>>>>>>>>>>>>>>>>;
 
 // inference network type (replaced batch normalization with fixed affine transforms)
 using anet_type = dlib::loss_multiclass_log_per_pixel_weighted<
     dlib::affine<dlib::cont<default_class_count, 7, 7, 2, 2,
-    ares<64,
+    ares<16,
+    dlib::relu<dlib::affine<dlib::cont<32, 3, 3, 2, 2,
     dlib::relu<dlib::affine<dlib::cont<64, 3, 3, 2, 2,
-    dlib::relu<dlib::affine<dlib::cont<128, 3, 3, 2, 2,
-    dlib::relu<dlib::affine<dlib::cont<256, 7, 7, 2, 2,
-    dlib::relu<dlib::affine<dlib::con<128, 7, 7, 2, 2,
-    ares_down<64,
+    dlib::relu<dlib::affine<dlib::cont<128, 7, 7, 2, 2,
+    dlib::relu<dlib::affine<dlib::con<64, 7, 7, 2, 2,
+    ares_down<32,
     dlib::max_pool<3, 3, 2, 2,
-    dlib::relu<dlib::affine<dlib::con<32, 7, 7, 2, 2,
+    dlib::relu<dlib::affine<dlib::con<8, 7, 7, 2, 2,
     dlib::input_grayscale_image
     >>>>>>>>>>>>>>>>>>>>>;
 
