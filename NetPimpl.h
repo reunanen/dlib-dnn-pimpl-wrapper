@@ -5,7 +5,11 @@
 
 namespace NetPimpl
 {
+#ifdef DLIB_DNN_PIMPL_WRAPPER_GRAYSCALE_INPUT
+    typedef dlib::matrix<uint8_t> input_type;
+#else
     typedef dlib::matrix<dlib::rgb_pixel> input_type;
+#endif
     typedef dlib::matrix<dlib::loss_multiclass_log_per_pixel_weighted_::weighted_label> training_label_type;
     typedef dlib::matrix<uint16_t> output_type;
 #if 0

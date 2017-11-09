@@ -5,6 +5,12 @@
 
 // ----------------------------------------------------------------------------------------
 
+#ifdef DLIB_DNN_PIMPL_WRAPPER_GRAYSCALE_INPUT
+typedef dlib::input_grayscale_image input_layer_type;
+#else
+typedef dlib::input_rgb_image input_layer_type;
+#endif
+
 #ifndef __INTELLISENSE__
 
 template <int N, template <typename> class BN, int stride, typename SUBNET>
@@ -112,7 +118,7 @@ using net_type = dlib::loss_multiclass_log_per_pixel_weighted<
     level4t<level3t<level2t<level1t<
     level1<level2<level3<level4<
     /*dlib::max_pool<3,3,2,2,dlib::relu<dlib::bn_con<dlib::con<64,5,5,2,2,*/
-    dlib::input_rgb_image
+    input_layer_type
     >>>>>>>>>>>/*>>>>>*/;
 
 // inference network type (replaced batch normalization with fixed affine transforms)
@@ -121,7 +127,7 @@ using anet_type = dlib::loss_multiclass_log_per_pixel_weighted<
     alevel4t<alevel3t<alevel2t<alevel1t<
     alevel1<alevel2<alevel3<alevel4<
     /*dlib::max_pool<3,3,2,2,dlib::relu<dlib::affine<dlib::con<64,5,5,2,2,*/
-    dlib::input_rgb_image
+    input_layer_type
     >>>>>>>>>>>/*>>>>>*/;
 
 // The definitions below need to match the network architecture above
@@ -150,7 +156,7 @@ using net_type = dlib::loss_multiclass_log_per_pixel_weighted<
     level4t<level3t<
     level3<level4<
     dlib::max_pool<3,3,2,2,dlib::relu<dlib::bn_con<dlib::con<32,7,7,2,2,
-    dlib::input_rgb_image
+    input_layer_type
     >>>>>>>>>>>>;
 
 // inference network type (replaced batch normalization with fixed affine transforms)
@@ -159,7 +165,7 @@ using anet_type = dlib::loss_multiclass_log_per_pixel_weighted<
     alevel4t<alevel3t<
     alevel3<alevel4<
     dlib::max_pool<3,3,2,2,dlib::relu<dlib::affine<dlib::con<32,7,7,2,2,
-    dlib::input_rgb_image
+    input_layer_type
     >>>>>>>>>>>>;
 
 // The definitions below need to match the network architecture above
@@ -199,12 +205,12 @@ template <int N, int K, int S, typename SUBNET> using auprelu = dlib::relu<aup<N
 using net_type = dlib::loss_multiclass_log_per_pixel_weighted<
                     bup<default_class_count,5,2,buprelu<8,3,2,buprelu<32,7,3,buprelu<64,7,3,buprelu<128,7,3,
                     bdownrelu<128,7,3,bdownrelu<64,7,3,bdownrelu<32,7,3,dlib::max_pool<3,3,2,2,bdownrelu<8,5,2,
-                    dlib::input_grayscale_image>>>>>>>>>>>;
+                    input_layer_type>>>>>>>>>>>;
 
 using anet_type = dlib::loss_multiclass_log_per_pixel_weighted<
                     aup<default_class_count,5,2,auprelu<8,3,2,auprelu<32,7,3,auprelu<64,7,3,auprelu<128,7,3,
                     adownrelu<128,7,3,adownrelu<64,7,3,adownrelu<32,7,3,dlib::max_pool<3,3,2,2,adownrelu<8,5,2,
-                    dlib::input_grayscale_image>>>>>>>>>>>;
+                    input_layer_type>>>>>>>>>>>;
 
 // The definitions below need to match the network architecture above
 template<int W>
@@ -238,7 +244,7 @@ using net_type = dlib::loss_multiclass_log_per_pixel_weighted<
     dlib::relu<dlib::bn_con<dlib::con<256, 7, 7, 3, 3,
     dlib::relu<dlib::bn_con<dlib::con<128, 7, 7, 3, 3,
     dlib::relu<dlib::bn_con<dlib::con<64, 7, 7, 3, 3,
-    dlib::input_grayscale_image
+    input_layer_type
     >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>;
 
 // testing network type (replaced batch normalization with fixed affine transforms)
@@ -253,7 +259,7 @@ using anet_type = dlib::loss_multiclass_log_per_pixel_weighted<
     dlib::relu<dlib::affine<dlib::con<256, 7, 7, 3, 3,
     dlib::relu<dlib::affine<dlib::con<128, 7, 7, 3, 3,
     dlib::relu<dlib::affine<dlib::con<64, 7, 7, 3, 3,
-    dlib::input_grayscale_image
+    input_layer_type
     >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>;
 
 // The definitions below need to match the network architecture above
@@ -287,7 +293,7 @@ using net_type = dlib::loss_multiclass_log_per_pixel_weighted<
     res_down<32,
     dlib::max_pool<3, 3, 2, 2,
     dlib::relu<dlib::bn_con<dlib::con<8, 7, 7, 2, 2,
-    dlib::input_grayscale_image
+    input_layer_type
     >>>>>>>>>>>>>>>>>>>>>;
 
 // inference network type (replaced batch normalization with fixed affine transforms)
@@ -301,7 +307,7 @@ using anet_type = dlib::loss_multiclass_log_per_pixel_weighted<
     ares_down<32,
     dlib::max_pool<3, 3, 2, 2,
     dlib::relu<dlib::affine<dlib::con<8, 7, 7, 2, 2,
-    dlib::input_grayscale_image
+    input_layer_type
     >>>>>>>>>>>>>>>>>>>>>;
 
 // The definitions below need to match the network architecture above
