@@ -39,7 +39,7 @@ template <int N, typename SUBNET> using ares_up = dlib::relu<residual_up<block, 
 
 constexpr long default_class_count = 2;
 
-#if 1
+#if 0
 
 #if 0
 template <typename SUBNET> using level1 = res_down<256, SUBNET>;
@@ -150,39 +150,39 @@ static_assert(NetInputs<1>::count == 31, "Unexpected net input count");
 #endif
 
 #if 0
+// this one is quick to compile
+
 // training network type
 using net_type = dlib::loss_multiclass_log_per_pixel_weighted<
-    dlib::bn_con<dlib::cont<default_class_count,7,7,2,2,res<64,
-    level4t<level3t<
-    level3<level4<
-    dlib::max_pool<3,3,2,2,dlib::relu<dlib::bn_con<dlib::con<32,7,7,2,2,
+    dlib::bn_con<dlib::cont<default_class_count,5,5,1,1,
+    level4t<
+    level4<    
     input_layer_type
-    >>>>>>>>>>>>;
+    >>>>>;
 
 // inference network type (replaced batch normalization with fixed affine transforms)
 using anet_type = dlib::loss_multiclass_log_per_pixel_weighted<
-    dlib::affine<dlib::cont<default_class_count,7,7,2,2,ares<64,
-    alevel4t<alevel3t<
-    alevel3<alevel4<
-    dlib::max_pool<3,3,2,2,dlib::relu<dlib::affine<dlib::con<32,7,7,2,2,
+    dlib::affine<dlib::cont<default_class_count,5,5,1,1,
+    alevel4t<
+    alevel4<    
     input_layer_type
-    >>>>>>>>>>>>;
+    >>>>>;
 
 // The definitions below need to match the network architecture above
 template<int W>
 struct NetInputs {
     enum {
-        count = Inputs<1,Inputs<2,W,3,2>::count,7,2>::count
+        count = Inputs<1,W,3,2>::count
     };
 };
 template<int W>
 struct NetOutputs {
     enum {
-        count = Outputs<2,Outputs<1,W,7,2>::count,3,2>::count
+        count = Outputs<1,W,3,2>::count
     };
 };
 
-static_assert(NetInputs<1>::count == 11, "Unexpected net input count");
+//static_assert(NetInputs<1>::count == 11, "Unexpected net input count");
 #endif
 
 #endif
@@ -277,6 +277,90 @@ struct NetOutputs {
 };
 
 static_assert(NetInputs<1>::count == 295, "Unexpected net input count");
+
+#endif
+
+#if 1
+
+// training network type
+using net_type = dlib::loss_multiclass_log_per_pixel_weighted<
+    dlib::bn_con<dlib::cont<default_class_count, 5, 5, 2, 2,
+    dlib::relu<dlib::bn_con<dlib::cont<144, 3, 3, 2, 2,
+    dlib::relu<dlib::bn_con<dlib::cont<128, 3, 3, 2, 2,
+    dlib::relu<dlib::bn_con<dlib::cont<112, 3, 3, 2, 2,
+    dlib::relu<dlib::bn_con<dlib::cont<96, 3, 3, 2, 2,
+    dlib::relu<dlib::bn_con<dlib::con<80, 3, 3, 2, 2,
+    dlib::relu<dlib::bn_con<dlib::con<64, 3, 3, 2, 2,
+    dlib::relu<dlib::bn_con<dlib::con<48, 3, 3, 2, 2,
+    dlib::relu<dlib::bn_con<dlib::con<32, 3, 3, 2, 2,
+    dlib::relu<dlib::bn_con<dlib::con<16, 5, 5, 2, 2,
+    input_layer_type
+    >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>;
+
+// testing network type (replaced batch normalization with fixed affine transforms)
+using anet_type = dlib::loss_multiclass_log_per_pixel_weighted<
+    dlib::affine<dlib::cont<default_class_count, 5, 5, 2, 2,
+    dlib::relu<dlib::affine<dlib::cont<144, 3, 3, 2, 2,
+    dlib::relu<dlib::affine<dlib::cont<128, 3, 3, 2, 2,
+    dlib::relu<dlib::affine<dlib::cont<112, 3, 3, 2, 2,
+    dlib::relu<dlib::affine<dlib::cont<96, 3, 3, 2, 2,
+    dlib::relu<dlib::affine<dlib::con<80, 3, 3, 2, 2,
+    dlib::relu<dlib::affine<dlib::con<64, 3, 3, 2, 2,
+    dlib::relu<dlib::affine<dlib::con<48, 3, 3, 2, 2,
+    dlib::relu<dlib::affine<dlib::con<32, 3, 3, 2, 2,
+    dlib::relu<dlib::affine<dlib::con<16, 5, 5, 2, 2,
+    input_layer_type
+    >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>;
+
+// The definitions below need to match the network architecture above
+template<int W>
+struct NetInputs {
+    enum {
+        count = Inputs<1, Inputs<1, Inputs<3, W, 3, 2>::count, 3, 2>::count, 5, 2>::count
+    };
+};
+template<int W>
+struct NetOutputs {
+    enum {
+        count = Outputs<3, Outputs<1, Outputs<1, W, 5, 2>::count, 3, 2>::count, 3, 2>::count
+    };
+};
+
+static_assert(NetInputs<1>::count == 65, "Unexpected net input count");
+
+#endif
+
+#if 0
+
+// training network type
+using net_type = dlib::loss_multiclass_log_per_pixel_weighted<
+    dlib::bn_con<dlib::cont<default_class_count, 5, 5, 2, 2,
+    dlib::relu<dlib::bn_con<dlib::con<16, 5, 5, 2, 2,
+    input_layer_type
+    >>>>>>;
+
+// testing network type (replaced batch normalization with fixed affine transforms)
+using anet_type = dlib::loss_multiclass_log_per_pixel_weighted<
+    dlib::affine<dlib::cont<default_class_count, 5, 5, 2, 2,
+    dlib::relu<dlib::affine<dlib::con<16, 5, 5, 2, 2,
+    input_layer_type
+    >>>>>>;
+
+// The definitions below need to match the network architecture above
+template<int W>
+struct NetInputs {
+    enum {
+        count = Inputs<1, W, 5, 2>::count
+    };
+};
+template<int W>
+struct NetOutputs {
+    enum {
+        count = Outputs<1, W, 5, 2>::count
+    };
+};
+
+//static_assert(NetInputs<1>::count == 63, "Unexpected net input count");
 
 #endif
 
