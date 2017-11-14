@@ -71,11 +71,11 @@ namespace NetPimpl
 
         RuntimeNet& operator= (const TrainingNet& trainingNet); // may block
 
-        output_type operator() (const input_type& input, const std::vector<double>& gainFactors = std::vector<double>()) const;
+        output_type operator() (const input_type& input, const std::vector<double>& gains = std::vector<double>()) const;
 
         static int GetRecommendedInputDimension(int minimumInputDimension);
 
-        output_type Process(const input_type& input, const std::vector<double>& gainFactors = std::vector<double>()) const;
+        output_type Process(const input_type& input, const std::vector<double>& gains = std::vector<double>()) const;
 
         void Serialize(std::ostream& out) const;
         void Deserialize(std::istream& in);
