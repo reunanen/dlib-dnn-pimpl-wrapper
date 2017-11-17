@@ -173,6 +173,11 @@ output_type RuntimeNet::operator() (const input_type& input, const std::vector<d
     return pimpl->anet.process(input, gainFactors);
 }
 
+const dlib::tensor& RuntimeNet::GetOutput() const
+{
+    return pimpl->anet.subnet().get_output();
+}
+
 // see: https://stackoverflow.com/a/3499919/19254
 
 const int MAX_OUTPUT_COUNT_FOR_CALCULATING_RECOMMENDED_INPUT_DIMENSION = 500;
