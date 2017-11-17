@@ -1,86 +1,244 @@
 #include "NetPimpl.h"
 #include "NetStructure.h"
 
-struct NetPimpl::Impl
+namespace NetPimpl {
+
+struct TrainingNet::Impl
 {
-    Impl(const NetPimpl::solver_type& solver)
-        : trainer(net, solver)
-    {}
-
-    net_type net;
-    dlib::dnn_trainer<net_type> trainer;
-
-    anet_type anet;
-
-    bool dirty = false; // Has training been started, but the updated net not copied to anet yet?
-    std::future<net_type> getNetFuture;
+    std::unique_ptr<net_type> net;
+    std::unique_ptr<dlib::dnn_trainer<net_type, solver_type>> trainer;
 };
 
-NetPimpl::NetPimpl(const NetPimpl::solver_type& solver)
+struct RuntimeNet::Impl
 {
-    pimpl = new NetPimpl::Impl(solver);
-    pimpl->trainer.be_verbose(); // TODO: make optional
+    anet_type anet;
+};
+
+TrainingNet::TrainingNet()
+{
+    pimpl = new TrainingNet::Impl();
 }
 
-NetPimpl::~NetPimpl()
+TrainingNet::~TrainingNet()
 {
     delete pimpl;
 }
 
-void NetPimpl::SetLearningRate(double learningRate)
+void TrainingNet::Initialize(const solver_type& solver)
 {
-    pimpl->trainer.set_learning_rate(learningRate);
-}
-
-void NetPimpl::SetMinLearningRate(double minLearningRate)
-{
-    pimpl->trainer.set_min_learning_rate(minLearningRate);
-}
-
-void NetPimpl::SetIterationsWithoutProgressThreshold(unsigned long threshold)
-{
-    pimpl->trainer.set_iterations_without_progress_threshold(threshold);
-}
-
-void NetPimpl::SetSynchronizationFile(const std::string& filename, std::chrono::seconds time_between_syncs)
-{
-    pimpl->trainer.set_synchronization_file(filename, time_between_syncs);
-}
-
-void NetPimpl::StartTraining(const std::vector<NetPimpl::input_type>& inputs, const std::vector<NetPimpl::training_label_type>& training_labels)
-{
-    assert(!pimpl->dirty);
-    pimpl->trainer.train_one_step(inputs, training_labels);
-    pimpl->dirty = true;
-    pimpl->getNetFuture = std::async(std::launch::async, [this]() { return pimpl->trainer.get_net(); });
-}
-
-bool NetPimpl::IsTrainingStarted() const
-{
-    return pimpl->dirty;
-}
-
-bool NetPimpl::IsStillTraining() const
-{
-    assert(pimpl->dirty);
-    return pimpl->getNetFuture.wait_for(std::chrono::seconds(0)) != std::future_status::ready;
-}
-
-bool NetPimpl::IsTraining() const
-{
-    return pimpl->dirty && IsStillTraining();
-}
-
-void NetPimpl::WaitForTrainingToFinishAndUseNet()
-{
-    if (pimpl->dirty) {
-        pimpl->trainer.get_net();
-        pimpl->anet = pimpl->net;
-        pimpl->dirty = false;
+    if (pimpl->trainer) {
+        pimpl->trainer->get_net(dlib::force_flush_to_disk::no); // may block
     }
+    pimpl->net = std::make_unique<net_type>();
+    pimpl->trainer = std::make_unique<dlib::dnn_trainer<net_type, solver_type>>(*pimpl->net, solver);
 }
 
-NetPimpl::output_type NetPimpl::operator() (const NetPimpl::input_type& input) const
+void TrainingNet::SetClassCount(unsigned short classCount)
 {
-    return pimpl->anet(input);
+    DLIB_CASSERT(classCount < dlib::loss_multiclass_log_per_pixel_::label_to_ignore);
+    pimpl->net->subnet().subnet().layer_details().set_num_filters(classCount);
+}
+
+void TrainingNet::SetLearningRate(double learningRate)
+{
+    pimpl->trainer->set_learning_rate(learningRate);
+}
+
+void TrainingNet::SetIterationsWithoutProgressThreshold(unsigned long threshold)
+{
+    pimpl->trainer->set_iterations_without_progress_threshold(threshold);
+}
+
+void TrainingNet::SetPreviousLossValuesDumpAmount(unsigned long dump_amount)
+{
+    pimpl->trainer->set_previous_loss_values_dump_amount(dump_amount);
+}
+
+void TrainingNet::SetAllBatchNormalizationRunningStatsWindowSizes(unsigned long window_size)
+{
+    dlib::set_all_bn_running_stats_window_sizes(*pimpl->net, window_size);
+}
+
+void TrainingNet::SetLearningRateShrinkFactor(double learningRateShrinkFactor)
+{
+    pimpl->trainer->set_learning_rate_shrink_factor(learningRateShrinkFactor);
+}
+
+void TrainingNet::SetSynchronizationFile(const std::string& filename, std::chrono::seconds time_between_syncs)
+{
+    pimpl->trainer->set_synchronization_file(filename, time_between_syncs);
+}
+
+void TrainingNet::BeVerbose()
+{
+    pimpl->trainer->be_verbose();
+}
+
+int TrainingNet::GetRequiredInputDimension()
+{
+    constexpr int startingPoint = 225; // A rather arbitrary selection
+    constexpr int testInputDim = NetInputs<startingPoint>::count;
+    constexpr int testOutputDim = NetOutputs<testInputDim>::count;
+    static_assert(testOutputDim == startingPoint, "I/O dimension mismatch detected");
+
+    constexpr int inputDim = NetInputs<1>::count;
+    return inputDim;
+}
+
+void TrainingNet::StartTraining(const std::vector<input_type>& inputs, const std::vector<training_label_type>& training_labels)
+{
+    pimpl->trainer->train_one_step(inputs, training_labels);
+}
+
+double TrainingNet::GetLearningRate() const
+{
+    return pimpl->trainer->get_learning_rate();
+}
+
+RuntimeNet TrainingNet::GetRuntimeNet() const
+{
+    RuntimeNet runtimeNet;
+    runtimeNet = *this; // there's only assignment operator - no copy constructor (at least for now)
+    return runtimeNet;
+}
+
+void TrainingNet::Serialize(std::ostream& out) const
+{
+    dlib::serialize(*pimpl->net, out);
+}
+
+void TrainingNet::Deserialize(std::istream& in)
+{
+    dlib::deserialize(*pimpl->net, in);
+}
+
+void TrainingNet::Serialize(const std::string& filename) const
+{
+    Serialize(std::ofstream(filename, std::ios::binary));
+}
+
+void TrainingNet::Deserialize(const std::string& filename)
+{
+    Deserialize(std::ifstream(filename, std::ios::binary));
+}
+
+RuntimeNet::RuntimeNet()
+{
+    pimpl = new RuntimeNet::Impl();
+    //std::cout << pimpl->anet << std::endl;
+
+#if 0
+    pimpl->anet(dlib::matrix<float>(561, 561));
+    const auto& output6 = dlib::layer<6>(pimpl->anet).get_output();
+    if (output6.num_samples() == 1 && output6.nr() == 1 && output6.nc() == 1 && output6.k() == 64) {
+        ; // ok!
+    }
+    else {
+        std::ostringstream oss;
+        oss << "Unexpected output size from layer 6:" << std::endl
+            << " - num_samples = " << output6.num_samples() << std::endl
+            << " - nr          = " << output6.nr() << std::endl
+            << " - nc          = " << output6.nc() << std::endl
+            << " - k           = " << output6.k() << std::endl;
+    }
+#endif
+}
+
+RuntimeNet::~RuntimeNet()
+{
+    delete pimpl;
+}
+
+RuntimeNet::RuntimeNet(const RuntimeNet& that)
+{
+    pimpl = new RuntimeNet::Impl();
+    operator= (that);
+}
+
+RuntimeNet& RuntimeNet::operator= (const RuntimeNet& that)
+{
+    pimpl->anet = that.pimpl->anet;
+    return *this;
+}
+
+RuntimeNet& RuntimeNet::operator= (const TrainingNet& trainingNet)
+{
+    pimpl->anet = trainingNet.pimpl->trainer->get_net(dlib::force_flush_to_disk::no); // may block
+    pimpl->anet.clean();
+    return *this;
+}
+
+output_type RuntimeNet::operator() (const input_type& input, const std::vector<double>& gainFactors) const
+{
+    return pimpl->anet.process(input, gainFactors);
+}
+
+// see: https://stackoverflow.com/a/3499919/19254
+
+const int MAX_OUTPUT_COUNT_FOR_CALCULATING_RECOMMENDED_INPUT_DIMENSION = 500;
+
+template <int N, int OutputCount = N - 1>
+class OutputDimensionToInputDimension : public OutputDimensionToInputDimension<N, OutputCount - 1>
+{
+public:
+    static const int dummy;
+};
+
+template <int N>
+class OutputDimensionToInputDimension<N, 0>
+{
+public:
+    static const int dummy = 0;
+    static int array[N];
+};
+
+template <int N, int OutputCount>
+const int OutputDimensionToInputDimension<N, OutputCount>::dummy = OutputDimensionToInputDimension<N, 0>::array[OutputCount] = NetInputs<OutputCount>::count + 0 * OutputDimensionToInputDimension<N, OutputCount - 1>::dummy;
+
+template <int N>
+int OutputDimensionToInputDimension<N, 0>::array[N];
+
+template class OutputDimensionToInputDimension<MAX_OUTPUT_COUNT_FOR_CALCULATING_RECOMMENDED_INPUT_DIMENSION>;
+
+int RuntimeNet::GetRecommendedInputDimension(int minimumInputDimension)
+{
+    const int *outputDimensionToInputDimension = OutputDimensionToInputDimension<MAX_OUTPUT_COUNT_FOR_CALCULATING_RECOMMENDED_INPUT_DIMENSION>::array;
+
+    for (size_t outputCount = 1; outputCount < MAX_OUTPUT_COUNT_FOR_CALCULATING_RECOMMENDED_INPUT_DIMENSION; ++outputCount) {
+        int inputDimension = outputDimensionToInputDimension[outputCount];
+        if (inputDimension >= minimumInputDimension) {
+            return inputDimension;
+        }
+    }
+    
+    std::ostringstream error;
+    error << "Requested minimum input dimension " << minimumInputDimension << " is too large (the largest supported is " << outputDimensionToInputDimension[MAX_OUTPUT_COUNT_FOR_CALCULATING_RECOMMENDED_INPUT_DIMENSION - 1] << ")";
+    throw std::runtime_error(error.str());
+}
+
+output_type RuntimeNet::Process(const input_type& input, const std::vector<double>& gainFactors) const
+{
+    return pimpl->anet.process(input, gainFactors);
+}
+
+void RuntimeNet::Serialize(std::ostream& out) const
+{
+    dlib::serialize(pimpl->anet, out);
+}
+
+void RuntimeNet::Deserialize(std::istream& in)
+{
+    dlib::deserialize(pimpl->anet, in);
+}
+
+void RuntimeNet::Serialize(const std::string& filename) const
+{
+    Serialize(std::ofstream(filename, std::ios::binary));
+}
+
+void RuntimeNet::Deserialize(const std::string& filename)
+{
+    Deserialize(std::ifstream(filename, std::ios::binary));
+}
+
 }
