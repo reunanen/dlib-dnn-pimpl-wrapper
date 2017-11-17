@@ -285,48 +285,52 @@ static_assert(NetInputs<1>::count == 295, "Unexpected net input count");
 // training network type
 using net_type = dlib::loss_multiclass_log_per_pixel_weighted<
     dlib::bn_con<dlib::cont<default_class_count, 5, 5, 2, 2,
-    dlib::relu<dlib::bn_con<dlib::cont<144, 3, 3, 2, 2,
-    dlib::relu<dlib::bn_con<dlib::cont<128, 3, 3, 2, 2,
-    dlib::relu<dlib::bn_con<dlib::cont<112, 3, 3, 2, 2,
-    dlib::relu<dlib::bn_con<dlib::cont<96, 3, 3, 2, 2,
-    dlib::relu<dlib::bn_con<dlib::con<80, 3, 3, 2, 2,
+    dlib::relu<dlib::bn_con<dlib::cont<512, 3, 3, 2, 2,
+    dlib::relu<dlib::bn_con<dlib::cont<512, 3, 3, 2, 2,
+    dlib::relu<dlib::bn_con<dlib::cont<512, 3, 3, 2, 2,
+    dlib::relu<dlib::bn_con<dlib::cont<512, 3, 3, 2, 2,
+    dlib::relu<dlib::bn_con<dlib::cont<512, 3, 3, 2, 2,
+    dlib::relu<dlib::bn_con<dlib::con<384, 3, 3, 2, 2,
+    dlib::relu<dlib::bn_con<dlib::con<256, 3, 3, 2, 2,
+    dlib::relu<dlib::bn_con<dlib::con<128, 3, 3, 2, 2,
     dlib::relu<dlib::bn_con<dlib::con<64, 3, 3, 2, 2,
-    dlib::relu<dlib::bn_con<dlib::con<48, 3, 3, 2, 2,
     dlib::relu<dlib::bn_con<dlib::con<32, 3, 3, 2, 2,
     dlib::relu<dlib::bn_con<dlib::con<16, 5, 5, 2, 2,
     input_layer_type
-    >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>;
+    >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>;
 
 // testing network type (replaced batch normalization with fixed affine transforms)
 using anet_type = dlib::loss_multiclass_log_per_pixel_weighted<
     dlib::affine<dlib::cont<default_class_count, 5, 5, 2, 2,
-    dlib::relu<dlib::affine<dlib::cont<144, 3, 3, 2, 2,
-    dlib::relu<dlib::affine<dlib::cont<128, 3, 3, 2, 2,
-    dlib::relu<dlib::affine<dlib::cont<112, 3, 3, 2, 2,
-    dlib::relu<dlib::affine<dlib::cont<96, 3, 3, 2, 2,
-    dlib::relu<dlib::affine<dlib::con<80, 3, 3, 2, 2,
+    dlib::relu<dlib::affine<dlib::cont<512, 3, 3, 2, 2,
+    dlib::relu<dlib::affine<dlib::cont<512, 3, 3, 2, 2,
+    dlib::relu<dlib::affine<dlib::cont<512, 3, 3, 2, 2,
+    dlib::relu<dlib::affine<dlib::cont<512, 3, 3, 2, 2,
+    dlib::relu<dlib::affine<dlib::cont<512, 3, 3, 2, 2,
+    dlib::relu<dlib::affine<dlib::con<384, 3, 3, 2, 2,
+    dlib::relu<dlib::affine<dlib::con<256, 3, 3, 2, 2,
+    dlib::relu<dlib::affine<dlib::con<128, 3, 3, 2, 2,
     dlib::relu<dlib::affine<dlib::con<64, 3, 3, 2, 2,
-    dlib::relu<dlib::affine<dlib::con<48, 3, 3, 2, 2,
     dlib::relu<dlib::affine<dlib::con<32, 3, 3, 2, 2,
     dlib::relu<dlib::affine<dlib::con<16, 5, 5, 2, 2,
     input_layer_type
-    >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>;
+    >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>;
 
 // The definitions below need to match the network architecture above
 template<int W>
 struct NetInputs {
     enum {
-        count = Inputs<1, Inputs<1, Inputs<3, W, 3, 2>::count, 3, 2>::count, 5, 2>::count
+        count = Inputs<1, Inputs<1, Inputs<5, W, 3, 2>::count, 3, 2>::count, 5, 2>::count
     };
 };
 template<int W>
 struct NetOutputs {
     enum {
-        count = Outputs<3, Outputs<1, Outputs<1, W, 5, 2>::count, 3, 2>::count, 3, 2>::count
+        count = Outputs<5, Outputs<1, Outputs<1, W, 5, 2>::count, 3, 2>::count, 3, 2>::count
     };
 };
 
-static_assert(NetInputs<1>::count == 65, "Unexpected net input count");
+static_assert(NetInputs<1>::count == 257, "Unexpected net input count");
 
 #endif
 
