@@ -36,7 +36,7 @@ void TrainingNet::Initialize(const solver_type& solver)
 void TrainingNet::SetClassCount(unsigned short classCount)
 {
     DLIB_CASSERT(classCount < dlib::loss_multiclass_log_per_pixel_::label_to_ignore);
-    pimpl->net->subnet().subnet().layer_details().set_num_filters(classCount);
+    pimpl->net->subnet().layer_details().set_num_filters(classCount);
 }
 
 void TrainingNet::SetLearningRate(double learningRate)
