@@ -163,8 +163,9 @@ RuntimeNet& RuntimeNet::operator= (const RuntimeNet& that)
 
 RuntimeNet& RuntimeNet::operator= (const TrainingNet& trainingNet)
 {
-    pimpl->anet = trainingNet.pimpl->trainer->get_net(dlib::force_flush_to_disk::no); // may block
-    pimpl->anet.clean();
+    auto& net = trainingNet.pimpl->trainer->get_net(dlib::force_flush_to_disk::no); // may block
+    net.clean();
+    pimpl->anet = net;
     return *this;
 }
 
