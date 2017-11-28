@@ -41,6 +41,24 @@ constexpr long default_class_count = 2;
 
 #if 0
 
+#if 1
+template <typename SUBNET> using level1 = res_down<128, SUBNET>;
+template <typename SUBNET> using level2 = res_down<64, SUBNET>;
+template <typename SUBNET> using level3 = res_down<32, SUBNET>;
+
+template <typename SUBNET> using alevel1 = ares_down<128, SUBNET>;
+template <typename SUBNET> using alevel2 = ares_down<64, SUBNET>;
+template <typename SUBNET> using alevel3 = ares_down<32, SUBNET>;
+
+template <typename SUBNET> using level1t = res_up<128, SUBNET>;
+template <typename SUBNET> using level2t = res_up<128, SUBNET>;
+template <typename SUBNET> using level3t = res_up<128, SUBNET>;
+
+template <typename SUBNET> using alevel1t = ares_up<128, SUBNET>;
+template <typename SUBNET> using alevel2t = ares_up<128, SUBNET>;
+template <typename SUBNET> using alevel3t = ares_up<128, SUBNET>;
+#endif
+
 #if 0
 template <typename SUBNET> using level1 = res_down<256, SUBNET>;
 template <typename SUBNET> using level2 = res_down<128, SUBNET>;
@@ -67,7 +85,7 @@ template <typename SUBNET> using alevel4t = ares_up<32, SUBNET>;
 template <typename SUBNET> using alevel5t = ares_up<16, SUBNET>;
 #endif
 
-#if 1
+#if 0
 template <typename SUBNET> using level1 = res<512, res_down<512, SUBNET>>;
 template <typename SUBNET> using level2 = res<256, res_down<256, SUBNET>>;
 template <typename SUBNET> using level3 = res<128, res_down<128, SUBNET>>;
@@ -111,7 +129,7 @@ template <typename SUBNET> using alevel3t = ares<128, ares<128, ares<128, ares_u
 template <typename SUBNET> using alevel4t = ares<64, ares<64, ares_up<64, SUBNET>>>;
 #endif
 
-#if 1
+#if 0
 // training network type
 using net_type = dlib::loss_multiclass_log_per_pixel_weighted<
     dlib::bn_con<dlib::cont<default_class_count,5,5,1,1,/*res<64,*/
@@ -185,6 +203,41 @@ struct NetOutputs {
 //static_assert(NetInputs<1>::count == 11, "Unexpected net input count");
 #endif
 
+#if 1
+// training network type
+using net_type = dlib::loss_multiclass_log_per_pixel_weighted<
+    dlib::cont<default_class_count,3,3,2,2,dlib::relu<dlib::bn_con<dlib::cont<128,3,3,2,2,
+    level3t<level2t<level1t<
+    level1<level2<level3<
+    dlib::max_pool<3,3,2,2,dlib::relu<dlib::bn_con<dlib::con<32,3,3,2,2,
+    input_layer_type
+    >>>>>>>>>>>>>>>;
+
+// inference network type (replaced batch normalization with fixed affine transforms)
+using anet_type = dlib::loss_multiclass_log_per_pixel_weighted<
+    dlib::cont<default_class_count,3,3,2,2,dlib::relu<dlib::affine<dlib::cont<128,3,3,2,2,
+    alevel3t<alevel2t<alevel1t<
+    alevel1<alevel2<alevel3<
+    dlib::max_pool<3,3,2,2,dlib::relu<dlib::affine<dlib::con<32,3,3,2,2,
+    input_layer_type
+    >>>>>>>>>>>>>>>;
+
+// The definitions below need to match the network architecture above
+template<int W>
+struct NetInputs {
+    enum {
+        count = Inputs<5, W, 3, 2>::count
+    };
+};
+template<int W>
+struct NetOutputs {
+    enum {
+        count = Outputs<5, W, 3, 2>::count
+    };
+};
+static_assert(NetInputs<1>::count == 63, "Unexpected net input count");
+#endif
+
 #endif
 
 #if 0
@@ -235,8 +288,8 @@ static_assert(NetInputs<1>::count == 321, "Unexpected net input count");
 // training network type
 using net_type = dlib::loss_multiclass_log_per_pixel_weighted<
     dlib::cont<default_class_count, 3, 3, 2, 2,
-    dlib::relu<dlib::bn_con<dlib::cont<16, 3, 3, 2, 2,
-    dlib::relu<dlib::bn_con<dlib::cont<24, 3, 3, 2, 2,
+    dlib::relu<dlib::bn_con<dlib::cont<32, 3, 3, 2, 2,
+    dlib::relu<dlib::bn_con<dlib::cont<32, 3, 3, 2, 2,
     dlib::relu<dlib::bn_con<dlib::cont<32, 3, 3, 2, 2,
     dlib::relu<dlib::bn_con<dlib::con<32, 3, 3, 2, 2,
     dlib::relu<dlib::bn_con<dlib::con<32, 3, 3, 2, 2,
@@ -248,8 +301,8 @@ using net_type = dlib::loss_multiclass_log_per_pixel_weighted<
 // testing network type (replaced batch normalization with fixed affine transforms)
 using anet_type = dlib::loss_multiclass_log_per_pixel_weighted<
     dlib::cont<default_class_count, 3, 3, 2, 2,
-    dlib::relu<dlib::affine<dlib::cont<16, 3, 3, 2, 2,
-    dlib::relu<dlib::affine<dlib::cont<24, 3, 3, 2, 2,
+    dlib::relu<dlib::affine<dlib::cont<32, 3, 3, 2, 2,
+    dlib::relu<dlib::affine<dlib::cont<32, 3, 3, 2, 2,
     dlib::relu<dlib::affine<dlib::cont<32, 3, 3, 2, 2,
     dlib::relu<dlib::affine<dlib::con<32, 3, 3, 2, 2,
     dlib::relu<dlib::affine<dlib::con<32, 3, 3, 2, 2,
