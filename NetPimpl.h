@@ -2,16 +2,18 @@
 
 #include <dlib/dnn.h>
 #include <vector>
+#include "MemoryManager.h"
 
 namespace NetPimpl
 {
 #ifdef DLIB_DNN_PIMPL_WRAPPER_GRAYSCALE_INPUT
-    typedef dlib::matrix<uint8_t> input_type;
+    // TODO: use definition from MemoryManager.h
+    typedef dlib::matrix<uint8_t,0,0,dlib::memory_manager_stateless<uint8_t>::kernel_2_3e> input_type;
 #else
     typedef dlib::matrix<dlib::rgb_pixel> input_type;
 #endif
-    typedef dlib::matrix<dlib::loss_multiclass_log_per_pixel_weighted_::weighted_label> training_label_type;
-    typedef dlib::matrix<uint16_t> output_type;
+    typedef dlib::loss_multiclass_log_per_pixel_weighted_::training_label_type training_label_type;
+    typedef dlib::loss_multiclass_log_per_pixel_weighted_::output_label_type output_type;
 #if 0
     typedef dlib::adam solver_type;
     const auto GetDefaultSolver = []() { return dlib::adam(0.001, 0.9, 0.999); };
