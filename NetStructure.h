@@ -289,10 +289,10 @@ static_assert(NetInputs<1>::count == 321, "Unexpected net input count");
 // training network type
 using net_type = dlib::loss_multiclass_log_per_pixel_weighted<
     dlib::cont<default_class_count, 3, 3, 2, 2,
+    dlib::relu<dlib::bn_con<dlib::cont<32, 3, 3, 2, 2,
+    dlib::relu<dlib::bn_con<dlib::cont<48, 3, 3, 2, 2,
     dlib::relu<dlib::bn_con<dlib::cont<64, 3, 3, 2, 2,
     dlib::relu<dlib::bn_con<dlib::cont<80, 3, 3, 2, 2,
-    dlib::relu<dlib::bn_con<dlib::cont<88, 3, 3, 2, 2,
-    dlib::relu<dlib::bn_con<dlib::cont<96, 3, 3, 2, 2,
     dlib::relu<dlib::bn_con<dlib::con<96, 3, 3, 2, 2,
     dlib::relu<dlib::bn_con<dlib::con<80, 3, 3, 2, 2,
     dlib::relu<dlib::bn_con<dlib::con<64, 3, 3, 2, 2,
@@ -304,10 +304,10 @@ using net_type = dlib::loss_multiclass_log_per_pixel_weighted<
 // testing network type (replaced batch normalization with fixed affine transforms)
 using anet_type = dlib::loss_multiclass_log_per_pixel_weighted<
     dlib::cont<default_class_count, 3, 3, 2, 2,
+    dlib::relu<dlib::affine<dlib::cont<32, 3, 3, 2, 2,
+    dlib::relu<dlib::affine<dlib::cont<48, 3, 3, 2, 2,
     dlib::relu<dlib::affine<dlib::cont<64, 3, 3, 2, 2,
     dlib::relu<dlib::affine<dlib::cont<80, 3, 3, 2, 2,
-    dlib::relu<dlib::affine<dlib::cont<88, 3, 3, 2, 2,
-    dlib::relu<dlib::affine<dlib::cont<96, 3, 3, 2, 2,
     dlib::relu<dlib::affine<dlib::con<96, 3, 3, 2, 2,
     dlib::relu<dlib::affine<dlib::con<80, 3, 3, 2, 2,
     dlib::relu<dlib::affine<dlib::con<64, 3, 3, 2, 2,
