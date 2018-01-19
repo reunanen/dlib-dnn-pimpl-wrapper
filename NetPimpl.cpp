@@ -33,10 +33,10 @@ void TrainingNet::Initialize(const solver_type& solver)
     pimpl->trainer = std::make_unique<dlib::dnn_trainer<net_type, solver_type>>(*pimpl->net, solver);
 }
 
-void TrainingNet::SetClassCount(unsigned short classCount)
+void TrainingNet::SetOutputCount(unsigned short outputCount)
 {
-    DLIB_CASSERT(classCount < dlib::loss_multiclass_log_per_pixel_::label_to_ignore);
-    pimpl->net->subnet().layer_details().set_num_filters(classCount);
+    throw std::runtime_error("Not implemented");
+    //pimpl->net->subnet().layer_details().set_num_filters(outputCount);
 }
 
 void TrainingNet::SetLearningRate(double learningRate)
@@ -76,6 +76,7 @@ void TrainingNet::BeVerbose()
 
 int TrainingNet::GetRequiredInputDimension()
 {
+#if 0
     constexpr int startingPoint = 225; // A rather arbitrary selection
     constexpr int testInputDim = NetInputs<startingPoint>::count;
     constexpr int testOutputDim = NetOutputs<testInputDim>::count;
@@ -83,6 +84,8 @@ int TrainingNet::GetRequiredInputDimension()
 
     constexpr int inputDim = NetInputs<1>::count;
     return inputDim;
+#endif
+    return 227;
 }
 
 void TrainingNet::StartTraining(const std::vector<input_type>& inputs, const std::vector<training_label_type>& training_labels)
@@ -169,9 +172,9 @@ RuntimeNet& RuntimeNet::operator= (const TrainingNet& trainingNet)
     return *this;
 }
 
-output_type RuntimeNet::operator() (const input_type& input, const std::vector<double>& gainFactors) const
+output_type RuntimeNet::operator() (const input_type& input) const
 {
-    return pimpl->anet.process(input, gainFactors);
+    return pimpl->anet.process(input);
 }
 
 const dlib::tensor& RuntimeNet::GetOutput() const
@@ -179,6 +182,7 @@ const dlib::tensor& RuntimeNet::GetOutput() const
     return pimpl->anet.subnet().get_output();
 }
 
+#if 0
 // see: https://stackoverflow.com/a/3499919/19254
 
 const int MAX_OUTPUT_COUNT_FOR_CALCULATING_RECOMMENDED_INPUT_DIMENSION = 500;
@@ -221,10 +225,11 @@ int RuntimeNet::GetRecommendedInputDimension(int minimumInputDimension)
     error << "Requested minimum input dimension " << minimumInputDimension << " is too large (the largest supported is " << outputDimensionToInputDimension[MAX_OUTPUT_COUNT_FOR_CALCULATING_RECOMMENDED_INPUT_DIMENSION - 1] << ")";
     throw std::runtime_error(error.str());
 }
+#endif
 
-output_type RuntimeNet::Process(const input_type& input, const std::vector<double>& gainFactors) const
+output_type RuntimeNet::Process(const input_type& input) const
 {
-    return pimpl->anet.process(input, gainFactors);
+    return pimpl->anet.process(input);
 }
 
 void RuntimeNet::Serialize(std::ostream& out) const
