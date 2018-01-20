@@ -110,7 +110,7 @@ struct NetOutputs {
     };
 };
 
-static_assert(NetInputs<1>::count == 227, "Unexpected net input count");
+static_assert(NetInputs<1>::count == 67, "Unexpected net input count");
 
 #endif // __INTELLISENSE__
 
