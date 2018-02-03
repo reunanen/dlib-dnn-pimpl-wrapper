@@ -10,7 +10,7 @@ namespace NetPimpl
     // TODO: use definition from MemoryManager.h
     typedef dlib::matrix<uint8_t,0,0,dlib::memory_manager_stateless<uint8_t>::kernel_2_3e> input_type;
 #else
-    typedef dlib::matrix<dlib::rgb_pixel> input_type;
+    typedef dlib::matrix<dlib::rgb_pixel,0,0,dlib::memory_manager_stateless<uint8_t>::kernel_2_3e> input_type;
 #endif
     typedef dlib::loss_multiclass_log_per_pixel_weighted_::training_label_type training_label_type;
     typedef dlib::loss_multiclass_log_per_pixel_weighted_::output_label_type output_type;
