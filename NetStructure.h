@@ -81,36 +81,99 @@ template <typename SUBNET> using alevel4t = dlib::repeat<2,ares64,ares_up<64,SUB
 // training network type
 using net_type = dlib::loss_multiclass_log_per_pixel_weighted<
                             dlib::cont<default_class_count,7,7,2,2,
-                            level4t<level3t<level2t<level1t<
-                            level1<level2<level3<level4<
+                            level4t<
+#if DLIB_DNN_PIMPL_WRAPPER_LEVEL_COUNT >= 2
+                            level3t<
+#if DLIB_DNN_PIMPL_WRAPPER_LEVEL_COUNT >= 3
+                            level2t<
+#if DLIB_DNN_PIMPL_WRAPPER_LEVEL_COUNT >= 4
+                            level1t<
+                            level1<
+#endif // DLIB_DNN_PIMPL_WRAPPER_LEVEL_COUNT >= 4
+                            level2<
+#endif // DLIB_DNN_PIMPL_WRAPPER_LEVEL_COUNT >= 3
+                            level3<
+#endif // DLIB_DNN_PIMPL_WRAPPER_LEVEL_COUNT >= 2
+                            level4<
                             dlib::max_pool<3,3,2,2,dlib::relu<dlib::bn_con<dlib::con<64,7,7,2,2,
                             input_layer_type
-                            >>>>>>>>>>>>>>;
+                            >>>>>
+#if DLIB_DNN_PIMPL_WRAPPER_LEVEL_COUNT >= 2
+                            >
+#if DLIB_DNN_PIMPL_WRAPPER_LEVEL_COUNT >= 3
+                            >
+#if DLIB_DNN_PIMPL_WRAPPER_LEVEL_COUNT >= 4
+                            >>
+#endif // DLIB_DNN_PIMPL_WRAPPER_LEVEL_COUNT >= 4
+                            >
+#endif // DLIB_DNN_PIMPL_WRAPPER_LEVEL_COUNT >= 3
+                            >
+#endif // DLIB_DNN_PIMPL_WRAPPER_LEVEL_COUNT >= 2
+                            >>>;
 
 // testing network type (replaced batch normalization with fixed affine transforms)
 using anet_type = dlib::loss_multiclass_log_per_pixel_weighted<
                             dlib::cont<default_class_count,7,7,2,2,
-                            alevel4t<alevel3t<alevel2t<alevel1t<
-                            alevel1<alevel2<alevel3<alevel4<
+                            alevel4t<
+#if DLIB_DNN_PIMPL_WRAPPER_LEVEL_COUNT >= 2
+                            alevel3t<
+#if DLIB_DNN_PIMPL_WRAPPER_LEVEL_COUNT >= 3
+                            alevel2t<
+#if DLIB_DNN_PIMPL_WRAPPER_LEVEL_COUNT >= 4
+                            alevel1t<
+                            alevel1<
+#endif // DLIB_DNN_PIMPL_WRAPPER_LEVEL_COUNT >= 4
+                            alevel2<
+#endif // DLIB_DNN_PIMPL_WRAPPER_LEVEL_COUNT >= 3
+                            alevel3<
+#endif // DLIB_DNN_PIMPL_WRAPPER_LEVEL_COUNT >= 2
+                            alevel4<
                             dlib::max_pool<3,3,2,2,dlib::relu<dlib::affine<dlib::con<64,7,7,2,2,
                             input_layer_type
-                            >>>>>>>>>>>>>>;
+                            >>>>>
+#if DLIB_DNN_PIMPL_WRAPPER_LEVEL_COUNT >= 2
+                            >
+#if DLIB_DNN_PIMPL_WRAPPER_LEVEL_COUNT >= 3
+                            >
+#if DLIB_DNN_PIMPL_WRAPPER_LEVEL_COUNT >= 4
+    >>
+#endif // DLIB_DNN_PIMPL_WRAPPER_LEVEL_COUNT >= 4
+                            >
+#endif // DLIB_DNN_PIMPL_WRAPPER_LEVEL_COUNT >= 3
+                            >
+#endif // DLIB_DNN_PIMPL_WRAPPER_LEVEL_COUNT >= 2
+                            >>>;
+
+#ifndef DLIB_DNN_PIMPL_WRAPPER_LEVEL_COUNT
+#define DLIB_DNN_PIMPL_WRAPPER_LEVEL_COUNT (1)
+#endif // DLIB_DNN_PIMPL_WRAPPER_LEVEL_COUNT
+
+static_assert(DLIB_DNN_PIMPL_WRAPPER_LEVEL_COUNT >= 1, "If defined, DLIB_DNN_PIMPL_WRAPPER_LEVEL_COUNT must be greater than or equal to 1.");
+static_assert(DLIB_DNN_PIMPL_WRAPPER_LEVEL_COUNT <= 4, "If defined, DLIB_DNN_PIMPL_WRAPPER_LEVEL_COUNT must be less than or equal to 4.");
 
 // The definitions below need to match the network architecture above
 template<int W>
 struct NetInputs {
     enum {
-        count = Inputs<1,Inputs<1,Inputs<3,W,3,2>::count,3,2>::count,7,2>::count
+        count = Inputs<1,Inputs<1,Inputs<DLIB_DNN_PIMPL_WRAPPER_LEVEL_COUNT-1,W,3,2>::count,3,2>::count,7,2>::count
     };
 };
 template<int W>
 struct NetOutputs {
     enum {
-        count = Outputs<3,Outputs<1,Outputs<1,W,7,2>::count,3,2>::count,3,2>::count
+        count = Outputs<DLIB_DNN_PIMPL_WRAPPER_LEVEL_COUNT-1,Outputs<1,Outputs<1,W,7,2>::count,3,2>::count,3,2>::count
     };
 };
 
+#if DLIB_DNN_PIMPL_WRAPPER_LEVEL_COUNT >= 4
 static_assert(NetInputs<1>::count == 67, "Unexpected net input count");
+#elif DLIB_DNN_PIMPL_WRAPPER_LEVEL_COUNT >= 3
+static_assert(NetInputs<1>::count == 35, "Unexpected net input count");
+#elif DLIB_DNN_PIMPL_WRAPPER_LEVEL_COUNT >= 2
+static_assert(NetInputs<1>::count == 19, "Unexpected net input count");
+#else // DLIB_DNN_PIMPL_WRAPPER_LEVEL_COUNT
+static_assert(NetInputs<1>::count == 11, "Unexpected net input count");
+#endif // DLIB_DNN_PIMPL_WRAPPER_LEVEL_COUNT
 
 #endif // __INTELLISENSE__
 
