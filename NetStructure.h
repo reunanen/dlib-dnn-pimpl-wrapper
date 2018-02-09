@@ -207,17 +207,17 @@ static_assert(NetInputs<1>::count == 11, "Unexpected net input count");
 #endif // DLIB_DNN_PIMPL_WRAPPER_LEVEL_COUNT
 #endif // ((DLIB_DNN_PIMPL_WRAPPER_FIRST_FILTER_SIZE) == 7) and ((DLIB_DNN_PIMPL_WRAPPER_FIRST_FILTER_PADDING) == 2)
 
-#if ((DLIB_DNN_PIMPL_WRAPPER_FIRST_FILTER_SIZE) == 7) && ((DLIB_DNN_PIMPL_WRAPPER_FIRST_FILTER_PADDING) == 2)
+#if ((DLIB_DNN_PIMPL_WRAPPER_FIRST_FILTER_SIZE) == 5) && ((DLIB_DNN_PIMPL_WRAPPER_FIRST_FILTER_PADDING) == 2)
 #if DLIB_DNN_PIMPL_WRAPPER_LEVEL_COUNT >= 4
-static_assert(NetInputs<1>::count == 67, "Unexpected net input count");
+static_assert(NetInputs<1>::count == 65, "Unexpected net input count");
 #elif DLIB_DNN_PIMPL_WRAPPER_LEVEL_COUNT >= 3
-static_assert(NetInputs<1>::count == 35, "Unexpected net input count");
+static_assert(NetInputs<1>::count == 33, "Unexpected net input count");
 #elif DLIB_DNN_PIMPL_WRAPPER_LEVEL_COUNT >= 2
-static_assert(NetInputs<1>::count == 19, "Unexpected net input count");
+static_assert(NetInputs<1>::count == 17, "Unexpected net input count");
 #else // DLIB_DNN_PIMPL_WRAPPER_LEVEL_COUNT
-static_assert(NetInputs<1>::count == 11, "Unexpected net input count");
+static_assert(NetInputs<1>::count == 9, "Unexpected net input count");
 #endif // DLIB_DNN_PIMPL_WRAPPER_LEVEL_COUNT
-#endif // ((DLIB_DNN_PIMPL_WRAPPER_FIRST_FILTER_SIZE) == 7) and ((DLIB_DNN_PIMPL_WRAPPER_FIRST_FILTER_PADDING) == 2)
+#endif // ((DLIB_DNN_PIMPL_WRAPPER_FIRST_FILTER_SIZE) == 5) and ((DLIB_DNN_PIMPL_WRAPPER_FIRST_FILTER_PADDING) == 2)
 
 #endif // __INTELLISENSE__
 
