@@ -185,13 +185,13 @@ static_assert(DLIB_DNN_PIMPL_WRAPPER_LEVEL_COUNT <= 4, "If defined, DLIB_DNN_PIM
 template<int W>
 struct NetInputs {
     enum {
-        count = Inputs<1,Inputs<1,Inputs<DLIB_DNN_PIMPL_WRAPPER_LEVEL_COUNT-1,W,3,2>::count,3,2>::count,(DLIB_DNN_PIMPL_WRAPPER_FIRST_FILTER_SIZE),(DLIB_DNN_PIMPL_WRAPPER_FIRST_FILTER_PADDING)>::count
+        count = Inputs<1,Inputs<DLIB_DNN_PIMPL_WRAPPER_LEVEL_COUNT,W,3,2>::count,(DLIB_DNN_PIMPL_WRAPPER_FIRST_FILTER_SIZE),(DLIB_DNN_PIMPL_WRAPPER_FIRST_FILTER_PADDING)>::count
     };
 };
 template<int W>
 struct NetOutputs {
     enum {
-        count = Outputs<DLIB_DNN_PIMPL_WRAPPER_LEVEL_COUNT-1,Outputs<1,Outputs<1,W,(DLIB_DNN_PIMPL_WRAPPER_FIRST_FILTER_SIZE),(DLIB_DNN_PIMPL_WRAPPER_FIRST_FILTER_PADDING)>::count,3,2>::count,3,2>::count
+        count = Outputs<DLIB_DNN_PIMPL_WRAPPER_LEVEL_COUNT,Outputs<1,W,(DLIB_DNN_PIMPL_WRAPPER_FIRST_FILTER_SIZE),(DLIB_DNN_PIMPL_WRAPPER_FIRST_FILTER_PADDING)>::count,3,2>::count
     };
 };
 
