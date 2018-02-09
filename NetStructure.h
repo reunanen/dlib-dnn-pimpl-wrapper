@@ -58,25 +58,25 @@ template <typename SUBNET> using ares128 = ares<128, SUBNET>;
 template <typename SUBNET> using ares64  = ares<64, SUBNET>;
 
 
-template <typename SUBNET> using level1 = dlib::repeat<2,res512,res_down<512,SUBNET>>;
-template <typename SUBNET> using level2 = dlib::repeat<2,res256,res_down<256,SUBNET>>;
-template <typename SUBNET> using level3 = dlib::repeat<2,res128,res_down<128,SUBNET>>;
-template <typename SUBNET> using level4 = dlib::repeat<2,res64,res_down<64,SUBNET>>;
+template <typename SUBNET> using level1 = dlib::repeat<2,res64,res_down<64,SUBNET>>;
+template <typename SUBNET> using level2 = dlib::repeat<2,res128,res_down<128,SUBNET>>;
+template <typename SUBNET> using level3 = dlib::repeat<2,res256,res_down<256,SUBNET>>;
+template <typename SUBNET> using level4 = dlib::repeat<2,res512,res_down<512,SUBNET>>;
 
-template <typename SUBNET> using alevel1 = dlib::repeat<2,ares512,ares_down<512,SUBNET>>;
-template <typename SUBNET> using alevel2 = dlib::repeat<2,ares256,ares_down<256,SUBNET>>;
-template <typename SUBNET> using alevel3 = dlib::repeat<2,ares128,ares_down<128,SUBNET>>;
-template <typename SUBNET> using alevel4 = dlib::repeat<2,ares64,ares_down<64,SUBNET>>;
+template <typename SUBNET> using alevel1 = dlib::repeat<2,ares64,ares_down<64,SUBNET>>;
+template <typename SUBNET> using alevel2 = dlib::repeat<2,ares128,ares_down<128,SUBNET>>;
+template <typename SUBNET> using alevel3 = dlib::repeat<2,ares256,ares_down<256,SUBNET>>;
+template <typename SUBNET> using alevel4 = dlib::repeat<2,ares512,ares_down<512,SUBNET>>;
 
-template <typename SUBNET> using level1t = dlib::repeat<2,res512,res_up<512,SUBNET>>;
-template <typename SUBNET> using level2t = dlib::repeat<2,res256,res_up<256,SUBNET>>;
-template <typename SUBNET> using level3t = dlib::repeat<2,res128,res_up<128,SUBNET>>;
-template <typename SUBNET> using level4t = dlib::repeat<2,res64,res_up<64,SUBNET>>;
+template <typename SUBNET> using level1t = dlib::repeat<2,res64,res_up<64,SUBNET>>;
+template <typename SUBNET> using level2t = dlib::repeat<2,res128,res_up<128,SUBNET>>;
+template <typename SUBNET> using level3t = dlib::repeat<2,res256,res_up<256,SUBNET>>;
+template <typename SUBNET> using level4t = dlib::repeat<2,res512,res_up<512,SUBNET>>;
 
-template <typename SUBNET> using alevel1t = dlib::repeat<2,ares512,ares_up<512,SUBNET>>;
-template <typename SUBNET> using alevel2t = dlib::repeat<2,ares256,ares_up<256,SUBNET>>;
-template <typename SUBNET> using alevel3t = dlib::repeat<2,ares128,ares_up<128,SUBNET>>;
-template <typename SUBNET> using alevel4t = dlib::repeat<2,ares64,ares_up<64,SUBNET>>;
+template <typename SUBNET> using alevel1t = dlib::repeat<2,ares64,ares_up<64,SUBNET>>;
+template <typename SUBNET> using alevel2t = dlib::repeat<2,ares128,ares_up<128,SUBNET>>;
+template <typename SUBNET> using alevel3t = dlib::repeat<2,ares256,ares_up<256,SUBNET>>;
+template <typename SUBNET> using alevel4t = dlib::repeat<2,ares512,ares_up<512,SUBNET>>;
 
 #ifndef FIRST_FILTER_SIZE
 #define FIRST_FILTER_SIZE 7
@@ -89,20 +89,20 @@ template <typename SUBNET> using alevel4t = dlib::repeat<2,ares64,ares_up<64,SUB
 // training network type
 using net_type = dlib::loss_multiclass_log_per_pixel_weighted<
                             dlib::cont<default_class_count,(FIRST_FILTER_SIZE),(FIRST_FILTER_SIZE),(FIRST_FILTER_PADDING),(FIRST_FILTER_PADDING),
-                            level4t<
-#if DLIB_DNN_PIMPL_WRAPPER_LEVEL_COUNT >= 2
-                            level3t<
-#if DLIB_DNN_PIMPL_WRAPPER_LEVEL_COUNT >= 3
-                            level2t<
-#if DLIB_DNN_PIMPL_WRAPPER_LEVEL_COUNT >= 4
                             level1t<
-                            level1<
-#endif // DLIB_DNN_PIMPL_WRAPPER_LEVEL_COUNT >= 4
-                            level2<
-#endif // DLIB_DNN_PIMPL_WRAPPER_LEVEL_COUNT >= 3
-                            level3<
-#endif // DLIB_DNN_PIMPL_WRAPPER_LEVEL_COUNT >= 2
+#if DLIB_DNN_PIMPL_WRAPPER_LEVEL_COUNT >= 2
+                            level2t<
+#if DLIB_DNN_PIMPL_WRAPPER_LEVEL_COUNT >= 3
+                            level3t<
+#if DLIB_DNN_PIMPL_WRAPPER_LEVEL_COUNT >= 4
+                            level4t<
                             level4<
+#endif // DLIB_DNN_PIMPL_WRAPPER_LEVEL_COUNT >= 4
+                            level3<
+#endif // DLIB_DNN_PIMPL_WRAPPER_LEVEL_COUNT >= 3
+                            level2<
+#endif // DLIB_DNN_PIMPL_WRAPPER_LEVEL_COUNT >= 2
+                            level1<
                             dlib::relu<dlib::bn_con<
                             dlib::con<64,(FIRST_FILTER_SIZE),(FIRST_FILTER_SIZE),(FIRST_FILTER_PADDING),(FIRST_FILTER_PADDING),
                             input_layer_type
@@ -123,20 +123,20 @@ using net_type = dlib::loss_multiclass_log_per_pixel_weighted<
 // testing network type (replaced batch normalization with fixed affine transforms)
 using anet_type = dlib::loss_multiclass_log_per_pixel_weighted<
                             dlib::cont<default_class_count,(FIRST_FILTER_SIZE),(FIRST_FILTER_SIZE),(FIRST_FILTER_PADDING),(FIRST_FILTER_PADDING),
-                            alevel4t<
-#if DLIB_DNN_PIMPL_WRAPPER_LEVEL_COUNT >= 2
-                            alevel3t<
-#if DLIB_DNN_PIMPL_WRAPPER_LEVEL_COUNT >= 3
-                            alevel2t<
-#if DLIB_DNN_PIMPL_WRAPPER_LEVEL_COUNT >= 4
                             alevel1t<
-                            alevel1<
-#endif // DLIB_DNN_PIMPL_WRAPPER_LEVEL_COUNT >= 4
-                            alevel2<
-#endif // DLIB_DNN_PIMPL_WRAPPER_LEVEL_COUNT >= 3
-                            alevel3<
-#endif // DLIB_DNN_PIMPL_WRAPPER_LEVEL_COUNT >= 2
+#if DLIB_DNN_PIMPL_WRAPPER_LEVEL_COUNT >= 2
+                            alevel2t<
+#if DLIB_DNN_PIMPL_WRAPPER_LEVEL_COUNT >= 3
+                            alevel3t<
+#if DLIB_DNN_PIMPL_WRAPPER_LEVEL_COUNT >= 4
+                            alevel4t<
                             alevel4<
+#endif // DLIB_DNN_PIMPL_WRAPPER_LEVEL_COUNT >= 4
+                            alevel3<
+#endif // DLIB_DNN_PIMPL_WRAPPER_LEVEL_COUNT >= 3
+                            alevel2<
+#endif // DLIB_DNN_PIMPL_WRAPPER_LEVEL_COUNT >= 2
+                            alevel1<
                             dlib::relu<dlib::affine<
                             dlib::con<64,(FIRST_FILTER_SIZE),(FIRST_FILTER_SIZE),(FIRST_FILTER_PADDING),(FIRST_FILTER_PADDING),
                             input_layer_type
