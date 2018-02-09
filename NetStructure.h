@@ -79,16 +79,17 @@ template <typename SUBNET> using alevel3t = dlib::repeat<2,ares256,ares_up<256,S
 template <typename SUBNET> using alevel4t = dlib::repeat<2,ares512,ares_up<512,SUBNET>>;
 
 #ifndef FIRST_FILTER_SIZE
-#define FIRST_FILTER_SIZE 7
+#define FIRST_FILTER_SIZE (7)
 #endif // FIRST_FILTER_SIZE
 
 #ifndef FIRST_FILTER_PADDING
-#define FIRST_FILTER_PADDING 2
+#define FIRST_FILTER_PADDING (2)
 #endif // FIRST_FILTER_PADDING
 
 // training network type
 using net_type = dlib::loss_multiclass_log_per_pixel_weighted<
                             dlib::cont<default_class_count,(FIRST_FILTER_SIZE),(FIRST_FILTER_SIZE),(FIRST_FILTER_PADDING),(FIRST_FILTER_PADDING),
+#if DLIB_DNN_PIMPL_WRAPPER_LEVEL_COUNT >= 1
                             level1t<
 #if DLIB_DNN_PIMPL_WRAPPER_LEVEL_COUNT >= 2
                             level2t<
@@ -103,10 +104,13 @@ using net_type = dlib::loss_multiclass_log_per_pixel_weighted<
                             level2<
 #endif // DLIB_DNN_PIMPL_WRAPPER_LEVEL_COUNT >= 2
                             level1<
+#endif // DLIB_DNN_PIMPL_WRAPPER_LEVEL_COUNT >= 1
                             dlib::relu<dlib::bn_con<
                             dlib::con<64,(FIRST_FILTER_SIZE),(FIRST_FILTER_SIZE),(FIRST_FILTER_PADDING),(FIRST_FILTER_PADDING),
                             input_layer_type
-                            >>>>
+                            >>>
+#if DLIB_DNN_PIMPL_WRAPPER_LEVEL_COUNT >= 1
+                            >
 #if DLIB_DNN_PIMPL_WRAPPER_LEVEL_COUNT >= 2
                             >
 #if DLIB_DNN_PIMPL_WRAPPER_LEVEL_COUNT >= 3
@@ -118,11 +122,14 @@ using net_type = dlib::loss_multiclass_log_per_pixel_weighted<
 #endif // DLIB_DNN_PIMPL_WRAPPER_LEVEL_COUNT >= 3
                             >
 #endif // DLIB_DNN_PIMPL_WRAPPER_LEVEL_COUNT >= 2
-                            >>>;
+                            >
+#endif // DLIB_DNN_PIMPL_WRAPPER_LEVEL_COUNT >= 1
+                            >>;
 
 // testing network type (replaced batch normalization with fixed affine transforms)
 using anet_type = dlib::loss_multiclass_log_per_pixel_weighted<
                             dlib::cont<default_class_count,(FIRST_FILTER_SIZE),(FIRST_FILTER_SIZE),(FIRST_FILTER_PADDING),(FIRST_FILTER_PADDING),
+#if DLIB_DNN_PIMPL_WRAPPER_LEVEL_COUNT >= 1
                             alevel1t<
 #if DLIB_DNN_PIMPL_WRAPPER_LEVEL_COUNT >= 2
                             alevel2t<
@@ -137,10 +144,13 @@ using anet_type = dlib::loss_multiclass_log_per_pixel_weighted<
                             alevel2<
 #endif // DLIB_DNN_PIMPL_WRAPPER_LEVEL_COUNT >= 2
                             alevel1<
+#endif // DLIB_DNN_PIMPL_WRAPPER_LEVEL_COUNT >= 1
                             dlib::relu<dlib::affine<
                             dlib::con<64,(FIRST_FILTER_SIZE),(FIRST_FILTER_SIZE),(FIRST_FILTER_PADDING),(FIRST_FILTER_PADDING),
                             input_layer_type
-                            >>>>
+                            >>>
+#if DLIB_DNN_PIMPL_WRAPPER_LEVEL_COUNT >= 1
+                            >
 #if DLIB_DNN_PIMPL_WRAPPER_LEVEL_COUNT >= 2
                             >
 #if DLIB_DNN_PIMPL_WRAPPER_LEVEL_COUNT >= 3
@@ -152,13 +162,15 @@ using anet_type = dlib::loss_multiclass_log_per_pixel_weighted<
 #endif // DLIB_DNN_PIMPL_WRAPPER_LEVEL_COUNT >= 3
                             >
 #endif // DLIB_DNN_PIMPL_WRAPPER_LEVEL_COUNT >= 2
-                            >>>;
+                            >
+#endif // DLIB_DNN_PIMPL_WRAPPER_LEVEL_COUNT >= 1
+                            >>;
 
 #ifndef DLIB_DNN_PIMPL_WRAPPER_LEVEL_COUNT
 #define DLIB_DNN_PIMPL_WRAPPER_LEVEL_COUNT (1)
 #endif // DLIB_DNN_PIMPL_WRAPPER_LEVEL_COUNT
 
-static_assert(DLIB_DNN_PIMPL_WRAPPER_LEVEL_COUNT >= 1, "If defined, DLIB_DNN_PIMPL_WRAPPER_LEVEL_COUNT must be greater than or equal to 1.");
+static_assert(DLIB_DNN_PIMPL_WRAPPER_LEVEL_COUNT >= 0, "If defined, DLIB_DNN_PIMPL_WRAPPER_LEVEL_COUNT must be greater than or equal to 0.");
 static_assert(DLIB_DNN_PIMPL_WRAPPER_LEVEL_COUNT <= 4, "If defined, DLIB_DNN_PIMPL_WRAPPER_LEVEL_COUNT must be less than or equal to 4.");
 
 // The definitions below need to match the network architecture above
