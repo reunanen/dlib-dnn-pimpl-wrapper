@@ -41,6 +41,8 @@ namespace NetPimpl
         void SetNetWidth(double scaler, int minFilterCount);
         void BeVerbose();
 
+        static int GetLevelCount();
+        static int GetLevelDepth();
         static int GetFirstFilterSize();
         static int GetFirstFilterPadding();
         static int GetRequiredInputDimension();

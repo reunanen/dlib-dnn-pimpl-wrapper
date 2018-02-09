@@ -133,14 +133,24 @@ void TrainingNet::BeVerbose()
     pimpl->trainer->be_verbose();
 }
 
+int TrainingNet::GetLevelCount()
+{
+    return DLIB_DNN_PIMPL_WRAPPER_LEVEL_COUNT;
+}
+
+int TrainingNet::GetLevelDepth()
+{
+    return DLIB_DNN_PIMPL_WRAPPER_LEVEL_DEPTH;
+}
+
 int TrainingNet::GetFirstFilterSize()
 {
-    return FIRST_FILTER_SIZE;
+    return DLIB_DNN_PIMPL_WRAPPER_FIRST_FILTER_SIZE;
 }
 
 int TrainingNet::GetFirstFilterPadding()
 {
-    return FIRST_FILTER_PADDING;
+    return DLIB_DNN_PIMPL_WRAPPER_FIRST_FILTER_PADDING;
 }
 
 int TrainingNet::GetRequiredInputDimension()
