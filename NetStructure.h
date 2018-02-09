@@ -5,6 +5,26 @@
 
 // ----------------------------------------------------------------------------------------
 
+// Set default configuration
+
+#ifndef DLIB_DNN_PIMPL_WRAPPER_LEVEL_COUNT
+#define DLIB_DNN_PIMPL_WRAPPER_LEVEL_COUNT (1)
+#endif // DLIB_DNN_PIMPL_WRAPPER_LEVEL_COUNT
+
+#ifndef DLIB_DNN_PIMPL_WRAPPER_FIRST_FILTER_SIZE
+#define DLIB_DNN_PIMPL_WRAPPER_FIRST_FILTER_SIZE (7)
+#endif // DLIB_DNN_PIMPL_WRAPPER_FIRST_FILTER_SIZE
+
+#ifndef DLIB_DNN_PIMPL_WRAPPER_FIRST_FILTER_PADDING
+#define DLIB_DNN_PIMPL_WRAPPER_FIRST_FILTER_PADDING (2)
+#endif // DLIB_DNN_PIMPL_WRAPPER_FIRST_FILTER_PADDING
+
+#ifndef DLIB_DNN_PIMPL_WRAPPER_LEVEL_DEPTH
+#define DLIB_DNN_PIMPL_WRAPPER_LEVEL_DEPTH (2)
+#endif // DLIB_DNN_PIMPL_WRAPPER_LEVEL_DEPTH
+
+// ----------------------------------------------------------------------------------------
+
 #ifdef DLIB_DNN_PIMPL_WRAPPER_GRAYSCALE_INPUT
 typedef dlib::input_grayscale_image<dlib::memory_manager_stateless<uint8_t>::kernel_2_3e> input_layer_type;
 #else
@@ -58,37 +78,29 @@ template <typename SUBNET> using ares128 = ares<128, SUBNET>;
 template <typename SUBNET> using ares64  = ares<64, SUBNET>;
 
 
-template <typename SUBNET> using level1 = dlib::repeat<2,res64,res_down<64,SUBNET>>;
-template <typename SUBNET> using level2 = dlib::repeat<2,res128,res_down<128,SUBNET>>;
-template <typename SUBNET> using level3 = dlib::repeat<2,res256,res_down<256,SUBNET>>;
-template <typename SUBNET> using level4 = dlib::repeat<2,res512,res_down<512,SUBNET>>;
+template <typename SUBNET> using level1 = dlib::repeat<DLIB_DNN_PIMPL_WRAPPER_LEVEL_DEPTH,res64,res_down<64,SUBNET>>;
+template <typename SUBNET> using level2 = dlib::repeat<DLIB_DNN_PIMPL_WRAPPER_LEVEL_DEPTH,res128,res_down<128,SUBNET>>;
+template <typename SUBNET> using level3 = dlib::repeat<DLIB_DNN_PIMPL_WRAPPER_LEVEL_DEPTH,res256,res_down<256,SUBNET>>;
+template <typename SUBNET> using level4 = dlib::repeat<DLIB_DNN_PIMPL_WRAPPER_LEVEL_DEPTH,res512,res_down<512,SUBNET>>;
 
-template <typename SUBNET> using alevel1 = dlib::repeat<2,ares64,ares_down<64,SUBNET>>;
-template <typename SUBNET> using alevel2 = dlib::repeat<2,ares128,ares_down<128,SUBNET>>;
-template <typename SUBNET> using alevel3 = dlib::repeat<2,ares256,ares_down<256,SUBNET>>;
-template <typename SUBNET> using alevel4 = dlib::repeat<2,ares512,ares_down<512,SUBNET>>;
+template <typename SUBNET> using alevel1 = dlib::repeat<DLIB_DNN_PIMPL_WRAPPER_LEVEL_DEPTH,ares64,ares_down<64,SUBNET>>;
+template <typename SUBNET> using alevel2 = dlib::repeat<DLIB_DNN_PIMPL_WRAPPER_LEVEL_DEPTH,ares128,ares_down<128,SUBNET>>;
+template <typename SUBNET> using alevel3 = dlib::repeat<DLIB_DNN_PIMPL_WRAPPER_LEVEL_DEPTH,ares256,ares_down<256,SUBNET>>;
+template <typename SUBNET> using alevel4 = dlib::repeat<DLIB_DNN_PIMPL_WRAPPER_LEVEL_DEPTH,ares512,ares_down<512,SUBNET>>;
 
-template <typename SUBNET> using level1t = dlib::repeat<2,res64,res_up<64,SUBNET>>;
-template <typename SUBNET> using level2t = dlib::repeat<2,res128,res_up<128,SUBNET>>;
-template <typename SUBNET> using level3t = dlib::repeat<2,res256,res_up<256,SUBNET>>;
-template <typename SUBNET> using level4t = dlib::repeat<2,res512,res_up<512,SUBNET>>;
+template <typename SUBNET> using level1t = dlib::repeat<DLIB_DNN_PIMPL_WRAPPER_LEVEL_DEPTH,res64,res_up<64,SUBNET>>;
+template <typename SUBNET> using level2t = dlib::repeat<DLIB_DNN_PIMPL_WRAPPER_LEVEL_DEPTH,res128,res_up<128,SUBNET>>;
+template <typename SUBNET> using level3t = dlib::repeat<DLIB_DNN_PIMPL_WRAPPER_LEVEL_DEPTH,res256,res_up<256,SUBNET>>;
+template <typename SUBNET> using level4t = dlib::repeat<DLIB_DNN_PIMPL_WRAPPER_LEVEL_DEPTH,res512,res_up<512,SUBNET>>;
 
-template <typename SUBNET> using alevel1t = dlib::repeat<2,ares64,ares_up<64,SUBNET>>;
-template <typename SUBNET> using alevel2t = dlib::repeat<2,ares128,ares_up<128,SUBNET>>;
-template <typename SUBNET> using alevel3t = dlib::repeat<2,ares256,ares_up<256,SUBNET>>;
-template <typename SUBNET> using alevel4t = dlib::repeat<2,ares512,ares_up<512,SUBNET>>;
-
-#ifndef FIRST_FILTER_SIZE
-#define FIRST_FILTER_SIZE (7)
-#endif // FIRST_FILTER_SIZE
-
-#ifndef FIRST_FILTER_PADDING
-#define FIRST_FILTER_PADDING (2)
-#endif // FIRST_FILTER_PADDING
+template <typename SUBNET> using alevel1t = dlib::repeat<DLIB_DNN_PIMPL_WRAPPER_LEVEL_DEPTH,ares64,ares_up<64,SUBNET>>;
+template <typename SUBNET> using alevel2t = dlib::repeat<DLIB_DNN_PIMPL_WRAPPER_LEVEL_DEPTH,ares128,ares_up<128,SUBNET>>;
+template <typename SUBNET> using alevel3t = dlib::repeat<DLIB_DNN_PIMPL_WRAPPER_LEVEL_DEPTH,ares256,ares_up<256,SUBNET>>;
+template <typename SUBNET> using alevel4t = dlib::repeat<DLIB_DNN_PIMPL_WRAPPER_LEVEL_DEPTH,ares512,ares_up<512,SUBNET>>;
 
 // training network type
 using net_type = dlib::loss_multiclass_log_per_pixel_weighted<
-                            dlib::cont<default_class_count,(FIRST_FILTER_SIZE),(FIRST_FILTER_SIZE),(FIRST_FILTER_PADDING),(FIRST_FILTER_PADDING),
+                            dlib::cont<default_class_count,(DLIB_DNN_PIMPL_WRAPPER_FIRST_FILTER_SIZE),(DLIB_DNN_PIMPL_WRAPPER_FIRST_FILTER_SIZE),(DLIB_DNN_PIMPL_WRAPPER_FIRST_FILTER_PADDING),(DLIB_DNN_PIMPL_WRAPPER_FIRST_FILTER_PADDING),
 #if DLIB_DNN_PIMPL_WRAPPER_LEVEL_COUNT >= 1
                             level1t<
 #if DLIB_DNN_PIMPL_WRAPPER_LEVEL_COUNT >= 2
@@ -106,7 +118,7 @@ using net_type = dlib::loss_multiclass_log_per_pixel_weighted<
                             level1<
 #endif // DLIB_DNN_PIMPL_WRAPPER_LEVEL_COUNT >= 1
                             dlib::relu<dlib::bn_con<
-                            dlib::con<64,(FIRST_FILTER_SIZE),(FIRST_FILTER_SIZE),(FIRST_FILTER_PADDING),(FIRST_FILTER_PADDING),
+                            dlib::con<64,(DLIB_DNN_PIMPL_WRAPPER_FIRST_FILTER_SIZE),(DLIB_DNN_PIMPL_WRAPPER_FIRST_FILTER_SIZE),(DLIB_DNN_PIMPL_WRAPPER_FIRST_FILTER_PADDING),(DLIB_DNN_PIMPL_WRAPPER_FIRST_FILTER_PADDING),
                             input_layer_type
                             >>>
 #if DLIB_DNN_PIMPL_WRAPPER_LEVEL_COUNT >= 1
@@ -128,7 +140,7 @@ using net_type = dlib::loss_multiclass_log_per_pixel_weighted<
 
 // testing network type (replaced batch normalization with fixed affine transforms)
 using anet_type = dlib::loss_multiclass_log_per_pixel_weighted<
-                            dlib::cont<default_class_count,(FIRST_FILTER_SIZE),(FIRST_FILTER_SIZE),(FIRST_FILTER_PADDING),(FIRST_FILTER_PADDING),
+                            dlib::cont<default_class_count,(DLIB_DNN_PIMPL_WRAPPER_FIRST_FILTER_SIZE),(DLIB_DNN_PIMPL_WRAPPER_FIRST_FILTER_SIZE),(DLIB_DNN_PIMPL_WRAPPER_FIRST_FILTER_PADDING),(DLIB_DNN_PIMPL_WRAPPER_FIRST_FILTER_PADDING),
 #if DLIB_DNN_PIMPL_WRAPPER_LEVEL_COUNT >= 1
                             alevel1t<
 #if DLIB_DNN_PIMPL_WRAPPER_LEVEL_COUNT >= 2
@@ -146,7 +158,7 @@ using anet_type = dlib::loss_multiclass_log_per_pixel_weighted<
                             alevel1<
 #endif // DLIB_DNN_PIMPL_WRAPPER_LEVEL_COUNT >= 1
                             dlib::relu<dlib::affine<
-                            dlib::con<64,(FIRST_FILTER_SIZE),(FIRST_FILTER_SIZE),(FIRST_FILTER_PADDING),(FIRST_FILTER_PADDING),
+                            dlib::con<64,(DLIB_DNN_PIMPL_WRAPPER_FIRST_FILTER_SIZE),(DLIB_DNN_PIMPL_WRAPPER_FIRST_FILTER_SIZE),(DLIB_DNN_PIMPL_WRAPPER_FIRST_FILTER_PADDING),(DLIB_DNN_PIMPL_WRAPPER_FIRST_FILTER_PADDING),
                             input_layer_type
                             >>>
 #if DLIB_DNN_PIMPL_WRAPPER_LEVEL_COUNT >= 1
@@ -166,10 +178,6 @@ using anet_type = dlib::loss_multiclass_log_per_pixel_weighted<
 #endif // DLIB_DNN_PIMPL_WRAPPER_LEVEL_COUNT >= 1
                             >>;
 
-#ifndef DLIB_DNN_PIMPL_WRAPPER_LEVEL_COUNT
-#define DLIB_DNN_PIMPL_WRAPPER_LEVEL_COUNT (1)
-#endif // DLIB_DNN_PIMPL_WRAPPER_LEVEL_COUNT
-
 static_assert(DLIB_DNN_PIMPL_WRAPPER_LEVEL_COUNT >= 0, "If defined, DLIB_DNN_PIMPL_WRAPPER_LEVEL_COUNT must be greater than or equal to 0.");
 static_assert(DLIB_DNN_PIMPL_WRAPPER_LEVEL_COUNT <= 4, "If defined, DLIB_DNN_PIMPL_WRAPPER_LEVEL_COUNT must be less than or equal to 4.");
 
@@ -177,17 +185,17 @@ static_assert(DLIB_DNN_PIMPL_WRAPPER_LEVEL_COUNT <= 4, "If defined, DLIB_DNN_PIM
 template<int W>
 struct NetInputs {
     enum {
-        count = Inputs<1,Inputs<1,Inputs<DLIB_DNN_PIMPL_WRAPPER_LEVEL_COUNT-1,W,3,2>::count,3,2>::count,(FIRST_FILTER_SIZE),(FIRST_FILTER_PADDING)>::count
+        count = Inputs<1,Inputs<1,Inputs<DLIB_DNN_PIMPL_WRAPPER_LEVEL_COUNT-1,W,3,2>::count,3,2>::count,(DLIB_DNN_PIMPL_WRAPPER_FIRST_FILTER_SIZE),(DLIB_DNN_PIMPL_WRAPPER_FIRST_FILTER_PADDING)>::count
     };
 };
 template<int W>
 struct NetOutputs {
     enum {
-        count = Outputs<DLIB_DNN_PIMPL_WRAPPER_LEVEL_COUNT-1,Outputs<1,Outputs<1,W,(FIRST_FILTER_SIZE),(FIRST_FILTER_PADDING)>::count,3,2>::count,3,2>::count
+        count = Outputs<DLIB_DNN_PIMPL_WRAPPER_LEVEL_COUNT-1,Outputs<1,Outputs<1,W,(DLIB_DNN_PIMPL_WRAPPER_FIRST_FILTER_SIZE),(DLIB_DNN_PIMPL_WRAPPER_FIRST_FILTER_PADDING)>::count,3,2>::count,3,2>::count
     };
 };
 
-#if ((FIRST_FILTER_SIZE) == 7) && ((FIRST_FILTER_PADDING) == 2)
+#if ((DLIB_DNN_PIMPL_WRAPPER_FIRST_FILTER_SIZE) == 7) && ((DLIB_DNN_PIMPL_WRAPPER_FIRST_FILTER_PADDING) == 2)
 #if DLIB_DNN_PIMPL_WRAPPER_LEVEL_COUNT >= 4
 static_assert(NetInputs<1>::count == 67, "Unexpected net input count");
 #elif DLIB_DNN_PIMPL_WRAPPER_LEVEL_COUNT >= 3
@@ -197,7 +205,19 @@ static_assert(NetInputs<1>::count == 19, "Unexpected net input count");
 #else // DLIB_DNN_PIMPL_WRAPPER_LEVEL_COUNT
 static_assert(NetInputs<1>::count == 11, "Unexpected net input count");
 #endif // DLIB_DNN_PIMPL_WRAPPER_LEVEL_COUNT
-#endif // ((FIRST_FILTER_SIZE) == 7) and ((FIRST_FILTER_PADDING) == 2)
+#endif // ((DLIB_DNN_PIMPL_WRAPPER_FIRST_FILTER_SIZE) == 7) and ((DLIB_DNN_PIMPL_WRAPPER_FIRST_FILTER_PADDING) == 2)
+
+#if ((DLIB_DNN_PIMPL_WRAPPER_FIRST_FILTER_SIZE) == 7) && ((DLIB_DNN_PIMPL_WRAPPER_FIRST_FILTER_PADDING) == 2)
+#if DLIB_DNN_PIMPL_WRAPPER_LEVEL_COUNT >= 4
+static_assert(NetInputs<1>::count == 67, "Unexpected net input count");
+#elif DLIB_DNN_PIMPL_WRAPPER_LEVEL_COUNT >= 3
+static_assert(NetInputs<1>::count == 35, "Unexpected net input count");
+#elif DLIB_DNN_PIMPL_WRAPPER_LEVEL_COUNT >= 2
+static_assert(NetInputs<1>::count == 19, "Unexpected net input count");
+#else // DLIB_DNN_PIMPL_WRAPPER_LEVEL_COUNT
+static_assert(NetInputs<1>::count == 11, "Unexpected net input count");
+#endif // DLIB_DNN_PIMPL_WRAPPER_LEVEL_COUNT
+#endif // ((DLIB_DNN_PIMPL_WRAPPER_FIRST_FILTER_SIZE) == 7) and ((DLIB_DNN_PIMPL_WRAPPER_FIRST_FILTER_PADDING) == 2)
 
 #endif // __INTELLISENSE__
 
