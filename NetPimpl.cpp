@@ -133,6 +133,16 @@ void TrainingNet::BeVerbose()
     pimpl->trainer->be_verbose();
 }
 
+int TrainingNet::GetFirstFilterSize()
+{
+    return FIRST_FILTER_SIZE;
+}
+
+int TrainingNet::GetFirstFilterPadding()
+{
+    return FIRST_FILTER_PADDING;
+}
+
 int TrainingNet::GetRequiredInputDimension()
 {
     constexpr int startingPoint = 225; // A rather arbitrary selection

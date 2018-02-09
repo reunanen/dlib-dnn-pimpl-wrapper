@@ -41,6 +41,8 @@ namespace NetPimpl
         void SetNetWidth(double scaler, int minFilterCount);
         void BeVerbose();
 
+        static int GetFirstFilterSize();
+        static int GetFirstFilterPadding();
         static int GetRequiredInputDimension();
         void StartTraining(const std::vector<input_type>& inputs, const std::vector<training_label_type>& training_labels);
 

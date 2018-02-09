@@ -25,7 +25,7 @@ constexpr long default_class_count = 2;
 // https://people.eecs.berkeley.edu/~jonlong/long_shelhamer_fcn.pdf)
 
 template <int N, template <typename> class BN, int stride, typename SUBNET> 
-using block = BN<dlib::con<N,3,3,1,1, dlib::relu<BN<dlib::con<N,3,3,stride,stride,SUBNET>>>>>;
+using block = BN<dlib::con<N,3,3,1,1,dlib::relu<BN<dlib::con<N,3,3,stride,stride,SUBNET>>>>>;
 
 template <int N, template <typename> class BN, int stride, typename SUBNET> 
 using blockt = BN<dlib::cont<N,3,3,1,1,dlib::relu<BN<dlib::cont<N,3,3,stride,stride,SUBNET>>>>>;
@@ -61,12 +61,12 @@ template <typename SUBNET> using ares64  = ares<64, SUBNET>;
 template <typename SUBNET> using level1 = dlib::repeat<2,res512,res_down<512,SUBNET>>;
 template <typename SUBNET> using level2 = dlib::repeat<2,res256,res_down<256,SUBNET>>;
 template <typename SUBNET> using level3 = dlib::repeat<2,res128,res_down<128,SUBNET>>;
-template <typename SUBNET> using level4 = dlib::repeat<2,res64,res<64,SUBNET>>;
+template <typename SUBNET> using level4 = dlib::repeat<2,res64,res_down<64,SUBNET>>;
 
 template <typename SUBNET> using alevel1 = dlib::repeat<2,ares512,ares_down<512,SUBNET>>;
 template <typename SUBNET> using alevel2 = dlib::repeat<2,ares256,ares_down<256,SUBNET>>;
 template <typename SUBNET> using alevel3 = dlib::repeat<2,ares128,ares_down<128,SUBNET>>;
-template <typename SUBNET> using alevel4 = dlib::repeat<2,ares64,ares<64,SUBNET>>;
+template <typename SUBNET> using alevel4 = dlib::repeat<2,ares64,ares_down<64,SUBNET>>;
 
 template <typename SUBNET> using level1t = dlib::repeat<2,res512,res_up<512,SUBNET>>;
 template <typename SUBNET> using level2t = dlib::repeat<2,res256,res_up<256,SUBNET>>;
@@ -78,39 +78,51 @@ template <typename SUBNET> using alevel2t = dlib::repeat<2,ares256,ares_up<256,S
 template <typename SUBNET> using alevel3t = dlib::repeat<2,ares128,ares_up<128,SUBNET>>;
 template <typename SUBNET> using alevel4t = dlib::repeat<2,ares64,ares_up<64,SUBNET>>;
 
+#ifndef FIRST_FILTER_SIZE
+#define FIRST_FILTER_SIZE 7
+#endif // FIRST_FILTER_SIZE
+
+#ifndef FIRST_FILTER_PADDING
+#define FIRST_FILTER_PADDING 2
+#endif // FIRST_FILTER_PADDING
+
 // training network type
 using net_type = dlib::loss_multiclass_log_per_pixel_weighted<
-                            dlib::cont<default_class_count,7,7,2,2,
+                            dlib::cont<default_class_count,(FIRST_FILTER_SIZE),(FIRST_FILTER_SIZE),(FIRST_FILTER_PADDING),(FIRST_FILTER_PADDING),
                             level4t<level3t<level2t<level1t<
                             level1<level2<level3<level4<
-                            dlib::max_pool<3,3,2,2,dlib::relu<dlib::bn_con<dlib::con<64,7,7,2,2,
+                            dlib::relu<dlib::bn_con<
+                            dlib::con<64,(FIRST_FILTER_SIZE),(FIRST_FILTER_SIZE),(FIRST_FILTER_PADDING),(FIRST_FILTER_PADDING),
                             input_layer_type
-                            >>>>>>>>>>>>>>;
+                            >>>>>>>>>>>>>;
 
 // testing network type (replaced batch normalization with fixed affine transforms)
 using anet_type = dlib::loss_multiclass_log_per_pixel_weighted<
-                            dlib::cont<default_class_count,7,7,2,2,
+                            dlib::cont<default_class_count,(FIRST_FILTER_SIZE),(FIRST_FILTER_SIZE),(FIRST_FILTER_PADDING),(FIRST_FILTER_PADDING),
                             alevel4t<alevel3t<alevel2t<alevel1t<
                             alevel1<alevel2<alevel3<alevel4<
-                            dlib::max_pool<3,3,2,2,dlib::relu<dlib::affine<dlib::con<64,7,7,2,2,
+                            dlib::relu<dlib::affine<
+                            dlib::con<64,(FIRST_FILTER_SIZE),(FIRST_FILTER_SIZE),(FIRST_FILTER_PADDING),(FIRST_FILTER_PADDING),
                             input_layer_type
-                            >>>>>>>>>>>>>>;
+                            >>>>>>>>>>>>>;
 
 // The definitions below need to match the network architecture above
 template<int W>
 struct NetInputs {
     enum {
-        count = Inputs<1,Inputs<1,Inputs<3,W,3,2>::count,3,2>::count,7,2>::count
+        count = Inputs<1,Inputs<1,Inputs<3,W,3,2>::count,3,2>::count,(FIRST_FILTER_SIZE),(FIRST_FILTER_PADDING)>::count
     };
 };
 template<int W>
 struct NetOutputs {
     enum {
-        count = Outputs<3,Outputs<1,Outputs<1,W,7,2>::count,3,2>::count,3,2>::count
+        count = Outputs<3,Outputs<1,Outputs<1,W,(FIRST_FILTER_SIZE),(FIRST_FILTER_PADDING)>::count,3,2>::count,3,2>::count
     };
 };
 
+#if ((FIRST_FILTER_SIZE) == 7) && ((FIRST_FILTER_PADDING) == 2)
 static_assert(NetInputs<1>::count == 67, "Unexpected net input count");
+#endif // ((FIRST_FILTER_SIZE) == 7) and ((FIRST_FILTER_PADDING) == 2)
 
 #endif // __INTELLISENSE__
 
