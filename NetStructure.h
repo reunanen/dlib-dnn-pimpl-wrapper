@@ -24,7 +24,7 @@
 #endif // DLIB_DNN_PIMPL_WRAPPER_FIRST_FILTER_PADDING
 
 // Residual learning is great, but it may make inference
-// a little slow for some purposes.
+// a little slow (or memory intensive) for some purposes.
 #ifndef DLIB_DNN_PIMPL_WRAPPER_RESIDUAL_LEARNING
 #define DLIB_DNN_PIMPL_WRAPPER_RESIDUAL_LEARNING 1
 #endif // DLIB_DNN_PIMPL_WRAPPER_RESIDUAL_LEARNING
@@ -125,10 +125,10 @@ template <typename SUBNET> using alevel8t = dlib::repeat<(DLIB_DNN_PIMPL_WRAPPER
 
 #else // DLIB_DNN_PIMPL_WRAPPER_RESIDUAL_LEARNING
 
-template <int N, typename SUBNET> using level = dlib::relu<dlib::bn_con<dlib::con<3,3,2,2,SUBNET>>>;
-template <int N, typename SUBNET> using alevel = dlib::relu<dlib::affine<dlib::con<3,3,2,2,SUBNET>>>;
-template <int N, typename SUBNET> using levelt = dlib::relu<dlib::bn_con<dlib::cont<3,3,2,2,SUBNET>>>;
-template <int N, typename SUBNET> using alevelt = dlib::relu<dlib::affine<dlib::cont<3,3,2,2,SUBNET>>>;
+template <int N, typename SUBNET> using level = dlib::relu<dlib::bn_con<dlib::con<N,3,3,2,2,SUBNET>>>;
+template <int N, typename SUBNET> using alevel = dlib::relu<dlib::affine<dlib::con<N,3,3,2,2,SUBNET>>>;
+template <int N, typename SUBNET> using levelt = dlib::relu<dlib::bn_con<dlib::cont<N,3,3,2,2,SUBNET>>>;
+template <int N, typename SUBNET> using alevelt = dlib::relu<dlib::affine<dlib::cont<N,3,3,2,2,SUBNET>>>;
 
 template <typename SUBNET> using level1 = level<64,SUBNET>;
 template <typename SUBNET> using level2 = level<128,SUBNET>;
