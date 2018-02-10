@@ -23,6 +23,12 @@
 #define DLIB_DNN_PIMPL_WRAPPER_FIRST_FILTER_PADDING (2)
 #endif // DLIB_DNN_PIMPL_WRAPPER_FIRST_FILTER_PADDING
 
+// Residual learning is great, but it may make inference
+// a little slow for some purposes.
+#ifndef DLIB_DNN_PIMPL_WRAPPER_RESIDUAL_LEARNING
+#define DLIB_DNN_PIMPL_WRAPPER_RESIDUAL_LEARNING 1
+#endif // DLIB_DNN_PIMPL_WRAPPER_RESIDUAL_LEARNING
+
 // ----------------------------------------------------------------------------------------
 
 #ifdef DLIB_DNN_PIMPL_WRAPPER_GRAYSCALE_INPUT
@@ -36,6 +42,10 @@ typedef dlib::input_rgb_image<dlib::memory_manager_stateless<uint8_t>::kernel_2_
 #ifndef __INTELLISENSE__
 
 constexpr long default_class_count = 2;
+
+// ----------------------------------------------------------------------------------------
+
+#if (DLIB_DNN_PIMPL_WRAPPER_RESIDUAL_LEARNING)
 
 // Introduce the building blocks used to define the segmentation network.
 // The network first does residual downsampling (similar to the dnn_imagenet_(train_)ex 
@@ -77,13 +87,14 @@ template <typename SUBNET> using ares256 = ares<256, SUBNET>;
 template <typename SUBNET> using ares128 = ares<128, SUBNET>;
 template <typename SUBNET> using ares64  = ares<64, SUBNET>;
 
-
 template <typename SUBNET> using level1 = dlib::repeat<(DLIB_DNN_PIMPL_WRAPPER_LEVEL_DEPTH),res64,res_down<64,SUBNET>>;
 template <typename SUBNET> using level2 = dlib::repeat<(DLIB_DNN_PIMPL_WRAPPER_LEVEL_DEPTH),res128,res_down<128,SUBNET>>;
 template <typename SUBNET> using level3 = dlib::repeat<(DLIB_DNN_PIMPL_WRAPPER_LEVEL_DEPTH),res256,res_down<256,SUBNET>>;
 template <typename SUBNET> using level4 = dlib::repeat<(DLIB_DNN_PIMPL_WRAPPER_LEVEL_DEPTH),res512,res_down<512,SUBNET>>;
 template <typename SUBNET> using level5 = dlib::repeat<(DLIB_DNN_PIMPL_WRAPPER_LEVEL_DEPTH),res512,res_down<512,SUBNET>>;
 template <typename SUBNET> using level6 = dlib::repeat<(DLIB_DNN_PIMPL_WRAPPER_LEVEL_DEPTH),res512,res_down<512,SUBNET>>;
+template <typename SUBNET> using level7 = dlib::repeat<(DLIB_DNN_PIMPL_WRAPPER_LEVEL_DEPTH),res512,res_down<512,SUBNET>>;
+template <typename SUBNET> using level8 = dlib::repeat<(DLIB_DNN_PIMPL_WRAPPER_LEVEL_DEPTH),res512,res_down<512,SUBNET>>;
 
 template <typename SUBNET> using alevel1 = dlib::repeat<(DLIB_DNN_PIMPL_WRAPPER_LEVEL_DEPTH),ares64,ares_down<64,SUBNET>>;
 template <typename SUBNET> using alevel2 = dlib::repeat<(DLIB_DNN_PIMPL_WRAPPER_LEVEL_DEPTH),ares128,ares_down<128,SUBNET>>;
@@ -91,6 +102,8 @@ template <typename SUBNET> using alevel3 = dlib::repeat<(DLIB_DNN_PIMPL_WRAPPER_
 template <typename SUBNET> using alevel4 = dlib::repeat<(DLIB_DNN_PIMPL_WRAPPER_LEVEL_DEPTH),ares512,ares_down<512,SUBNET>>;
 template <typename SUBNET> using alevel5 = dlib::repeat<(DLIB_DNN_PIMPL_WRAPPER_LEVEL_DEPTH),ares512,ares_down<512,SUBNET>>;
 template <typename SUBNET> using alevel6 = dlib::repeat<(DLIB_DNN_PIMPL_WRAPPER_LEVEL_DEPTH),ares512,ares_down<512,SUBNET>>;
+template <typename SUBNET> using alevel7 = dlib::repeat<(DLIB_DNN_PIMPL_WRAPPER_LEVEL_DEPTH),ares512,ares_down<512,SUBNET>>;
+template <typename SUBNET> using alevel8 = dlib::repeat<(DLIB_DNN_PIMPL_WRAPPER_LEVEL_DEPTH),ares512,ares_down<512,SUBNET>>;
 
 template <typename SUBNET> using level1t = dlib::repeat<(DLIB_DNN_PIMPL_WRAPPER_LEVEL_DEPTH),res64,res_up<64,SUBNET>>;
 template <typename SUBNET> using level2t = dlib::repeat<(DLIB_DNN_PIMPL_WRAPPER_LEVEL_DEPTH),res128,res_up<128,SUBNET>>;
@@ -98,6 +111,8 @@ template <typename SUBNET> using level3t = dlib::repeat<(DLIB_DNN_PIMPL_WRAPPER_
 template <typename SUBNET> using level4t = dlib::repeat<(DLIB_DNN_PIMPL_WRAPPER_LEVEL_DEPTH),res512,res_up<512,SUBNET>>;
 template <typename SUBNET> using level5t = dlib::repeat<(DLIB_DNN_PIMPL_WRAPPER_LEVEL_DEPTH),res512,res_up<512,SUBNET>>;
 template <typename SUBNET> using level6t = dlib::repeat<(DLIB_DNN_PIMPL_WRAPPER_LEVEL_DEPTH),res512,res_up<512,SUBNET>>;
+template <typename SUBNET> using level7t = dlib::repeat<(DLIB_DNN_PIMPL_WRAPPER_LEVEL_DEPTH),res512,res_up<512,SUBNET>>;
+template <typename SUBNET> using level8t = dlib::repeat<(DLIB_DNN_PIMPL_WRAPPER_LEVEL_DEPTH),res512,res_up<512,SUBNET>>;
 
 template <typename SUBNET> using alevel1t = dlib::repeat<(DLIB_DNN_PIMPL_WRAPPER_LEVEL_DEPTH),ares64,ares_up<64,SUBNET>>;
 template <typename SUBNET> using alevel2t = dlib::repeat<(DLIB_DNN_PIMPL_WRAPPER_LEVEL_DEPTH),ares128,ares_up<128,SUBNET>>;
@@ -105,6 +120,55 @@ template <typename SUBNET> using alevel3t = dlib::repeat<(DLIB_DNN_PIMPL_WRAPPER
 template <typename SUBNET> using alevel4t = dlib::repeat<(DLIB_DNN_PIMPL_WRAPPER_LEVEL_DEPTH),ares512,ares_up<512,SUBNET>>;
 template <typename SUBNET> using alevel5t = dlib::repeat<(DLIB_DNN_PIMPL_WRAPPER_LEVEL_DEPTH),ares512,ares_up<512,SUBNET>>;
 template <typename SUBNET> using alevel6t = dlib::repeat<(DLIB_DNN_PIMPL_WRAPPER_LEVEL_DEPTH),ares512,ares_up<512,SUBNET>>;
+template <typename SUBNET> using alevel7t = dlib::repeat<(DLIB_DNN_PIMPL_WRAPPER_LEVEL_DEPTH),ares512,ares_up<512,SUBNET>>;
+template <typename SUBNET> using alevel8t = dlib::repeat<(DLIB_DNN_PIMPL_WRAPPER_LEVEL_DEPTH),ares512,ares_up<512,SUBNET>>;
+
+#else // DLIB_DNN_PIMPL_WRAPPER_RESIDUAL_LEARNING
+
+template <int N, typename SUBNET> using level = dlib::relu<dlib::bn_con<dlib::con<3,3,2,2,SUBNET>>>;
+template <int N, typename SUBNET> using alevel = dlib::relu<dlib::affine<dlib::con<3,3,2,2,SUBNET>>>;
+template <int N, typename SUBNET> using levelt = dlib::relu<dlib::bn_con<dlib::cont<3,3,2,2,SUBNET>>>;
+template <int N, typename SUBNET> using alevelt = dlib::relu<dlib::affine<dlib::cont<3,3,2,2,SUBNET>>>;
+
+template <typename SUBNET> using level1 = level<64,SUBNET>;
+template <typename SUBNET> using level2 = level<128,SUBNET>;
+template <typename SUBNET> using level3 = level<256,SUBNET>;
+template <typename SUBNET> using level4 = level<512,SUBNET>;
+template <typename SUBNET> using level5 = level<512,SUBNET>;
+template <typename SUBNET> using level6 = level<512,SUBNET>;
+template <typename SUBNET> using level7 = level<512,SUBNET>;
+template <typename SUBNET> using level8 = level<512,SUBNET>;
+
+template <typename SUBNET> using alevel1 = alevel<64,SUBNET>;
+template <typename SUBNET> using alevel2 = alevel<128,SUBNET>;
+template <typename SUBNET> using alevel3 = alevel<256,SUBNET>;
+template <typename SUBNET> using alevel4 = alevel<512,SUBNET>;
+template <typename SUBNET> using alevel5 = alevel<512,SUBNET>;
+template <typename SUBNET> using alevel6 = alevel<512,SUBNET>;
+template <typename SUBNET> using alevel7 = alevel<512,SUBNET>;
+template <typename SUBNET> using alevel8 = alevel<512,SUBNET>;
+
+template <typename SUBNET> using level1t = levelt<64,SUBNET>;
+template <typename SUBNET> using level2t = levelt<128,SUBNET>;
+template <typename SUBNET> using level3t = levelt<256,SUBNET>;
+template <typename SUBNET> using level4t = levelt<512,SUBNET>;
+template <typename SUBNET> using level5t = levelt<512,SUBNET>;
+template <typename SUBNET> using level6t = levelt<512,SUBNET>;
+template <typename SUBNET> using level7t = levelt<512,SUBNET>;
+template <typename SUBNET> using level8t = levelt<512,SUBNET>;
+
+template <typename SUBNET> using alevel1t = alevelt<64,SUBNET>;
+template <typename SUBNET> using alevel2t = alevelt<128,SUBNET>;
+template <typename SUBNET> using alevel3t = alevelt<256,SUBNET>;
+template <typename SUBNET> using alevel4t = alevelt<512,SUBNET>;
+template <typename SUBNET> using alevel5t = alevelt<512,SUBNET>;
+template <typename SUBNET> using alevel6t = alevelt<512,SUBNET>;
+template <typename SUBNET> using alevel7t = alevelt<512,SUBNET>;
+template <typename SUBNET> using alevel8t = alevelt<512,SUBNET>;
+
+#endif // DLIB_DNN_PIMPL_WRAPPER_RESIDUAL_LEARNING
+
+// ----------------------------------------------------------------------------------------
 
 // training network type
 using net_type = dlib::loss_multiclass_log_per_pixel_weighted<
@@ -121,6 +185,14 @@ using net_type = dlib::loss_multiclass_log_per_pixel_weighted<
                             level5t<
 #if DLIB_DNN_PIMPL_WRAPPER_LEVEL_COUNT >= 6
                             level6t<
+#if DLIB_DNN_PIMPL_WRAPPER_LEVEL_COUNT >= 7
+                            level7t<
+#if DLIB_DNN_PIMPL_WRAPPER_LEVEL_COUNT >= 8
+                            level8t<
+                            level8<
+#endif // DLIB_DNN_PIMPL_WRAPPER_LEVEL_COUNT >= 8
+                            level7<
+#endif // DLIB_DNN_PIMPL_WRAPPER_LEVEL_COUNT >= 7
                             level6<
 #endif // DLIB_DNN_PIMPL_WRAPPER_LEVEL_COUNT >= 6
                             level5<
@@ -148,7 +220,15 @@ using net_type = dlib::loss_multiclass_log_per_pixel_weighted<
 #if DLIB_DNN_PIMPL_WRAPPER_LEVEL_COUNT >= 5
                             >
 #if DLIB_DNN_PIMPL_WRAPPER_LEVEL_COUNT >= 6
+                            >
+#if DLIB_DNN_PIMPL_WRAPPER_LEVEL_COUNT >= 7
+                            >
+#if DLIB_DNN_PIMPL_WRAPPER_LEVEL_COUNT >= 8
                             >>
+#endif // DLIB_DNN_PIMPL_WRAPPER_LEVEL_COUNT >= 8
+                            >
+#endif // DLIB_DNN_PIMPL_WRAPPER_LEVEL_COUNT >= 7
+                            >
 #endif // DLIB_DNN_PIMPL_WRAPPER_LEVEL_COUNT >= 6
                             >
 #endif // DLIB_DNN_PIMPL_WRAPPER_LEVEL_COUNT >= 5
@@ -177,6 +257,14 @@ using anet_type = dlib::loss_multiclass_log_per_pixel_weighted<
                             alevel5t<
 #if DLIB_DNN_PIMPL_WRAPPER_LEVEL_COUNT >= 6
                             alevel6t<
+#if DLIB_DNN_PIMPL_WRAPPER_LEVEL_COUNT >= 7
+                            alevel7t<
+#if DLIB_DNN_PIMPL_WRAPPER_LEVEL_COUNT >= 8
+                            alevel8t<
+                            alevel8<
+#endif // DLIB_DNN_PIMPL_WRAPPER_LEVEL_COUNT >= 8
+                            alevel7<
+#endif // DLIB_DNN_PIMPL_WRAPPER_LEVEL_COUNT >= 7
                             alevel6<
 #endif // DLIB_DNN_PIMPL_WRAPPER_LEVEL_COUNT >= 6
                             alevel5<
@@ -204,7 +292,15 @@ using anet_type = dlib::loss_multiclass_log_per_pixel_weighted<
 #if DLIB_DNN_PIMPL_WRAPPER_LEVEL_COUNT >= 5
                             >
 #if DLIB_DNN_PIMPL_WRAPPER_LEVEL_COUNT >= 6
+                            >
+#if DLIB_DNN_PIMPL_WRAPPER_LEVEL_COUNT >= 7
+                            >
+#if DLIB_DNN_PIMPL_WRAPPER_LEVEL_COUNT >= 8
                             >>
+#endif // DLIB_DNN_PIMPL_WRAPPER_LEVEL_COUNT >= 8
+                            >
+#endif // DLIB_DNN_PIMPL_WRAPPER_LEVEL_COUNT >= 7
+                            >
 #endif // DLIB_DNN_PIMPL_WRAPPER_LEVEL_COUNT >= 6
                             >
 #endif // DLIB_DNN_PIMPL_WRAPPER_LEVEL_COUNT >= 5
@@ -219,7 +315,7 @@ using anet_type = dlib::loss_multiclass_log_per_pixel_weighted<
                             >>;
 
 static_assert(DLIB_DNN_PIMPL_WRAPPER_LEVEL_COUNT >= 0, "If defined, DLIB_DNN_PIMPL_WRAPPER_LEVEL_COUNT must be greater than or equal to 0.");
-static_assert(DLIB_DNN_PIMPL_WRAPPER_LEVEL_COUNT <= 6, "If defined, DLIB_DNN_PIMPL_WRAPPER_LEVEL_COUNT must be less than or equal to 8.");
+static_assert(DLIB_DNN_PIMPL_WRAPPER_LEVEL_COUNT <= 8, "If defined, DLIB_DNN_PIMPL_WRAPPER_LEVEL_COUNT must be less than or equal to 8.");
 
 // The definitions below need to match the network architecture above
 template<int W>
@@ -239,63 +335,27 @@ struct NetOutputs {
 static_assert(NetInputs<1>::count == (DLIB_DNN_PIMPL_WRAPPER_FIRST_FILTER_SIZE), "Unexpected net input count");
 #endif // (DLIB_DNN_PIMPL_WRAPPER_LEVEL_COUNT) == 0
 
-#if (DLIB_DNN_PIMPL_WRAPPER_LEVEL_DEPTH) == 2
-
-#if (DLIB_DNN_PIMPL_WRAPPER_FIRST_FILTER_SIZE) == 7 && (DLIB_DNN_PIMPL_WRAPPER_FIRST_FILTER_PADDING) == 2
-#if (DLIB_DNN_PIMPL_WRAPPER_LEVEL_COUNT) >= 6
-static_assert(NetInputs<1>::count == 259, "Unexpected net input count");
+#if (DLIB_DNN_PIMPL_WRAPPER_FIRST_FILTER_PADDING) == 2
+#if (DLIB_DNN_PIMPL_WRAPPER_LEVEL_COUNT) >= 8
+static_assert(NetInputs<1>::count == 1024 - 4 + (DLIB_DNN_PIMPL_WRAPPER_FIRST_FILTER_SIZE), "Unexpected net input count");
+#elif (DLIB_DNN_PIMPL_WRAPPER_LEVEL_COUNT) >= 7
+static_assert(NetInputs<1>::count == 512 - 4 + (DLIB_DNN_PIMPL_WRAPPER_FIRST_FILTER_SIZE), "Unexpected net input count");
+#elif (DLIB_DNN_PIMPL_WRAPPER_LEVEL_COUNT) >= 6
+static_assert(NetInputs<1>::count == 256 - 4 + (DLIB_DNN_PIMPL_WRAPPER_FIRST_FILTER_SIZE), "Unexpected net input count");
 #elif (DLIB_DNN_PIMPL_WRAPPER_LEVEL_COUNT) >= 5
-static_assert(NetInputs<1>::count == 131, "Unexpected net input count");
+static_assert(NetInputs<1>::count == 128 - 4 + (DLIB_DNN_PIMPL_WRAPPER_FIRST_FILTER_SIZE), "Unexpected net input count");
 #elif (DLIB_DNN_PIMPL_WRAPPER_LEVEL_COUNT) >= 4
-static_assert(NetInputs<1>::count == 67, "Unexpected net input count");
+static_assert(NetInputs<1>::count == 64 - 4 + (DLIB_DNN_PIMPL_WRAPPER_FIRST_FILTER_SIZE), "Unexpected net input count");
 #elif (DLIB_DNN_PIMPL_WRAPPER_LEVEL_COUNT) >= 3
-static_assert(NetInputs<1>::count == 35, "Unexpected net input count");
+static_assert(NetInputs<1>::count == 32 - 4 + (DLIB_DNN_PIMPL_WRAPPER_FIRST_FILTER_SIZE), "Unexpected net input count");
 #elif (DLIB_DNN_PIMPL_WRAPPER_LEVEL_COUNT) >= 2
-static_assert(NetInputs<1>::count == 19, "Unexpected net input count");
+static_assert(NetInputs<1>::count == 16 - 4 + (DLIB_DNN_PIMPL_WRAPPER_FIRST_FILTER_SIZE), "Unexpected net input count");
 #elif (DLIB_DNN_PIMPL_WRAPPER_LEVEL_COUNT) >= 1
-static_assert(NetInputs<1>::count == 11, "Unexpected net input count");
+static_assert(NetInputs<1>::count == 8 - 4 + (DLIB_DNN_PIMPL_WRAPPER_FIRST_FILTER_SIZE), "Unexpected net input count");
 #else // (DLIB_DNN_PIMPL_WRAPPER_LEVEL_COUNT)
-static_assert(NetInputs<1>::count == 7, "Unexpected net input count");
+static_assert(NetInputs<1>::count == 4 - 4 + (DLIB_DNN_PIMPL_WRAPPER_FIRST_FILTER_SIZE), "Unexpected net input count");
 #endif // (DLIB_DNN_PIMPL_WRAPPER_LEVEL_COUNT)
-#endif // ((DLIB_DNN_PIMPL_WRAPPER_FIRST_FILTER_SIZE) == 7) and ((DLIB_DNN_PIMPL_WRAPPER_FIRST_FILTER_PADDING) == 2)
-
-#if (DLIB_DNN_PIMPL_WRAPPER_FIRST_FILTER_SIZE) == 5 && (DLIB_DNN_PIMPL_WRAPPER_FIRST_FILTER_PADDING) == 2
-#if (DLIB_DNN_PIMPL_WRAPPER_LEVEL_COUNT) >= 6
-static_assert(NetInputs<1>::count == 257, "Unexpected net input count");
-#elif (DLIB_DNN_PIMPL_WRAPPER_LEVEL_COUNT) >= 5
-static_assert(NetInputs<1>::count == 129, "Unexpected net input count");
-#elif (DLIB_DNN_PIMPL_WRAPPER_LEVEL_COUNT) >= 4
-static_assert(NetInputs<1>::count == 65, "Unexpected net input count");
-#elif (DLIB_DNN_PIMPL_WRAPPER_LEVEL_COUNT) >= 3
-static_assert(NetInputs<1>::count == 33, "Unexpected net input count");
-#elif (DLIB_DNN_PIMPL_WRAPPER_LEVEL_COUNT) >= 2
-static_assert(NetInputs<1>::count == 17, "Unexpected net input count");
-#elif (DLIB_DNN_PIMPL_WRAPPER_LEVEL_COUNT) >= 1
-static_assert(NetInputs<1>::count == 9, "Unexpected net input count");
-#else // (DLIB_DNN_PIMPL_WRAPPER_LEVEL_COUNT)
-static_assert(NetInputs<1>::count == 5, "Unexpected net input count");
-#endif // (DLIB_DNN_PIMPL_WRAPPER_LEVEL_COUNT)
-#endif // ((DLIB_DNN_PIMPL_WRAPPER_FIRST_FILTER_SIZE) == 5) and ((DLIB_DNN_PIMPL_WRAPPER_FIRST_FILTER_PADDING) == 2)
-
-#if (DLIB_DNN_PIMPL_WRAPPER_FIRST_FILTER_SIZE) == 3 && (DLIB_DNN_PIMPL_WRAPPER_FIRST_FILTER_PADDING) == 2
-#if (DLIB_DNN_PIMPL_WRAPPER_LEVEL_COUNT) >= 6
-static_assert(NetInputs<1>::count == 255, "Unexpected net input count");
-#elif (DLIB_DNN_PIMPL_WRAPPER_LEVEL_COUNT) >= 5
-static_assert(NetInputs<1>::count == 127, "Unexpected net input count");
-#elif (DLIB_DNN_PIMPL_WRAPPER_LEVEL_COUNT) >= 4
-static_assert(NetInputs<1>::count == 63, "Unexpected net input count");
-#elif (DLIB_DNN_PIMPL_WRAPPER_LEVEL_COUNT) >= 3
-static_assert(NetInputs<1>::count == 31, "Unexpected net input count");
-#elif (DLIB_DNN_PIMPL_WRAPPER_LEVEL_COUNT) >= 2
-static_assert(NetInputs<1>::count == 15, "Unexpected net input count");
-#elif (DLIB_DNN_PIMPL_WRAPPER_LEVEL_COUNT) >= 1
-static_assert(NetInputs<1>::count == 7, "Unexpected net input count");
-#else // (DLIB_DNN_PIMPL_WRAPPER_LEVEL_COUNT)
-static_assert(NetInputs<1>::count == 3, "Unexpected net input count");
-#endif // (DLIB_DNN_PIMPL_WRAPPER_LEVEL_COUNT)
-#endif // ((DLIB_DNN_PIMPL_WRAPPER_FIRST_FILTER_SIZE) == 5) and ((DLIB_DNN_PIMPL_WRAPPER_FIRST_FILTER_PADDING) == 2)
-
-#endif // ((DLIB_DNN_PIMPL_WRAPPER_LEVEL_DEPTH) == 2)
+#endif // (DLIB_DNN_PIMPL_WRAPPER_FIRST_FILTER_PADDING) == 2
 
 #endif // __INTELLISENSE__
 
