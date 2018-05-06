@@ -253,6 +253,11 @@ output_type RuntimeNet::operator() (const input_type& input, const std::vector<d
     return pimpl->anet.process(input, 0.0, gainFactors);
 }
 
+const dlib::mmod_options& RuntimeNet::GetOptions() const
+{
+    return pimpl->anet.loss_details().get_options();
+}
+
 const dlib::tensor& RuntimeNet::GetOutput() const
 {
     return pimpl->anet.subnet().get_output();

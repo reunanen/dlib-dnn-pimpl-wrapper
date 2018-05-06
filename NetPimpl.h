@@ -78,6 +78,8 @@ namespace NetPimpl
 
         output_type operator() (const input_type& input, const std::vector<double>& gainFactors = std::vector<double>()) const;
 
+        const dlib::mmod_options& GetOptions() const;
+
         const dlib::tensor& GetOutput() const;
 
         static int GetRecommendedInputDimension(int minimumInputDimension);
