@@ -7,13 +7,12 @@
 namespace NetPimpl
 {
 #ifdef DLIB_DNN_PIMPL_WRAPPER_GRAYSCALE_INPUT
-    // TODO: use definition from MemoryManager.h
-    typedef dlib::matrix<uint8_t,0,0,dlib::memory_manager_stateless<uint8_t>::kernel_2_3e> input_type;
+    typedef dlib::matrix<uint8_t> input_type;
 #else
-    typedef dlib::matrix<dlib::rgb_pixel,0,0,dlib::memory_manager_stateless<uint8_t>::kernel_2_3e> input_type;
+    typedef dlib::matrix<dlib::rgb_pixel> input_type;
 #endif
-    typedef dlib::loss_multiclass_log_per_pixel_weighted_::training_label_type training_label_type;
-    typedef dlib::loss_multiclass_log_per_pixel_weighted_::output_label_type output_type;
+    typedef std::vector<dlib::mmod_rect> training_label_type;
+    typedef std::vector<dlib::mmod_rect> output_type;
 #if 0
     typedef dlib::adam solver_type;
     const auto GetDefaultSolver = []() { return dlib::adam(0.001, 0.9, 0.999); };
@@ -29,9 +28,8 @@ namespace NetPimpl
         TrainingNet();
         virtual ~TrainingNet();
 
-        void Initialize(const solver_type& solver = GetDefaultSolver());
+        void Initialize(const dlib::mmod_options& mmod_options, const solver_type& solver = GetDefaultSolver());
 
-        void SetClassCount(unsigned short classCount);
         void SetLearningRate(double learningRate);
         void SetIterationsWithoutProgressThreshold(unsigned long threshold);
         void SetPreviousLossValuesDumpAmount(unsigned long dump_amount);

@@ -5,8 +5,8 @@ namespace NetPimpl {
 
 struct TrainingNet::Impl
 {
-    std::unique_ptr<net_type> net;
-    std::unique_ptr<dlib::dnn_trainer<net_type, solver_type>> trainer;
+    std::unique_ptr<bnet_type> net;
+    std::unique_ptr<dlib::dnn_trainer<bnet_type, solver_type>> trainer;
 };
 
 struct RuntimeNet::Impl
@@ -24,19 +24,15 @@ TrainingNet::~TrainingNet()
     delete pimpl;
 }
 
-void TrainingNet::Initialize(const solver_type& solver)
+void TrainingNet::Initialize(const dlib::mmod_options& mmod_options, const solver_type& solver)
 {
     if (pimpl->trainer) {
         pimpl->trainer->get_net(dlib::force_flush_to_disk::no); // may block
     }
-    pimpl->net = std::make_unique<net_type>();
-    pimpl->trainer = std::make_unique<dlib::dnn_trainer<net_type, solver_type>>(*pimpl->net, solver);
-}
+    pimpl->net = std::make_unique<bnet_type>(mmod_options);
+    pimpl->net->subnet().layer_details().set_num_filters(mmod_options.detector_windows.size());
 
-void TrainingNet::SetClassCount(unsigned short classCount)
-{
-    DLIB_CASSERT(classCount < dlib::loss_multiclass_log_per_pixel_::label_to_ignore);
-    pimpl->net->subnet().layer_details().set_num_filters(classCount);
+    pimpl->trainer = std::make_unique<dlib::dnn_trainer<bnet_type, solver_type>>(*pimpl->net, solver);
 }
 
 void TrainingNet::SetLearningRate(double learningRate)
@@ -133,6 +129,7 @@ void TrainingNet::BeVerbose()
     pimpl->trainer->be_verbose();
 }
 
+#if 0
 int TrainingNet::GetLevelCount()
 {
     return DLIB_DNN_PIMPL_WRAPPER_LEVEL_COUNT;
@@ -152,7 +149,9 @@ int TrainingNet::GetFirstFilterPadding()
 {
     return DLIB_DNN_PIMPL_WRAPPER_FIRST_FILTER_PADDING;
 }
+#endif
 
+#if 0
 int TrainingNet::GetRequiredInputDimension()
 {
     constexpr int startingPoint = 225; // A rather arbitrary selection
@@ -163,6 +162,7 @@ int TrainingNet::GetRequiredInputDimension()
     constexpr int inputDim = NetInputs<1>::count;
     return inputDim;
 }
+#endif
 
 void TrainingNet::StartTraining(const std::vector<input_type>& inputs, const std::vector<training_label_type>& training_labels)
 {
@@ -250,7 +250,7 @@ RuntimeNet& RuntimeNet::operator= (const TrainingNet& trainingNet)
 
 output_type RuntimeNet::operator() (const input_type& input, const std::vector<double>& gainFactors) const
 {
-    return pimpl->anet.process(input, gainFactors);
+    return pimpl->anet.process(input, 0.0, gainFactors);
 }
 
 const dlib::tensor& RuntimeNet::GetOutput() const
@@ -277,6 +277,7 @@ public:
     static int array[N];
 };
 
+#if 0
 template <int N, int OutputCount>
 const int OutputDimensionToInputDimension<N, OutputCount>::dummy = OutputDimensionToInputDimension<N, 0>::array[OutputCount] = NetInputs<OutputCount>::count + 0 * OutputDimensionToInputDimension<N, OutputCount - 1>::dummy;
 
@@ -300,10 +301,11 @@ int RuntimeNet::GetRecommendedInputDimension(int minimumInputDimension)
     error << "Requested minimum input dimension " << minimumInputDimension << " is too large (the largest supported is " << outputDimensionToInputDimension[MAX_OUTPUT_COUNT_FOR_CALCULATING_RECOMMENDED_INPUT_DIMENSION - 1] << ")";
     throw std::runtime_error(error.str());
 }
+#endif
 
 output_type RuntimeNet::Process(const input_type& input, const std::vector<double>& gainFactors) const
 {
-    return pimpl->anet.process(input, gainFactors);
+    return pimpl->anet.process(input, 0.0, gainFactors);
 }
 
 void RuntimeNet::Serialize(std::ostream& out) const
