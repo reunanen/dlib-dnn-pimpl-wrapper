@@ -12,6 +12,7 @@ typedef dlib::input_rgb_image_stack input_layer_type;
 #endif
 
 constexpr int outputCount = 3;
+constexpr int hiddenCount = 1000;
 
 #ifndef __INTELLISENSE__
 
@@ -33,35 +34,39 @@ template <int N, typename SUBNET> using ares_down = dlib::relu<residual_down<blo
 
 // ----------------------------------------------------------------------------------------
 
-template <typename SUBNET> using level1 = res<512,res<512,res_down<512,SUBNET>>>;
-template <typename SUBNET> using level2 = res<256,res<256,res<256,res<256,res<256,res_down<256,SUBNET>>>>>>;
-template <typename SUBNET> using level3 = res<128,res<128,res<128,res_down<128,SUBNET>>>>;
-template <typename SUBNET> using level4 = res<64,res<64,res_down<64,SUBNET>>>;
+template <typename SUBNET> using level1 = res<1024,res<1024,res_down<1024,SUBNET>>>;
+template <typename SUBNET> using level2 = res<512,res<512,res_down<512,SUBNET>>>;
+template <typename SUBNET> using level3 = res<256,res<256,res_down<256,SUBNET>>>;
+template <typename SUBNET> using level4 = res<128,res<128,res_down<128,SUBNET>>>;
+template <typename SUBNET> using level5 = res<64,res<64,res_down<64,SUBNET>>>;
 
-template <typename SUBNET> using alevel1 = ares<512,ares<512,ares_down<512,SUBNET>>>;
-template <typename SUBNET> using alevel2 = ares<256,ares<256,ares<256,ares<256,ares<256,ares_down<256,SUBNET>>>>>>;
-template <typename SUBNET> using alevel3 = ares<128,ares<128,ares<128,ares_down<128,SUBNET>>>>;
-template <typename SUBNET> using alevel4 = ares<64,ares<64,ares_down<64,SUBNET>>>;
+template <typename SUBNET> using alevel1 = ares<1024,ares<1024,ares_down<1024,SUBNET>>>;
+template <typename SUBNET> using alevel2 = ares<512,ares<512,ares_down<512,SUBNET>>>;
+template <typename SUBNET> using alevel3 = ares<256,ares<256,ares_down<256,SUBNET>>>;
+template <typename SUBNET> using alevel4 = ares<128,ares<128,ares_down<128,SUBNET>>>;
+template <typename SUBNET> using alevel5 = ares<64,ares<64,ares_down<64,SUBNET>>>;
 
 // training network type
-using net_type = dlib::loss_mean_squared_multioutput<dlib::fc<outputCount,
+using net_type = dlib::loss_mean_squared_multioutput<dlib::fc<outputCount,dlib::relu<dlib::fc<hiddenCount,
                             level1<
                             level2<
                             level3<
                             level4<
-                            dlib::relu<dlib::bn_con<dlib::con<64,7,7,2,2,
+                            level5<
+                            dlib::relu<dlib::bn_con<dlib::con<64,3,3,2,2,
                             input_layer_type
-                            >>>>>>>>>;
+                            >>>>>>>>>>>>;
 
 // testing network type (replaced batch normalization with fixed affine transforms)
-using anet_type = dlib::loss_mean_squared_multioutput<dlib::fc<outputCount,
+using anet_type = dlib::loss_mean_squared_multioutput<dlib::fc<outputCount,dlib::relu<dlib::fc<hiddenCount,
                             alevel1<
                             alevel2<
                             alevel3<
                             alevel4<
-                            dlib::relu<dlib::affine<dlib::con<64,7,7,2,2,
+                            alevel5<
+                            dlib::relu<dlib::affine<dlib::con<64,3,3,2,2,
                             input_layer_type
-                            >>>>>>>>>;
+                            >>>>>>>>>>>>;
 #endif // __INTELLISENSE__
 
 // ----------------------------------------------------------------------------------------

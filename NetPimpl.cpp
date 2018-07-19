@@ -85,7 +85,7 @@ int TrainingNet::GetRequiredInputDimension()
     constexpr int inputDim = NetInputs<1>::count;
     return inputDim;
 #endif
-    return 227;
+    return 455;
 }
 
 void TrainingNet::StartTraining(const std::vector<input_type>& inputs, const std::vector<training_label_type>& training_labels)
