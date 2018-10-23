@@ -80,69 +80,71 @@ template <typename SUBNET> using alevel4t = dlib::repeat<2,ares64,ares_up<64,SUB
 
 // training network type
 using net_type = dlib::loss_multiclass_log_per_pixel_weighted<
-                            dlib::cont<default_class_count,7,7,2,2,
-                            level4t<
+                            dlib::con<default_class_count,1,1,1,1,
+                            dlib::concat_prev7<dlib::cont<default_class_count,7,7,2,2,
+                            dlib::concat_prev6<level4t<
 #if DLIB_DNN_PIMPL_WRAPPER_LEVEL_COUNT >= 2
-                            level3t<
+                            dlib::concat_prev5<level3t<
 #if DLIB_DNN_PIMPL_WRAPPER_LEVEL_COUNT >= 3
-                            level2t<
+                            dlib::concat_prev4<level2t<
 #if DLIB_DNN_PIMPL_WRAPPER_LEVEL_COUNT >= 4
-                            level1t<
-                            level1<
+                            dlib::concat_prev3<level1t<
+                            level1<dlib::tag3<
 #endif // DLIB_DNN_PIMPL_WRAPPER_LEVEL_COUNT >= 4
-                            level2<
+                            level2<dlib::tag4<
 #endif // DLIB_DNN_PIMPL_WRAPPER_LEVEL_COUNT >= 3
-                            level3<
+                            level3<dlib::tag5<
 #endif // DLIB_DNN_PIMPL_WRAPPER_LEVEL_COUNT >= 2
-                            level4<
-                            dlib::max_pool<3,3,2,2,dlib::relu<dlib::bn_con<dlib::con<64,7,7,2,2,
+                            level4<dlib::max_pool<3,3,2,2,dlib::tag6<
+                            dlib::relu<dlib::bn_con<dlib::con<64,7,7,2,2,dlib::tag7<
                             input_layer_type
-                            >>>>>
+                            >>>>>>>
 #if DLIB_DNN_PIMPL_WRAPPER_LEVEL_COUNT >= 2
-                            >
-#if DLIB_DNN_PIMPL_WRAPPER_LEVEL_COUNT >= 3
-                            >
-#if DLIB_DNN_PIMPL_WRAPPER_LEVEL_COUNT >= 4
                             >>
+#if DLIB_DNN_PIMPL_WRAPPER_LEVEL_COUNT >= 3
+                            >>
+#if DLIB_DNN_PIMPL_WRAPPER_LEVEL_COUNT >= 4
+                            >>>>
 #endif // DLIB_DNN_PIMPL_WRAPPER_LEVEL_COUNT >= 4
-                            >
+                            >>
 #endif // DLIB_DNN_PIMPL_WRAPPER_LEVEL_COUNT >= 3
-                            >
+                            >>
 #endif // DLIB_DNN_PIMPL_WRAPPER_LEVEL_COUNT >= 2
-                            >>>;
+                            >>>>>>;
 
 // testing network type (replaced batch normalization with fixed affine transforms)
 using anet_type = dlib::loss_multiclass_log_per_pixel_weighted<
-                            dlib::cont<default_class_count,7,7,2,2,
-                            alevel4t<
+                            dlib::con<default_class_count,1,1,1,1,
+                            dlib::concat_prev7<dlib::cont<default_class_count,7,7,2,2,
+                            dlib::concat_prev6<alevel4t<
 #if DLIB_DNN_PIMPL_WRAPPER_LEVEL_COUNT >= 2
-                            alevel3t<
+                            dlib::concat_prev5<alevel3t<
 #if DLIB_DNN_PIMPL_WRAPPER_LEVEL_COUNT >= 3
-                            alevel2t<
+                            dlib::concat_prev4<alevel2t<
 #if DLIB_DNN_PIMPL_WRAPPER_LEVEL_COUNT >= 4
-                            alevel1t<
-                            alevel1<
+                            dlib::concat_prev3<alevel1t<
+                            alevel1<dlib::tag3<
 #endif // DLIB_DNN_PIMPL_WRAPPER_LEVEL_COUNT >= 4
-                            alevel2<
+                            alevel2<dlib::tag4<
 #endif // DLIB_DNN_PIMPL_WRAPPER_LEVEL_COUNT >= 3
-                            alevel3<
+                            alevel3<dlib::tag5<
 #endif // DLIB_DNN_PIMPL_WRAPPER_LEVEL_COUNT >= 2
-                            alevel4<
-                            dlib::max_pool<3,3,2,2,dlib::relu<dlib::affine<dlib::con<64,7,7,2,2,
+                            alevel4<dlib::max_pool<3,3,2,2,dlib::tag6<
+                            dlib::relu<dlib::affine<dlib::con<64,7,7,2,2,dlib::tag7<
                             input_layer_type
-                            >>>>>
+                            >>>>>>>
 #if DLIB_DNN_PIMPL_WRAPPER_LEVEL_COUNT >= 2
-                            >
+                            >>
 #if DLIB_DNN_PIMPL_WRAPPER_LEVEL_COUNT >= 3
-                            >
+                            >>
 #if DLIB_DNN_PIMPL_WRAPPER_LEVEL_COUNT >= 4
-    >>
+                            >>>>
 #endif // DLIB_DNN_PIMPL_WRAPPER_LEVEL_COUNT >= 4
-                            >
+                            >>
 #endif // DLIB_DNN_PIMPL_WRAPPER_LEVEL_COUNT >= 3
-                            >
+                            >>
 #endif // DLIB_DNN_PIMPL_WRAPPER_LEVEL_COUNT >= 2
-                            >>>;
+                            >>>>>>;
 
 #ifndef DLIB_DNN_PIMPL_WRAPPER_LEVEL_COUNT
 #define DLIB_DNN_PIMPL_WRAPPER_LEVEL_COUNT (1)
