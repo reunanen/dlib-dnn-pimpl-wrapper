@@ -6,16 +6,14 @@
 // ----------------------------------------------------------------------------------------
 
 #ifdef DLIB_DNN_PIMPL_WRAPPER_GRAYSCALE_INPUT
-typedef dlib::input_grayscale_image<dlib::memory_manager_stateless<uint8_t>::kernel_2_3e> input_layer_type;
+typedef dlib::input_grayscale_image_stack input_layer_type;
 #else
-typedef dlib::input_rgb_image<dlib::memory_manager_stateless<uint8_t>::kernel_2_3e> input_layer_type;
+typedef dlib::input_rgb_image_stack input_layer_type;
 #endif
 
 // ----------------------------------------------------------------------------------------
 
 #ifndef __INTELLISENSE__
-
-constexpr long default_class_count = 2;
 
 // Introduce the building blocks used to define the segmentation network.
 // The network first does downsampling, and then upsampling, using DenseNet
@@ -169,8 +167,8 @@ template <typename SUBNET> using alevel6t = adense4<default_level6_feature_count
 // ----------------------------------------------------------------------------------------
 
 // training network type
-using net_type = dlib::loss_multiclass_log_per_pixel_weighted<
-                            dlib::con<default_class_count,1,1,1,1,
+using net_type = dlib::loss_mean_squared_per_pixel<
+                            dlib::con<1,1,1,1,1,
                             level0t<
 #if DLIB_DNN_PIMPL_WRAPPER_LEVEL_COUNT >= 1
                             level1t<
@@ -234,8 +232,8 @@ using net_type = dlib::loss_multiclass_log_per_pixel_weighted<
                             >>>;
 
 // testing network type (replaced batch normalization with fixed affine transforms)
-using anet_type = dlib::loss_multiclass_log_per_pixel_weighted<
-                            dlib::con<default_class_count,1,1,1,1,
+using anet_type = dlib::loss_mean_squared_per_pixel<
+                            dlib::con<1,1,1,1,1,
                             alevel0t<
 #if DLIB_DNN_PIMPL_WRAPPER_LEVEL_COUNT >= 1
                             alevel1t<

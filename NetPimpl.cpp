@@ -33,12 +33,6 @@ void TrainingNet::Initialize(const solver_type& solver)
     pimpl->trainer = std::make_unique<dlib::dnn_trainer<net_type, solver_type>>(*pimpl->net, solver);
 }
 
-void TrainingNet::SetClassCount(unsigned short classCount)
-{
-    DLIB_CASSERT(classCount < dlib::loss_multiclass_log_per_pixel_::label_to_ignore);
-    pimpl->net->subnet().layer_details().set_num_filters(classCount);
-}
-
 void TrainingNet::SetLearningRate(double learningRate)
 {
     pimpl->trainer->set_learning_rate(learningRate);
@@ -103,7 +97,10 @@ public:
 
     int GetNewFilterCount(int currentFilterCount) const
     {
-        return std::max(minFilterCount, static_cast<int>(std::round(scaler * currentFilterCount)));
+        if (currentFilterCount == 1) {
+            return currentFilterCount;
+        }
+        return std::max(1, static_cast<int>(std::round(scaler * currentFilterCount)));
     }
 
     template<typename input_layer_type>
@@ -228,9 +225,9 @@ RuntimeNet& RuntimeNet::operator= (const TrainingNet& trainingNet)
     return *this;
 }
 
-output_type RuntimeNet::operator() (const input_type& input, const std::vector<double>& gainFactors) const
+output_type RuntimeNet::operator() (const input_type& input) const
 {
-    return pimpl->anet.process(input, gainFactors);
+    return pimpl->anet.process(input);
 }
 
 const dlib::tensor& RuntimeNet::GetOutput() const
@@ -281,9 +278,9 @@ int RuntimeNet::GetRecommendedInputDimension(int minimumInputDimension)
     throw std::runtime_error(error.str());
 }
 
-output_type RuntimeNet::Process(const input_type& input, const std::vector<double>& gainFactors) const
+output_type RuntimeNet::Process(const input_type& input) const
 {
-    return pimpl->anet.process(input, gainFactors);
+    return pimpl->anet.process(input);
 }
 
 void RuntimeNet::Serialize(std::ostream& out) const
