@@ -24,47 +24,6 @@ TrainingNet::~TrainingNet()
     delete pimpl;
 }
 
-void TrainingNet::Initialize(const dlib::mmod_options& mmod_options, const solver_type& solver)
-{
-    if (pimpl->trainer) {
-        pimpl->trainer->get_net(dlib::force_flush_to_disk::no); // may block
-    }
-    pimpl->net = std::make_unique<bnet_type>(mmod_options);
-    pimpl->net->subnet().layer_details().set_num_filters(mmod_options.detector_windows.size());
-
-    pimpl->trainer = std::make_unique<dlib::dnn_trainer<bnet_type, solver_type>>(*pimpl->net, solver);
-}
-
-void TrainingNet::SetLearningRate(double learningRate)
-{
-    pimpl->trainer->set_learning_rate(learningRate);
-}
-
-void TrainingNet::SetIterationsWithoutProgressThreshold(unsigned long threshold)
-{
-    pimpl->trainer->set_iterations_without_progress_threshold(threshold);
-}
-
-void TrainingNet::SetPreviousLossValuesDumpAmount(unsigned long dump_amount)
-{
-    pimpl->trainer->set_previous_loss_values_dump_amount(dump_amount);
-}
-
-void TrainingNet::SetAllBatchNormalizationRunningStatsWindowSizes(unsigned long window_size)
-{
-    dlib::set_all_bn_running_stats_window_sizes(*pimpl->net, window_size);
-}
-
-void TrainingNet::SetLearningRateShrinkFactor(double learningRateShrinkFactor)
-{
-    pimpl->trainer->set_learning_rate_shrink_factor(learningRateShrinkFactor);
-}
-
-void TrainingNet::SetSynchronizationFile(const std::string& filename, std::chrono::seconds time_between_syncs)
-{
-    pimpl->trainer->set_synchronization_file(filename, time_between_syncs);
-}
-
 class SetNetWidthVisitor
 {
 public:
@@ -119,9 +78,49 @@ private:
     int minFilterCount;
 };
 
-void TrainingNet::SetNetWidth(double scaler, int minFilterCount)
+void TrainingNet::Initialize(const dlib::mmod_options& mmod_options, const solver_type& solver, double scaler, int minFilterCount)
 {
+    if (pimpl->trainer) {
+        pimpl->trainer->get_net(dlib::force_flush_to_disk::no); // may block
+    }
+
+    pimpl->net = std::make_unique<bnet_type>(mmod_options);
+
     dlib::visit_layers(*pimpl->net, SetNetWidthVisitor(scaler, minFilterCount));
+
+    pimpl->net->subnet().layer_details().set_num_filters(mmod_options.detector_windows.size());
+
+    pimpl->trainer = std::make_unique<dlib::dnn_trainer<bnet_type, solver_type>>(*pimpl->net, solver);
+}
+
+void TrainingNet::SetLearningRate(double learningRate)
+{
+    pimpl->trainer->set_learning_rate(learningRate);
+}
+
+void TrainingNet::SetIterationsWithoutProgressThreshold(unsigned long threshold)
+{
+    pimpl->trainer->set_iterations_without_progress_threshold(threshold);
+}
+
+void TrainingNet::SetPreviousLossValuesDumpAmount(unsigned long dump_amount)
+{
+    pimpl->trainer->set_previous_loss_values_dump_amount(dump_amount);
+}
+
+void TrainingNet::SetAllBatchNormalizationRunningStatsWindowSizes(unsigned long window_size)
+{
+    dlib::set_all_bn_running_stats_window_sizes(*pimpl->net, window_size);
+}
+
+void TrainingNet::SetLearningRateShrinkFactor(double learningRateShrinkFactor)
+{
+    pimpl->trainer->set_learning_rate_shrink_factor(learningRateShrinkFactor);
+}
+
+void TrainingNet::SetSynchronizationFile(const std::string& filename, std::chrono::seconds time_between_syncs)
+{
+    pimpl->trainer->set_synchronization_file(filename, time_between_syncs);
 }
 
 void TrainingNet::BeVerbose()

@@ -28,7 +28,7 @@ namespace NetPimpl
         TrainingNet();
         virtual ~TrainingNet();
 
-        void Initialize(const dlib::mmod_options& mmod_options, const solver_type& solver = GetDefaultSolver());
+        void Initialize(const dlib::mmod_options& mmod_options, const solver_type& solver = GetDefaultSolver(), double scaler = 1.0, int minFilterCount = 0);
 
         void SetLearningRate(double learningRate);
         void SetIterationsWithoutProgressThreshold(unsigned long threshold);
@@ -36,7 +36,6 @@ namespace NetPimpl
         void SetAllBatchNormalizationRunningStatsWindowSizes(unsigned long window_size);
         void SetLearningRateShrinkFactor(double learningRateShrinkFactor);
         void SetSynchronizationFile(const std::string& filename, std::chrono::seconds time_between_syncs = std::chrono::minutes(15));
-        void SetNetWidth(double scaler, int minFilterCount);
         void BeVerbose();
 
         static int GetLevelCount();
