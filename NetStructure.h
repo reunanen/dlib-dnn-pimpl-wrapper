@@ -27,6 +27,22 @@ template <int N, template <typename> class BN, typename SUBNET> using level = dl
 
 // ----------------------------------------------------------------------------------------
 
+#ifndef DLIB_DNN_PIMPL_WRAPPER_LEVEL_COUNT
+#define DLIB_DNN_PIMPL_WRAPPER_LEVEL_COUNT (4)
+#endif // DLIB_DNN_PIMPL_WRAPPER_LEVEL_COUNT
+
+static_assert(DLIB_DNN_PIMPL_WRAPPER_LEVEL_COUNT >= 0, "If defined, DLIB_DNN_PIMPL_WRAPPER_LEVEL_COUNT must be greater than or equal to 0.");
+static_assert(DLIB_DNN_PIMPL_WRAPPER_LEVEL_COUNT <= 6, "If defined, DLIB_DNN_PIMPL_WRAPPER_LEVEL_COUNT must be less than or equal to 6.");
+
+#ifndef DLIB_DNN_PIMPL_WRAPPER_UNET_STARTING_LEVEL
+#define DLIB_DNN_PIMPL_WRAPPER_UNET_STARTING_LEVEL (1)
+#endif // DLIB_DNN_PIMPL_WRAPPER_UNET_STARTING_LEVEL
+
+static_assert(DLIB_DNN_PIMPL_WRAPPER_UNET_STARTING_LEVEL >= 1, "If defined, DLIB_DNN_PIMPL_WRAPPER_UNET_STARTING_LEVEL must be greater than or equal to 0.");
+static_assert(DLIB_DNN_PIMPL_WRAPPER_UNET_STARTING_LEVEL <= 7, "If defined, DLIB_DNN_PIMPL_WRAPPER_UNET_STARTING_LEVEL must be less than or equal to 7.");
+
+// ----------------------------------------------------------------------------------------
+
 template <typename SUBNET> using utag1 = dlib::add_tag_layer<2100+1,SUBNET>; // U-net top layer
 template <typename SUBNET> using utag2 = dlib::add_tag_layer<2100+2,SUBNET>;
 template <typename SUBNET> using utag3 = dlib::add_tag_layer<2100+3,SUBNET>;
@@ -34,21 +50,44 @@ template <typename SUBNET> using utag4 = dlib::add_tag_layer<2100+4,SUBNET>;
 template <typename SUBNET> using utag5 = dlib::add_tag_layer<2100+5,SUBNET>;
 template <typename SUBNET> using utag6 = dlib::add_tag_layer<2100+6,SUBNET>;
 
-template <typename SUBNET> using concat_utag1 = dlib::concat_prev<utag1,SUBNET>;
-template <typename SUBNET> using concat_utag2 = dlib::concat_prev<utag2,SUBNET>;
-template <typename SUBNET> using concat_utag3 = dlib::concat_prev<utag3,SUBNET>;
-template <typename SUBNET> using concat_utag4 = dlib::concat_prev<utag4,SUBNET>;
-template <typename SUBNET> using concat_utag5 = dlib::concat_prev<utag5,SUBNET>;
-template <typename SUBNET> using concat_utag6 = dlib::concat_prev<utag6,SUBNET>;
+template <typename SUBNET> using concat_utag1
+#if DLIB_DNN_PIMPL_WRAPPER_UNET_STARTING_LEVEL >= 1
+    = dlib::concat_prev<utag1,SUBNET>;
+#else // DLIB_DNN_PIMPL_WRAPPER_UNET_STARTING_LEVEL >= 1
+    = SUBNET;
+#endif // DLIB_DNN_PIMPL_WRAPPER_UNET_STARTING_LEVEL >= 1
+template <typename SUBNET> using concat_utag2
+#if DLIB_DNN_PIMPL_WRAPPER_UNET_STARTING_LEVEL >= 2
+    = dlib::concat_prev<utag2,SUBNET>;
+#else // DLIB_DNN_PIMPL_WRAPPER_UNET_STARTING_LEVEL >= 2
+    = SUBNET;
+#endif // DLIB_DNN_PIMPL_WRAPPER_UNET_STARTING_LEVEL >= 2
+template <typename SUBNET> using concat_utag3
+#if DLIB_DNN_PIMPL_WRAPPER_UNET_STARTING_LEVEL >= 3
+    = dlib::concat_prev<utag3,SUBNET>;
+#else // DLIB_DNN_PIMPL_WRAPPER_UNET_STARTING_LEVEL >= 3
+    = SUBNET;
+#endif // DLIB_DNN_PIMPL_WRAPPER_UNET_STARTING_LEVEL >= 3
+template <typename SUBNET> using concat_utag4
+#if DLIB_DNN_PIMPL_WRAPPER_UNET_STARTING_LEVEL >= 4
+    = dlib::concat_prev<utag4,SUBNET>;
+#else // DLIB_DNN_PIMPL_WRAPPER_UNET_STARTING_LEVEL >= 4
+    = SUBNET;
+#endif // DLIB_DNN_PIMPL_WRAPPER_UNET_STARTING_LEVEL >= 4
+template <typename SUBNET> using concat_utag5
+#if DLIB_DNN_PIMPL_WRAPPER_UNET_STARTING_LEVEL >= 5
+    = dlib::concat_prev<utag5,SUBNET>;
+#else // DLIB_DNN_PIMPL_WRAPPER_UNET_STARTING_LEVEL >= 5
+    = SUBNET;
+#endif // DLIB_DNN_PIMPL_WRAPPER_UNET_STARTING_LEVEL >= 5
+template <typename SUBNET> using concat_utag6
+#if DLIB_DNN_PIMPL_WRAPPER_UNET_STARTING_LEVEL >= 6
+    = dlib::concat_prev<utag6, SUBNET>;
+#else // DLIB_DNN_PIMPL_WRAPPER_UNET_STARTING_LEVEL >= 6
+    = SUBNET;
+#endif // DLIB_DNN_PIMPL_WRAPPER_UNET_STARTING_LEVEL >= 6
 
 // ----------------------------------------------------------------------------------------
-
-#ifndef DLIB_DNN_PIMPL_WRAPPER_LEVEL_COUNT
-#define DLIB_DNN_PIMPL_WRAPPER_LEVEL_COUNT (4)
-#endif // DLIB_DNN_PIMPL_WRAPPER_LEVEL_COUNT
-
-static_assert(DLIB_DNN_PIMPL_WRAPPER_LEVEL_COUNT >= 0, "If defined, DLIB_DNN_PIMPL_WRAPPER_LEVEL_COUNT must be greater than or equal to 0.");
-static_assert(DLIB_DNN_PIMPL_WRAPPER_LEVEL_COUNT <= 6, "If defined, DLIB_DNN_PIMPL_WRAPPER_LEVEL_COUNT must be less than or equal to 6.");
 
 constexpr int default_level0_feature_count = 16;
 constexpr int default_level1_feature_count = 16;
