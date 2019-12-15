@@ -19,10 +19,8 @@ constexpr long default_class_count = 2;
 
 // Introduce the building blocks used to define the segmentation network.
 // The network first does residual downsampling (similar to the dnn_imagenet_(train_)ex 
-// example program), and then residual upsampling. The network could be improved e.g.
-// by introducing skip connections from the input image, and/or the first layers, to the
-// last layer(s).  (See Long et al., Fully Convolutional Networks for Semantic Segmentation,
-// https://people.eecs.berkeley.edu/~jonlong/long_shelhamer_fcn.pdf)
+// example program), and then residual upsampling. U-net style skip connections are
+// used as well.
 
 template <int N, template <typename> class BN, int stride, typename SUBNET> 
 using block = BN<dlib::con<N,3,3,1,1, dlib::relu<BN<dlib::con<N,3,3,stride,stride,SUBNET>>>>>;
