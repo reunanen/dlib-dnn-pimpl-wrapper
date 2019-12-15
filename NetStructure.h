@@ -28,7 +28,7 @@ template <int N, template <typename> class BN, typename SUBNET> using level = dl
 // ----------------------------------------------------------------------------------------
 
 #ifndef DLIB_DNN_PIMPL_WRAPPER_LEVEL_COUNT
-#define DLIB_DNN_PIMPL_WRAPPER_LEVEL_COUNT (4)
+#define DLIB_DNN_PIMPL_WRAPPER_LEVEL_COUNT (5)
 #endif // DLIB_DNN_PIMPL_WRAPPER_LEVEL_COUNT
 
 static_assert(DLIB_DNN_PIMPL_WRAPPER_LEVEL_COUNT >= 0, "If defined, DLIB_DNN_PIMPL_WRAPPER_LEVEL_COUNT must be greater than or equal to 0.");
