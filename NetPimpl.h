@@ -4,7 +4,7 @@
 #include <vector>
 #include "MemoryManager.h"
 
-namespace NetPimpl
+namespace SegmentationNetPimpl
 {
 #ifdef DLIB_DNN_PIMPL_WRAPPER_GRAYSCALE_INPUT
     // TODO: use definition from MemoryManager.h

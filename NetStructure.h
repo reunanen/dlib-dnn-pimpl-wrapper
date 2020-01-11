@@ -3,6 +3,8 @@
 #include <dlib/dnn.h>
 #include "NetDimensions.h"
 
+namespace Segmentation {
+
 // ----------------------------------------------------------------------------------------
 
 #ifdef DLIB_DNN_PIMPL_WRAPPER_GRAYSCALE_INPUT
@@ -302,3 +304,5 @@ static_assert(NetInputs<1>::count == 1, "Unexpected net input count");
 #endif // __INTELLISENSE__
 
 // ----------------------------------------------------------------------------------------
+
+}

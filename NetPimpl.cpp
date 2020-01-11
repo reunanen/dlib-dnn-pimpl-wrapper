@@ -1,7 +1,9 @@
 #include "NetPimpl.h"
 #include "NetStructure.h"
 
-namespace NetPimpl {
+namespace SegmentationNetPimpl {
+
+using namespace Segmentation;
 
 struct TrainingNet::Impl
 {
