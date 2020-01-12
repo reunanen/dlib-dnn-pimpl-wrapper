@@ -12,8 +12,8 @@ namespace SegmentationNetPimpl
 #else
     typedef dlib::matrix<dlib::rgb_pixel,0,0,dlib::memory_manager_stateless<uint8_t>::kernel_2_3e> input_type;
 #endif
-    typedef dlib::loss_multiclass_log_per_pixel_weighted_::training_label_type training_label_type;
-    typedef dlib::loss_multiclass_log_per_pixel_weighted_::output_label_type output_type;
+    typedef dlib::loss_multiclass_log_per_pixel_::training_label_type training_label_type;
+    typedef dlib::loss_multiclass_log_per_pixel_::output_label_type output_type;
 #if 0
     typedef dlib::adam solver_type;
     const auto GetDefaultSolver = []() { return dlib::adam(0.001, 0.9, 0.999); };
