@@ -230,9 +230,9 @@ RuntimeNet& RuntimeNet::operator= (const TrainingNet& trainingNet)
     return *this;
 }
 
-output_type RuntimeNet::operator() (const input_type& input, const std::vector<double>& gainFactors) const
+output_type RuntimeNet::operator() (const input_type& input) const
 {
-    return pimpl->anet.process(input, gainFactors);
+    return pimpl->anet.process(input);
 }
 
 const dlib::tensor& RuntimeNet::GetOutput() const
@@ -283,9 +283,9 @@ int RuntimeNet::GetRecommendedInputDimension(int minimumInputDimension)
     throw std::runtime_error(error.str());
 }
 
-output_type RuntimeNet::Process(const input_type& input, const std::vector<double>& gainFactors) const
+output_type RuntimeNet::Process(const input_type& input) const
 {
-    return pimpl->anet.process(input, gainFactors);
+    return pimpl->anet.process(input);
 }
 
 void RuntimeNet::Serialize(std::ostream& out) const

@@ -17,8 +17,6 @@ typedef dlib::input_rgb_image<dlib::memory_manager_stateless<uint8_t>::kernel_2_
 
 #ifndef __INTELLISENSE__
 
-constexpr long default_class_count = 2;
-
 // Introduce the building blocks used to define the segmentation network.
 // The network first does downsampling, and then upsampling. U-net style
 // skip connections are used.
@@ -146,8 +144,8 @@ template <typename SUBNET> using adown6 = alevel6<down<default_level6_feature_co
 // ----------------------------------------------------------------------------------------
 
 // training network type
-using net_type = dlib::loss_multiclass_log_per_pixel<
-                            dlib::con<default_class_count,1,1,1,1,
+using net_type = dlib::loss_binary_log_per_pixel<
+                            dlib::con<1,1,1,1,1,
                             blevel0<
 #if DLIB_DNN_PIMPL_WRAPPER_LEVEL_COUNT >= 1
                             bup1<
@@ -208,8 +206,8 @@ using net_type = dlib::loss_multiclass_log_per_pixel<
                             >>>;
 
 // testing network type (replaced batch normalization with fixed affine transforms)
-using anet_type = dlib::loss_multiclass_log_per_pixel<
-                            dlib::con<default_class_count,1,1,1,1,
+using anet_type = dlib::loss_binary_log_per_pixel<
+                            dlib::con<1,1,1,1,1,
                             alevel0<
 #if DLIB_DNN_PIMPL_WRAPPER_LEVEL_COUNT >= 1
                             aup1<

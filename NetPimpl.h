@@ -12,8 +12,8 @@ namespace SegmentationNetPimpl
 #else
     typedef dlib::matrix<dlib::rgb_pixel,0,0,dlib::memory_manager_stateless<uint8_t>::kernel_2_3e> input_type;
 #endif
-    typedef dlib::loss_multiclass_log_per_pixel_::training_label_type training_label_type;
-    typedef dlib::loss_multiclass_log_per_pixel_::output_label_type output_type;
+    typedef dlib::loss_binary_log_per_pixel_::training_label_type training_label_type;
+    typedef dlib::loss_binary_log_per_pixel_::output_label_type output_type;
 #if 0
     typedef dlib::adam solver_type;
     const auto GetDefaultSolver = []() { return dlib::adam(0.001, 0.9, 0.999); };
@@ -74,13 +74,13 @@ namespace SegmentationNetPimpl
 
         RuntimeNet& operator= (const TrainingNet& trainingNet); // may block
 
-        output_type operator() (const input_type& input, const std::vector<double>& gainFactors = std::vector<double>()) const;
+        output_type operator() (const input_type& input) const;
 
         const dlib::tensor& GetOutput() const;
 
         static int GetRecommendedInputDimension(int minimumInputDimension);
 
-        output_type Process(const input_type& input, const std::vector<double>& gainFactors = std::vector<double>()) const;
+        output_type Process(const input_type& input) const;
 
         void Serialize(std::ostream& out) const;
         void Deserialize(std::istream& in);
