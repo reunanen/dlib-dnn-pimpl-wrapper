@@ -12,6 +12,7 @@ struct TrainingNet::Impl
 struct RuntimeNet::Impl
 {
     anet_type anet;
+    dlib::resizable_tensor temp_input;
 };
 
 TrainingNet::TrainingNet()
@@ -284,6 +285,14 @@ int RuntimeNet::GetRecommendedInputDimension(int minimumInputDimension)
 output_type RuntimeNet::Process(const input_type& input, const std::vector<double>& gainFactors) const
 {
     return pimpl->anet.process(input, gainFactors);
+}
+
+const dlib::tensor& RuntimeNet::Forward(const input_type& input) const
+{
+    auto& subnet = pimpl->anet.subnet();
+    subnet.to_tensor(&input, &input + 1, pimpl->temp_input);
+    subnet.forward(pimpl->temp_input);
+    return subnet.get_output();
 }
 
 void RuntimeNet::Serialize(std::ostream& out) const

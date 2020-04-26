@@ -82,6 +82,8 @@ namespace NetPimpl
 
         output_type Process(const input_type& input, const std::vector<double>& gainFactors = std::vector<double>()) const;
 
+        const dlib::tensor& Forward(const input_type& input) const;
+
         void Serialize(std::ostream& out) const;
         void Deserialize(std::istream& in);
 
