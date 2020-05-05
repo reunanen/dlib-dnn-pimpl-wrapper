@@ -22,6 +22,8 @@ namespace NetPimpl
     const auto GetDefaultSolver = []() { return dlib::sgd(0.001, 0.9); };
 #endif
 
+    typedef std::vector<std::shared_ptr<dlib::thread_pool>> ThreadPools;
+
     class RuntimeNet;
 
     class TrainingNet {
@@ -29,7 +31,11 @@ namespace NetPimpl
         TrainingNet();
         virtual ~TrainingNet();
 
-        void Initialize(const solver_type& solver = GetDefaultSolver());
+        void Initialize(
+            const solver_type& solver = GetDefaultSolver(),
+            const std::vector<int> extraDevices = std::vector<int>(),
+            std::shared_ptr<ThreadPools> threadPools = std::shared_ptr<ThreadPools>()
+        );
 
         void SetClassCount(unsigned short classCount);
         void SetLearningRate(double learningRate);
