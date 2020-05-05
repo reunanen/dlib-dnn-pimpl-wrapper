@@ -22,7 +22,7 @@ constexpr long default_class_count = 2;
 // blocks. In addition, U-net style skip connections are employed.
 
 template <int N, template <typename> class BN, typename SUBNET>
-using dense_block_layer = BN<dlib::relu<dlib::con<N,3,3,1,1,SUBNET>>>;
+using dense_block_layer = BN<dlib::mish<dlib::con<N,3,3,1,1,SUBNET>>>;
 
 template <typename SUBNET> using dintag = dlib::add_tag_layer<2000+0,SUBNET>; // input to the dense block
 template <typename SUBNET> using dotag0 = dlib::add_tag_layer<2000+1,SUBNET>; // output of the first layer of the dense block
@@ -75,7 +75,7 @@ template <int N, typename SUBNET> using dense4    = dense_block4<N,dlib::bn_con,
 template <int N, typename SUBNET> using adense4   = dense_block4<N,dlib::affine,SUBNET>;
 
 template <int N, template <typename> class BN, typename SUBNET>
-using transition_down = BN<dlib::relu<dlib::con<N, 1, 1, 1, 1, dlib::max_pool<3, 3, 2, 2, SUBNET>>>>;
+using transition_down = BN<dlib::mish<dlib::con<N, 1, 1, 1, 1, dlib::max_pool<3, 3, 2, 2, SUBNET>>>>;
 
 template <int N, typename SUBNET> using down	  = transition_down<N,dlib::bn_con,SUBNET>;
 template <int N, typename SUBNET> using adown     = transition_down<N,dlib::affine,SUBNET>;
@@ -133,10 +133,10 @@ constexpr int default_deepest_level_feature_count = 16;
 #error unexpected DLIB_DNN_PIMPL_WRAPPER_LEVEL_COUNT
 #endif // DLIB_DNN_PIMPL_WRAPPER_LEVEL_COUNT
 
-template <typename SUBNET> using level0   = dlib::relu<dlib::bn_con<dlib::con <default_level0_feature_count,3,3,1,1,SUBNET>>>;
-template <typename SUBNET> using alevel0  = dlib::relu<dlib::affine<dlib::con <default_level0_feature_count,3,3,1,1,SUBNET>>>;
-template <typename SUBNET> using level0t  = dlib::relu<dlib::bn_con<dlib::cont<default_level0_feature_count,3,3,1,1,SUBNET>>>;
-template <typename SUBNET> using alevel0t = dlib::relu<dlib::affine<dlib::cont<default_level0_feature_count,3,3,1,1,SUBNET>>>;
+template <typename SUBNET> using level0   = dlib::mish<dlib::bn_con<dlib::con <default_level0_feature_count,3,3,1,1,SUBNET>>>;
+template <typename SUBNET> using alevel0  = dlib::mish<dlib::affine<dlib::con <default_level0_feature_count,3,3,1,1,SUBNET>>>;
+template <typename SUBNET> using level0t  = dlib::mish<dlib::bn_con<dlib::cont<default_level0_feature_count,3,3,1,1,SUBNET>>>;
+template <typename SUBNET> using alevel0t = dlib::mish<dlib::affine<dlib::cont<default_level0_feature_count,3,3,1,1,SUBNET>>>;
 
 template <typename SUBNET> using level1 = down<default_level1_feature_count,utag1<dense1<default_level1_feature_count,SUBNET>>>;
 template <typename SUBNET> using level2 = down<default_level2_feature_count,utag2<dense2<default_level2_feature_count,SUBNET>>>;
