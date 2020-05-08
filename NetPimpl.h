@@ -2,16 +2,18 @@
 
 #include <dlib/dnn.h>
 #include <vector>
+#include "MemoryManager.h"
 
 namespace NetPimpl
 {
 #ifdef DLIB_DNN_PIMPL_WRAPPER_GRAYSCALE_INPUT
-    typedef dlib::matrix<uint8_t> input_type;
+    // TODO: use definition from MemoryManager.h
+    typedef dlib::matrix<uint8_t,0,0,dlib::memory_manager_stateless<uint8_t>::kernel_2_3e> input_type;
 #else
-    typedef dlib::matrix<dlib::rgb_pixel> input_type;
+    typedef dlib::matrix<dlib::rgb_pixel,0,0,dlib::memory_manager_stateless<uint8_t>::kernel_2_3e> input_type;
 #endif
-    typedef dlib::matrix<dlib::loss_multiclass_log_per_pixel_weighted_::weighted_label> training_label_type;
-    typedef dlib::matrix<uint16_t> output_type;
+    typedef dlib::loss_multiclass_log_per_pixel_weighted_::training_label_type training_label_type;
+    typedef dlib::loss_multiclass_log_per_pixel_weighted_::output_label_type output_type;
 #if 0
     typedef dlib::adam solver_type;
     const auto GetDefaultSolver = []() { return dlib::adam(0.001, 0.9, 0.999); };
@@ -20,6 +22,8 @@ namespace NetPimpl
     const auto GetDefaultSolver = []() { return dlib::sgd(0.001, 0.9); };
 #endif
 
+    typedef std::vector<std::shared_ptr<dlib::thread_pool>> ThreadPools;
+
     class RuntimeNet;
 
     class TrainingNet {
@@ -27,7 +31,11 @@ namespace NetPimpl
         TrainingNet();
         virtual ~TrainingNet();
 
-        void Initialize(const solver_type& solver = GetDefaultSolver());
+        void Initialize(
+            const solver_type& solver = GetDefaultSolver(),
+            const std::vector<int> extraDevices = std::vector<int>(),
+            std::shared_ptr<ThreadPools> threadPools = std::shared_ptr<ThreadPools>()
+        );
 
         void SetClassCount(unsigned short classCount);
         void SetLearningRate(double learningRate);
@@ -36,6 +44,7 @@ namespace NetPimpl
         void SetAllBatchNormalizationRunningStatsWindowSizes(unsigned long window_size);
         void SetLearningRateShrinkFactor(double learningRateShrinkFactor);
         void SetSynchronizationFile(const std::string& filename, std::chrono::seconds time_between_syncs = std::chrono::minutes(15));
+        void SetNetWidth(double scaler, int minFilterCount);
         void BeVerbose();
 
         static int GetRequiredInputDimension();
@@ -78,6 +87,8 @@ namespace NetPimpl
         static int GetRecommendedInputDimension(int minimumInputDimension);
 
         output_type Process(const input_type& input, const std::vector<double>& gainFactors = std::vector<double>()) const;
+
+        const dlib::tensor& Forward(const input_type& input) const;
 
         void Serialize(std::ostream& out) const;
         void Deserialize(std::istream& in);

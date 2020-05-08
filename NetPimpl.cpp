@@ -12,6 +12,7 @@ struct TrainingNet::Impl
 struct RuntimeNet::Impl
 {
     anet_type anet;
+    dlib::resizable_tensor temp_input;
 };
 
 TrainingNet::TrainingNet()
@@ -24,13 +25,13 @@ TrainingNet::~TrainingNet()
     delete pimpl;
 }
 
-void TrainingNet::Initialize(const solver_type& solver)
+void TrainingNet::Initialize(const solver_type& solver, const std::vector<int> extraDevices, std::shared_ptr<ThreadPools> threadPools)
 {
     if (pimpl->trainer) {
         pimpl->trainer->get_net(dlib::force_flush_to_disk::no); // may block
     }
     pimpl->net = std::make_unique<net_type>();
-    pimpl->trainer = std::make_unique<dlib::dnn_trainer<net_type, solver_type>>(*pimpl->net, solver);
+    pimpl->trainer = std::make_unique<dlib::dnn_trainer<net_type, solver_type>>(*pimpl->net, solver, extraDevices, threadPools);
 }
 
 void TrainingNet::SetClassCount(unsigned short classCount)
@@ -67,6 +68,65 @@ void TrainingNet::SetLearningRateShrinkFactor(double learningRateShrinkFactor)
 void TrainingNet::SetSynchronizationFile(const std::string& filename, std::chrono::seconds time_between_syncs)
 {
     pimpl->trainer->set_synchronization_file(filename, time_between_syncs);
+}
+
+class SetNetWidthVisitor
+{
+public:
+    SetNetWidthVisitor(double scaler, int minFilterCount)
+        : scaler(scaler)
+        , minFilterCount(minFilterCount)
+    {}
+
+    template <typename T>
+    void SetNetWidth(T&) const
+    {
+        // ignore other layer detail types
+    }
+
+    template <long num_filters, long nr, long nc, int stride_y, int stride_x, int padding_y, int padding_x>
+    void SetNetWidth(dlib::con_<num_filters, nr, nc, stride_y, stride_x, padding_y, padding_x>& l) const
+    {
+        SetFilterCount(l);
+    }
+
+    template <long num_filters, long nr, long nc, int stride_y, int stride_x, int padding_y, int padding_x>
+    void SetNetWidth(dlib::cont_<num_filters, nr, nc, stride_y, stride_x, padding_y, padding_x>& l) const
+    {
+        SetFilterCount(l);
+    }
+
+    template <typename L>
+    void SetFilterCount(L& l) const
+    {
+        l.set_num_filters(GetNewFilterCount(l.num_filters()));
+    }
+
+    int GetNewFilterCount(int currentFilterCount) const
+    {
+        return std::max(minFilterCount, static_cast<int>(std::round(scaler * currentFilterCount)));
+    }
+
+    template<typename input_layer_type>
+    void operator()(size_t, input_layer_type&) const
+    {
+        // ignore other layers
+    }
+
+    template <typename T, typename U, typename E>
+    void operator()(size_t, dlib::add_layer<T, U, E>& l) const
+    {
+        SetNetWidth(l.layer_details());
+    }
+
+private:
+    double scaler;
+    int minFilterCount;
+};
+
+void TrainingNet::SetNetWidth(double scaler, int minFilterCount)
+{
+    dlib::visit_layers(*pimpl->net, SetNetWidthVisitor(scaler, minFilterCount));
 }
 
 void TrainingNet::BeVerbose()
@@ -225,6 +285,14 @@ int RuntimeNet::GetRecommendedInputDimension(int minimumInputDimension)
 output_type RuntimeNet::Process(const input_type& input, const std::vector<double>& gainFactors) const
 {
     return pimpl->anet.process(input, gainFactors);
+}
+
+const dlib::tensor& RuntimeNet::Forward(const input_type& input) const
+{
+    auto& subnet = pimpl->anet.subnet();
+    subnet.to_tensor(&input, &input + 1, pimpl->temp_input);
+    subnet.forward(pimpl->temp_input);
+    return subnet.get_output();
 }
 
 void RuntimeNet::Serialize(std::ostream& out) const
