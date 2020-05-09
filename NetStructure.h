@@ -169,8 +169,8 @@ template <typename SUBNET> using alevel6t = adense4<default_level6_feature_count
 // ----------------------------------------------------------------------------------------
 
 // training network type
-using net_type = dlib::loss_multiclass_log_per_pixel_weighted<
-                            dlib::con<default_class_count,1,1,1,1,
+using net_type = dlib::loss_multiclass_log<
+                            dlib::fc<default_class_count,
                             level0t<
 #if DLIB_DNN_PIMPL_WRAPPER_LEVEL_COUNT >= 1
                             level1t<
@@ -234,8 +234,8 @@ using net_type = dlib::loss_multiclass_log_per_pixel_weighted<
                             >>>;
 
 // testing network type (replaced batch normalization with fixed affine transforms)
-using anet_type = dlib::loss_multiclass_log_per_pixel_weighted<
-                            dlib::con<default_class_count,1,1,1,1,
+using anet_type = dlib::loss_multiclass_log<
+                            dlib::fc<default_class_count,
                             alevel0t<
 #if DLIB_DNN_PIMPL_WRAPPER_LEVEL_COUNT >= 1
                             alevel1t<
