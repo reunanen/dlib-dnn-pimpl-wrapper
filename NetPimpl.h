@@ -47,7 +47,6 @@ namespace NetPimpl
         void SetNetWidth(double scaler, int minFilterCount);
         void BeVerbose();
 
-        static int GetRequiredInputDimension();
         void StartTraining(const std::vector<input_type>& inputs, const std::vector<training_label_type>& training_labels);
 
         double GetLearningRate() const;
@@ -85,8 +84,6 @@ namespace NetPimpl
         output_type operator() (const input_type& input) const;
 
         const dlib::tensor& GetOutput() const;
-
-        static int GetRecommendedInputDimension(int minimumInputDimension);
 
         output_type Process(const input_type& input) const;
 
