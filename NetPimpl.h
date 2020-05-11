@@ -60,6 +60,8 @@ namespace NetPimpl
         void Serialize(const std::string& filename) const;
         void Deserialize(const std::string& filename);
 
+        std::string GetNetDescription() const;
+
     private:
         TrainingNet(const TrainingNet&) = delete;
         TrainingNet& operator= (const TrainingNet&) = delete;
@@ -95,6 +97,8 @@ namespace NetPimpl
 
         void Serialize(const std::string& filename) const;
         void Deserialize(const std::string& filename);
+
+        std::string GetNetDescription() const;
 
     private:
         struct Impl;

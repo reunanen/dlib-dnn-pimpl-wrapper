@@ -182,6 +182,14 @@ void TrainingNet::Deserialize(const std::string& filename)
     Deserialize(std::ifstream(filename, std::ios::binary));
 }
 
+std::string TrainingNet::GetNetDescription() const
+{
+    std::ostringstream oss;
+    pimpl->trainer->get_net(dlib::force_flush_to_disk::no); // may block
+    oss << *pimpl->net;
+    return oss.str();
+}
+
 RuntimeNet::RuntimeNet()
 {
     pimpl = new RuntimeNet::Impl();
@@ -313,6 +321,13 @@ void RuntimeNet::Serialize(const std::string& filename) const
 void RuntimeNet::Deserialize(const std::string& filename)
 {
     Deserialize(std::ifstream(filename, std::ios::binary));
+}
+
+std::string RuntimeNet::GetNetDescription() const
+{
+    std::ostringstream oss;
+    oss << pimpl->anet;
+    return oss.str();
 }
 
 }
