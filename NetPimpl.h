@@ -12,8 +12,8 @@ namespace NetPimpl
 #else
     typedef dlib::matrix<dlib::rgb_pixel,0,0,dlib::memory_manager_stateless<uint8_t>::kernel_2_3e> input_type;
 #endif
-    typedef dlib::loss_multiclass_log_::training_label_type training_label_type;
-    typedef dlib::loss_multiclass_log_::output_label_type output_type;
+    typedef dlib::loss_binary_log_::training_label_type training_label_type;
+    typedef dlib::loss_binary_log_::output_label_type output_type;
 #if 0
     typedef dlib::adam solver_type;
     const auto GetDefaultSolver = []() { return dlib::adam(0.001, 0.9, 0.999); };
@@ -37,7 +37,6 @@ namespace NetPimpl
             std::shared_ptr<ThreadPools> threadPools = std::shared_ptr<ThreadPools>()
         );
 
-        void SetClassCount(unsigned short classCount);
         void SetLearningRate(double learningRate);
         void SetIterationsWithoutProgressThreshold(unsigned long threshold);
         void SetPreviousLossValuesDumpAmount(unsigned long dump_amount);

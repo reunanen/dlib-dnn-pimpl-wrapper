@@ -34,12 +34,6 @@ void TrainingNet::Initialize(const solver_type& solver, const std::vector<int> e
     pimpl->trainer = std::make_unique<dlib::dnn_trainer<net_type, solver_type>>(*pimpl->net, solver, extraDevices, threadPools);
 }
 
-void TrainingNet::SetClassCount(unsigned short classCount)
-{
-    DLIB_CASSERT(classCount < dlib::loss_multiclass_log_per_pixel_::label_to_ignore);
-    pimpl->net->subnet().layer_details().set_num_outputs(classCount);
-}
-
 void TrainingNet::SetLearningRate(double learningRate)
 {
     pimpl->trainer->set_learning_rate(learningRate);

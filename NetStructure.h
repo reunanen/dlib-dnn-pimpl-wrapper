@@ -38,24 +38,24 @@ template <int N, typename SUBNET> using ares_down = dlib::relu<residual_down<blo
 static_assert(DLIB_DNN_PIMPL_WRAPPER_LEVEL_COUNT >= 1, "If defined, DLIB_DNN_PIMPL_WRAPPER_LEVEL_COUNT must be greater than or equal to 0.");
 static_assert(DLIB_DNN_PIMPL_WRAPPER_LEVEL_COUNT <= 6, "If defined, DLIB_DNN_PIMPL_WRAPPER_LEVEL_COUNT must be less than or equal to 6.");
 
-template <typename SUBNET> using level1 = res<768,res<768,res_down<768,SUBNET>>>;
-template <typename SUBNET> using level2 = res<640,res<640,res_down<640,SUBNET>>>;
-template <typename SUBNET> using level3 = res<512,res<512,res_down<512,SUBNET>>>;
-template <typename SUBNET> using level4 = res<256,res<256,res_down<256,SUBNET>>>;
-template <typename SUBNET> using level5 = res<128,res<128,res_down<128,SUBNET>>>;
-template <typename SUBNET> using level6 = res<64,res<64,res<64,SUBNET>>>;
+template <typename SUBNET> using level1 = res<768,res_down<768,SUBNET>>;
+template <typename SUBNET> using level2 = res<640,res_down<640,SUBNET>>;
+template <typename SUBNET> using level3 = res<512,res_down<512,SUBNET>>;
+template <typename SUBNET> using level4 = res<256,res_down<256,SUBNET>>;
+template <typename SUBNET> using level5 = res<128,res_down<128,SUBNET>>;
+template <typename SUBNET> using level6 = res<64,res<64,SUBNET>>;
 
-template <typename SUBNET> using alevel1 = ares<768,ares<768,ares_down<768,SUBNET>>>;
-template <typename SUBNET> using alevel2 = ares<640,ares<640,ares_down<640,SUBNET>>>;
-template <typename SUBNET> using alevel3 = ares<512,ares<512,ares_down<512,SUBNET>>>;
-template <typename SUBNET> using alevel4 = ares<256,ares<256,ares_down<256,SUBNET>>>;
-template <typename SUBNET> using alevel5 = ares<128,ares<128,ares_down<128,SUBNET>>>;
-template <typename SUBNET> using alevel6 = ares<64,ares<64,ares<64,SUBNET>>>;
+template <typename SUBNET> using alevel1 = ares<768,ares_down<768,SUBNET>>;
+template <typename SUBNET> using alevel2 = ares<640,ares_down<640,SUBNET>>;
+template <typename SUBNET> using alevel3 = ares<512,ares_down<512,SUBNET>>;
+template <typename SUBNET> using alevel4 = ares<256,ares_down<256,SUBNET>>;
+template <typename SUBNET> using alevel5 = ares<128,ares_down<128,SUBNET>>;
+template <typename SUBNET> using alevel6 = ares<64,ares<64,SUBNET>>;
 
-constexpr long default_class_count = 2;
+constexpr long default_fc_feature_count = 100;
 
 // training network type
-using net_type = dlib::loss_multiclass_log<dlib::fc<default_class_count,dlib::avg_pool_everything<
+using net_type = dlib::loss_binary_log<dlib::fc<1,dlib::dropout<dlib::relu<dlib::bn_fc<dlib::fc<default_fc_feature_count,dlib::avg_pool_everything<
                             level1<
 #if DLIB_DNN_PIMPL_WRAPPER_LEVEL_COUNT >= 2
                             level2<
@@ -90,10 +90,10 @@ using net_type = dlib::loss_multiclass_log<dlib::fc<default_class_count,dlib::av
 #if DLIB_DNN_PIMPL_WRAPPER_LEVEL_COUNT >= 2
                             >
 #endif
-                            >>>>;
+                            >>>>>>>>;
 
 // testing network type (replaced batch normalization with fixed affine transforms)
-using anet_type = dlib::loss_multiclass_log<dlib::fc<default_class_count,dlib::avg_pool_everything<
+using anet_type = dlib::loss_binary_log<dlib::fc<1,dlib::dropout<dlib::relu<dlib::affine<dlib::fc<default_fc_feature_count,dlib::avg_pool_everything<
                             alevel1<
 #if DLIB_DNN_PIMPL_WRAPPER_LEVEL_COUNT >= 2
                             alevel2<
@@ -128,7 +128,7 @@ using anet_type = dlib::loss_multiclass_log<dlib::fc<default_class_count,dlib::a
 #if DLIB_DNN_PIMPL_WRAPPER_LEVEL_COUNT >= 2
                             >
 #endif
-                            >>>>;
+                            >>>>>>>>;
 
 #endif // __INTELLISENSE__
 
