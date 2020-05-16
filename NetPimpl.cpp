@@ -157,12 +157,14 @@ void TrainingNet::Deserialize(std::istream& in)
 
 void TrainingNet::Serialize(const std::string& filename) const
 {
-    Serialize(std::ofstream(filename, std::ios::binary));
+    std::ofstream ofs(filename, std::ios::binary);
+    Serialize(ofs);
 }
 
 void TrainingNet::Deserialize(const std::string& filename)
 {
-    Deserialize(std::ifstream(filename, std::ios::binary));
+    std::ifstream ifs(filename, std::ios::binary);
+    Deserialize(ifs);
 }
 
 std::string TrainingNet::GetNetDescription() const
@@ -255,12 +257,14 @@ void RuntimeNet::Deserialize(std::istream& in)
 
 void RuntimeNet::Serialize(const std::string& filename) const
 {
-    Serialize(std::ofstream(filename, std::ios::binary));
+    std::ofstream ofs(filename, std::ios::binary);
+    Serialize(ofs);
 }
 
 void RuntimeNet::Deserialize(const std::string& filename)
 {
-    Deserialize(std::ifstream(filename, std::ios::binary));
+    std::ifstream ifs(filename, std::ios::binary);
+    Deserialize(ifs);
 }
 
 std::string RuntimeNet::GetNetDescription() const
