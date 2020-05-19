@@ -88,7 +88,9 @@ void TrainingNet::Initialize(const dlib::mmod_options& mmod_options, const solve
 
     dlib::visit_layers(*pimpl->net, SetNetWidthVisitor(scaler, minFilterCount));
 
-    pimpl->net->subnet().layer_details().set_num_filters(mmod_options.detector_windows.size());
+    const auto num_filters = mmod_options.detector_windows.size() * (mmod_options.use_bounding_box_regression ? 5 : 1);
+
+    pimpl->net->subnet().layer_details().set_num_filters(num_filters);
 
     pimpl->trainer = std::make_unique<dlib::dnn_trainer<bnet_type, solver_type>>(*pimpl->net, solver);
 }
