@@ -7,11 +7,11 @@
 namespace NetPimpl
 {
 #ifdef DLIB_DNN_PIMPL_WRAPPER_GRAYSCALE_INPUT
-    // TODO: use definition from MemoryManager.h
-    typedef dlib::matrix<uint8_t,0,0,dlib::memory_manager_stateless<uint8_t>::kernel_2_3e> input_type;
+    typedef dlib::matrix<uint8_t> image_type;
 #else
-    typedef dlib::matrix<dlib::rgb_pixel,0,0,dlib::memory_manager_stateless<uint8_t>::kernel_2_3e> input_type;
+    typedef dlib::matrix<dlib::rgb_pixel> image_type;
 #endif
+    typedef std::vector<image_type> input_type;
     typedef dlib::loss_binary_log_::training_label_type training_label_type;
     typedef dlib::loss_binary_log_::output_label_type output_type;
 #if 0

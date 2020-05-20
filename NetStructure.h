@@ -6,9 +6,9 @@
 // ----------------------------------------------------------------------------------------
 
 #ifdef DLIB_DNN_PIMPL_WRAPPER_GRAYSCALE_INPUT
-typedef dlib::input_grayscale_image<dlib::memory_manager_stateless<uint8_t>::kernel_2_3e> input_layer_type;
+typedef dlib::input_grayscale_image_stack input_layer_type;
 #else
-typedef dlib::input_rgb_image<dlib::memory_manager_stateless<uint8_t>::kernel_2_3e> input_layer_type;
+typedef dlib::input_rgb_image_stack input_layer_type;
 #endif
 
 #ifndef __INTELLISENSE__
