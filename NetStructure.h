@@ -55,7 +55,7 @@ template <typename SUBNET> using alevel6 = ares<64,ares<64,SUBNET>>;
 constexpr long default_fc_feature_count = 100;
 
 // training network type
-using net_type = dlib::loss_binary_log<dlib::fc<1,dlib::dropout<dlib::relu<dlib::bn_fc<dlib::fc<default_fc_feature_count,dlib::avg_pool_everything<
+using net_type = dlib::loss_mean_squared<dlib::fc<1,dlib::dropout<dlib::relu<dlib::bn_fc<dlib::fc<default_fc_feature_count,dlib::avg_pool_everything<
                             level1<
 #if DLIB_DNN_PIMPL_WRAPPER_LEVEL_COUNT >= 2
                             level2<
@@ -93,7 +93,7 @@ using net_type = dlib::loss_binary_log<dlib::fc<1,dlib::dropout<dlib::relu<dlib:
                             >>>>>>>>;
 
 // testing network type (replaced batch normalization with fixed affine transforms)
-using anet_type = dlib::loss_binary_log<dlib::fc<1,dlib::dropout<dlib::relu<dlib::affine<dlib::fc<default_fc_feature_count,dlib::avg_pool_everything<
+using anet_type = dlib::loss_mean_squared<dlib::fc<1,dlib::dropout<dlib::relu<dlib::affine<dlib::fc<default_fc_feature_count,dlib::avg_pool_everything<
                             alevel1<
 #if DLIB_DNN_PIMPL_WRAPPER_LEVEL_COUNT >= 2
                             alevel2<
