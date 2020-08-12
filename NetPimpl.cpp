@@ -121,6 +121,9 @@ private:
 void TrainingNet::SetNetWidth(double scaler, int minFilterCount)
 {
     dlib::visit_layers(*pimpl->net, SetNetWidthVisitor(scaler, minFilterCount));
+
+    // Revert the number of filters in the output layer
+    pimpl->net->subnet().layer_details().set_num_filters(1);
 }
 
 void TrainingNet::BeVerbose()
