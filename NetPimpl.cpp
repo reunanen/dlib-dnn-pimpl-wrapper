@@ -128,6 +128,17 @@ void TrainingNet::BeVerbose()
     pimpl->trainer->be_verbose();
 }
 
+int TrainingNet::GetRequiredInputDimension()
+{
+    constexpr int startingPoint = 225; // A rather arbitrary selection
+    constexpr int testInputDim = NetInputs<startingPoint>::count;
+    constexpr int testOutputDim = NetOutputs<testInputDim>::count;
+    static_assert(testOutputDim == startingPoint, "I/O dimension mismatch detected");
+
+    constexpr int inputDim = NetInputs<1>::count;
+    return inputDim;
+}
+
 void TrainingNet::StartTraining(const std::vector<input_type>& inputs, const std::vector<training_label_type>& training_labels)
 {
     pimpl->trainer->train_one_step(inputs, training_labels);
@@ -230,6 +241,49 @@ output_type RuntimeNet::operator() (const input_type& input) const
 const dlib::tensor& RuntimeNet::GetOutput() const
 {
     return pimpl->anet.subnet().get_output();
+}
+
+// see: https://stackoverflow.com/a/3499919/19254
+
+const int MAX_OUTPUT_COUNT_FOR_CALCULATING_RECOMMENDED_INPUT_DIMENSION = 500;
+
+template <int N, int OutputCount = N - 1>
+class OutputDimensionToInputDimension : public OutputDimensionToInputDimension<N, OutputCount - 1>
+{
+public:
+    static const int dummy;
+};
+
+template <int N>
+class OutputDimensionToInputDimension<N, 0>
+{
+public:
+    static const int dummy = 0;
+    static int array[N];
+};
+
+template <int N, int OutputCount>
+const int OutputDimensionToInputDimension<N, OutputCount>::dummy = OutputDimensionToInputDimension<N, 0>::array[OutputCount] = NetInputs<OutputCount>::count + 0 * OutputDimensionToInputDimension<N, OutputCount - 1>::dummy;
+
+template <int N>
+int OutputDimensionToInputDimension<N, 0>::array[N];
+
+template class OutputDimensionToInputDimension<MAX_OUTPUT_COUNT_FOR_CALCULATING_RECOMMENDED_INPUT_DIMENSION>;
+
+int RuntimeNet::GetRecommendedInputDimension(int minimumInputDimension)
+{
+    const int *outputDimensionToInputDimension = OutputDimensionToInputDimension<MAX_OUTPUT_COUNT_FOR_CALCULATING_RECOMMENDED_INPUT_DIMENSION>::array;
+
+    for (size_t outputCount = 1; outputCount < MAX_OUTPUT_COUNT_FOR_CALCULATING_RECOMMENDED_INPUT_DIMENSION; ++outputCount) {
+        int inputDimension = outputDimensionToInputDimension[outputCount];
+        if (inputDimension >= minimumInputDimension) {
+            return inputDimension;
+        }
+    }
+    
+    std::ostringstream error;
+    error << "Requested minimum input dimension " << minimumInputDimension << " is too large (the largest supported is " << outputDimensionToInputDimension[MAX_OUTPUT_COUNT_FOR_CALCULATING_RECOMMENDED_INPUT_DIMENSION - 1] << ")";
+    throw std::runtime_error(error.str());
 }
 
 output_type RuntimeNet::Process(const input_type& input) const
