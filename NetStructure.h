@@ -15,7 +15,7 @@ typedef dlib::input_rgb_image<dlib::memory_manager_stateless<uint8_t>::kernel_2_
 
 #ifndef __INTELLISENSE__
 
-const int output_channel_count = 1;
+constexpr int output_channel_count = 4;
 
 // ----------------------------------------------------------------------------------------
 
@@ -171,7 +171,7 @@ template <typename SUBNET> using alevel6t = adense4<default_level6_feature_count
 // ----------------------------------------------------------------------------------------
 
 // training network type
-using net_type = dlib::loss_mean_squared_per_pixel<
+using net_type = dlib::loss_mean_squared_per_channel_and_pixel<output_channel_count,
                             dlib::con<output_channel_count,1,1,1,1,
                             level0t<
 #if DLIB_DNN_PIMPL_WRAPPER_LEVEL_COUNT >= 1
@@ -236,7 +236,7 @@ using net_type = dlib::loss_mean_squared_per_pixel<
                             >>>;
 
 // testing network type (replaced batch normalization with fixed affine transforms)
-using anet_type = dlib::loss_mean_squared_per_pixel<
+using anet_type = dlib::loss_mean_squared_per_channel_and_pixel<output_channel_count,
                             dlib::con<output_channel_count,1,1,1,1,
                             alevel0t<
 #if DLIB_DNN_PIMPL_WRAPPER_LEVEL_COUNT >= 1

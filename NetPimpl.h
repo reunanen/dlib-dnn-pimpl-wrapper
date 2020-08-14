@@ -13,8 +13,9 @@ namespace NetPimpl
     typedef dlib::matrix<dlib::rgb_pixel,0,0,dlib::memory_manager_stateless<uint8_t>::kernel_2_3e> image_type;
 #endif
     typedef image_type input_type;
-    typedef dlib::matrix<float> training_label_type;
-    typedef dlib::matrix<float> output_type;
+    constexpr int channel_count = 4;
+    typedef dlib::loss_mean_squared_per_channel_and_pixel_<channel_count>::training_label_type training_label_type;
+    typedef dlib::loss_mean_squared_per_channel_and_pixel_<channel_count>::output_label_type output_type;
 #if 0
     typedef dlib::adam solver_type;
     const auto GetDefaultSolver = []() { return dlib::adam(0.001, 0.9, 0.999); };
