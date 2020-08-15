@@ -86,22 +86,6 @@ template <int N, typename SUBNET> using up        = dlib::cont<N,3,3,2,2,SUBNET>
 
 // ----------------------------------------------------------------------------------------
 
-template <typename SUBNET> using utag1 = dlib::add_tag_layer<2100+1,SUBNET>; // U-net top layer
-template <typename SUBNET> using utag2 = dlib::add_tag_layer<2100+2,SUBNET>;
-template <typename SUBNET> using utag3 = dlib::add_tag_layer<2100+3,SUBNET>;
-template <typename SUBNET> using utag4 = dlib::add_tag_layer<2100+4,SUBNET>;
-template <typename SUBNET> using utag5 = dlib::add_tag_layer<2100+5,SUBNET>;
-template <typename SUBNET> using utag6 = dlib::add_tag_layer<2100+6,SUBNET>;
-
-template <typename SUBNET> using concat_utag1 = dlib::concat_prev<utag1,SUBNET>;
-template <typename SUBNET> using concat_utag2 = dlib::concat_prev<utag2,SUBNET>;
-template <typename SUBNET> using concat_utag3 = dlib::concat_prev<utag3,SUBNET>;
-template <typename SUBNET> using concat_utag4 = dlib::concat_prev<utag4,SUBNET>;
-template <typename SUBNET> using concat_utag5 = dlib::concat_prev<utag5,SUBNET>;
-template <typename SUBNET> using concat_utag6 = dlib::concat_prev<utag6,SUBNET>;
-
-// ----------------------------------------------------------------------------------------
-
 #ifndef DLIB_DNN_PIMPL_WRAPPER_LEVEL_COUNT
 #define DLIB_DNN_PIMPL_WRAPPER_LEVEL_COUNT (6)
 #endif // DLIB_DNN_PIMPL_WRAPPER_LEVEL_COUNT
@@ -110,27 +94,27 @@ static_assert(DLIB_DNN_PIMPL_WRAPPER_LEVEL_COUNT >= 0, "If defined, DLIB_DNN_PIM
 static_assert(DLIB_DNN_PIMPL_WRAPPER_LEVEL_COUNT <= 6, "If defined, DLIB_DNN_PIMPL_WRAPPER_LEVEL_COUNT must be less than or equal to 6.");
 
 constexpr int default_level0_feature_count = 16;
-constexpr int default_level1_feature_count = 16;
-constexpr int default_level2_feature_count = 24;
-constexpr int default_level3_feature_count = 32;
-constexpr int default_level4_feature_count = 40;
-constexpr int default_level5_feature_count = 48;
-constexpr int default_level6_feature_count = 56;
+constexpr int default_level1_feature_count = 32;
+constexpr int default_level2_feature_count = 64;
+constexpr int default_level3_feature_count = 96;
+constexpr int default_level4_feature_count = 128;
+constexpr int default_level5_feature_count = 256;
+constexpr int default_level6_feature_count = 512;
 
 #if DLIB_DNN_PIMPL_WRAPPER_LEVEL_COUNT == 6
-constexpr int default_deepest_level_feature_count = 64;
+constexpr int default_deepest_level_feature_count = 1024;
 #elif DLIB_DNN_PIMPL_WRAPPER_LEVEL_COUNT == 5
-constexpr int default_deepest_level_feature_count = 56;
+constexpr int default_deepest_level_feature_count = 512;
 #elif DLIB_DNN_PIMPL_WRAPPER_LEVEL_COUNT == 4
-constexpr int default_deepest_level_feature_count = 48;
+constexpr int default_deepest_level_feature_count = 256;
 #elif DLIB_DNN_PIMPL_WRAPPER_LEVEL_COUNT == 3
-constexpr int default_deepest_level_feature_count = 40;
+constexpr int default_deepest_level_feature_count = 128;
 #elif DLIB_DNN_PIMPL_WRAPPER_LEVEL_COUNT == 2
-constexpr int default_deepest_level_feature_count = 32;
+constexpr int default_deepest_level_feature_count = 96;
 #elif DLIB_DNN_PIMPL_WRAPPER_LEVEL_COUNT == 1
-constexpr int default_deepest_level_feature_count = 24;
+constexpr int default_deepest_level_feature_count = 64;
 #elif DLIB_DNN_PIMPL_WRAPPER_LEVEL_COUNT == 0
-constexpr int default_deepest_level_feature_count = 16;
+constexpr int default_deepest_level_feature_count = 32;
 #else
 #error unexpected DLIB_DNN_PIMPL_WRAPPER_LEVEL_COUNT
 #endif // DLIB_DNN_PIMPL_WRAPPER_LEVEL_COUNT
@@ -140,33 +124,33 @@ template <typename SUBNET> using alevel0  = dlib::mish<dlib::affine<dlib::con <d
 template <typename SUBNET> using level0t  = dlib::mish<dlib::bn_con<dlib::cont<default_level0_feature_count,3,3,1,1,SUBNET>>>;
 template <typename SUBNET> using alevel0t = dlib::mish<dlib::affine<dlib::cont<default_level0_feature_count,3,3,1,1,SUBNET>>>;
 
-template <typename SUBNET> using level1 = down<default_level1_feature_count,utag1<dense1<default_level1_feature_count,SUBNET>>>;
-template <typename SUBNET> using level2 = down<default_level2_feature_count,utag2<dense2<default_level2_feature_count,SUBNET>>>;
-template <typename SUBNET> using level3 = down<default_level3_feature_count,utag3<dense2<default_level3_feature_count,SUBNET>>>;
-template <typename SUBNET> using level4 = down<default_level4_feature_count,utag4<dense3<default_level4_feature_count,SUBNET>>>;
-template <typename SUBNET> using level5 = down<default_level5_feature_count,utag5<dense3<default_level5_feature_count,SUBNET>>>;
-template <typename SUBNET> using level6 = down<default_level6_feature_count,utag6<dense4<default_level6_feature_count,SUBNET>>>;
+template <typename SUBNET> using level1 = down<default_level1_feature_count,dense1<default_level1_feature_count,SUBNET>>;
+template <typename SUBNET> using level2 = down<default_level2_feature_count,dense2<default_level2_feature_count,SUBNET>>;
+template <typename SUBNET> using level3 = down<default_level3_feature_count,dense2<default_level3_feature_count,SUBNET>>;
+template <typename SUBNET> using level4 = down<default_level4_feature_count,dense3<default_level4_feature_count,SUBNET>>;
+template <typename SUBNET> using level5 = down<default_level5_feature_count,dense3<default_level5_feature_count,SUBNET>>;
+template <typename SUBNET> using level6 = down<default_level6_feature_count,dense4<default_level6_feature_count,SUBNET>>;
 
-template <typename SUBNET> using alevel1 = adown<default_level1_feature_count,utag1<adense1<default_level1_feature_count,SUBNET>>>;
-template <typename SUBNET> using alevel2 = adown<default_level2_feature_count,utag2<adense2<default_level2_feature_count,SUBNET>>>;
-template <typename SUBNET> using alevel3 = adown<default_level3_feature_count,utag3<adense2<default_level3_feature_count,SUBNET>>>;
-template <typename SUBNET> using alevel4 = adown<default_level4_feature_count,utag4<adense3<default_level4_feature_count,SUBNET>>>;
-template <typename SUBNET> using alevel5 = adown<default_level5_feature_count,utag5<adense3<default_level5_feature_count,SUBNET>>>;
-template <typename SUBNET> using alevel6 = adown<default_level6_feature_count,utag6<adense4<default_level6_feature_count,SUBNET>>>;
+template <typename SUBNET> using alevel1 = adown<default_level1_feature_count,adense1<default_level1_feature_count,SUBNET>>;
+template <typename SUBNET> using alevel2 = adown<default_level2_feature_count,adense2<default_level2_feature_count,SUBNET>>;
+template <typename SUBNET> using alevel3 = adown<default_level3_feature_count,adense2<default_level3_feature_count,SUBNET>>;
+template <typename SUBNET> using alevel4 = adown<default_level4_feature_count,adense3<default_level4_feature_count,SUBNET>>;
+template <typename SUBNET> using alevel5 = adown<default_level5_feature_count,adense3<default_level5_feature_count,SUBNET>>;
+template <typename SUBNET> using alevel6 = adown<default_level6_feature_count,adense4<default_level6_feature_count,SUBNET>>;
 
-template <typename SUBNET> using level1t = dense1<default_level1_feature_count,concat_utag1<up<default_level1_feature_count,SUBNET>>>;
-template <typename SUBNET> using level2t = dense2<default_level2_feature_count,concat_utag2<up<default_level2_feature_count,SUBNET>>>;
-template <typename SUBNET> using level3t = dense2<default_level3_feature_count,concat_utag3<up<default_level3_feature_count,SUBNET>>>;
-template <typename SUBNET> using level4t = dense3<default_level4_feature_count,concat_utag4<up<default_level4_feature_count,SUBNET>>>;
-template <typename SUBNET> using level5t = dense3<default_level5_feature_count,concat_utag5<up<default_level5_feature_count,SUBNET>>>;
-template <typename SUBNET> using level6t = dense4<default_level6_feature_count,concat_utag6<up<default_level6_feature_count,SUBNET>>>;
+template <typename SUBNET> using level1t = dense1<default_level1_feature_count,up<default_level1_feature_count,SUBNET>>;
+template <typename SUBNET> using level2t = dense1<default_level2_feature_count,up<default_level2_feature_count,SUBNET>>;
+template <typename SUBNET> using level3t = dense1<default_level3_feature_count,up<default_level3_feature_count,SUBNET>>;
+template <typename SUBNET> using level4t = dense2<default_level4_feature_count,up<default_level4_feature_count,SUBNET>>;
+template <typename SUBNET> using level5t = dense3<default_level5_feature_count,up<default_level5_feature_count,SUBNET>>;
+template <typename SUBNET> using level6t = dense4<default_level6_feature_count,up<default_level6_feature_count,SUBNET>>;
 
-template <typename SUBNET> using alevel1t = adense1<default_level1_feature_count,concat_utag1<up<default_level1_feature_count,SUBNET>>>;
-template <typename SUBNET> using alevel2t = adense2<default_level2_feature_count,concat_utag2<up<default_level2_feature_count,SUBNET>>>;
-template <typename SUBNET> using alevel3t = adense2<default_level3_feature_count,concat_utag3<up<default_level3_feature_count,SUBNET>>>;
-template <typename SUBNET> using alevel4t = adense3<default_level4_feature_count,concat_utag4<up<default_level4_feature_count,SUBNET>>>;
-template <typename SUBNET> using alevel5t = adense3<default_level5_feature_count,concat_utag5<up<default_level5_feature_count,SUBNET>>>;
-template <typename SUBNET> using alevel6t = adense4<default_level6_feature_count,concat_utag6<up<default_level6_feature_count,SUBNET>>>;
+template <typename SUBNET> using alevel1t = adense1<default_level1_feature_count,up<default_level1_feature_count,SUBNET>>;
+template <typename SUBNET> using alevel2t = adense1<default_level2_feature_count,up<default_level2_feature_count,SUBNET>>;
+template <typename SUBNET> using alevel3t = adense1<default_level3_feature_count,up<default_level3_feature_count,SUBNET>>;
+template <typename SUBNET> using alevel4t = adense2<default_level4_feature_count,up<default_level4_feature_count,SUBNET>>;
+template <typename SUBNET> using alevel5t = adense3<default_level5_feature_count,up<default_level5_feature_count,SUBNET>>;
+template <typename SUBNET> using alevel6t = adense4<default_level6_feature_count,up<default_level6_feature_count,SUBNET>>;
 
 // ----------------------------------------------------------------------------------------
 
