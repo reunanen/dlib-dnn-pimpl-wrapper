@@ -18,6 +18,7 @@ struct RuntimeNet::Impl
 TrainingNet::TrainingNet()
 {
     pimpl = new TrainingNet::Impl();
+    pimpl->net = std::make_unique<net_type>();
 }
 
 TrainingNet::~TrainingNet()
@@ -30,7 +31,6 @@ void TrainingNet::Initialize(const solver_type& solver, const std::vector<int> e
     if (pimpl->trainer) {
         pimpl->trainer->get_net(dlib::force_flush_to_disk::no); // may block
     }
-    pimpl->net = std::make_unique<net_type>();
     pimpl->trainer = std::make_unique<dlib::dnn_trainer<net_type, solver_type>>(*pimpl->net, solver, extraDevices, threadPools);
 }
 
@@ -51,6 +51,8 @@ void TrainingNet::SetPreviousLossValuesDumpAmount(unsigned long dump_amount)
 
 void TrainingNet::SetAllBatchNormalizationRunningStatsWindowSizes(unsigned long window_size)
 {
+    assert(pimpl->trainer.get() == nullptr);
+
     dlib::set_all_bn_running_stats_window_sizes(*pimpl->net, window_size);
 }
 
@@ -120,6 +122,8 @@ private:
 
 void TrainingNet::SetNetWidth(double scaler, int minFilterCount)
 {
+    assert(pimpl->trainer.get() == nullptr);
+
     const int outputChannelCount = pimpl->net->subnet().layer_details().num_filters();
 
     dlib::visit_layers(*pimpl->net, SetNetWidthVisitor(scaler, minFilterCount));
