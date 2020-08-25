@@ -2,6 +2,7 @@
 
 #include <dlib/dnn.h>
 #include "NetDimensions.h"
+#include "ChannelCount.h"
 
 // ----------------------------------------------------------------------------------------
 
@@ -14,8 +15,6 @@ typedef dlib::input_rgb_image<dlib::memory_manager_stateless<uint8_t>::kernel_2_
 // ----------------------------------------------------------------------------------------
 
 #ifndef __INTELLISENSE__
-
-constexpr int output_channel_count = 4;
 
 // ----------------------------------------------------------------------------------------
 
