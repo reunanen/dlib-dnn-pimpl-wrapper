@@ -63,6 +63,7 @@ namespace NetPimpl
         void Deserialize(const std::string& filename);
 
         std::string GetNetDescription() const;
+        double GetTrainingLoss() const;
 
     private:
         TrainingNet(const TrainingNet&) = delete;

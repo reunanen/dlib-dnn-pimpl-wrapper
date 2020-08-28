@@ -195,6 +195,11 @@ std::string TrainingNet::GetNetDescription() const
     return oss.str();
 }
 
+double TrainingNet::GetTrainingLoss() const
+{
+    return pimpl->trainer->get_average_loss();
+}
+
 RuntimeNet::RuntimeNet()
 {
     pimpl = new RuntimeNet::Impl();
