@@ -12,8 +12,8 @@ namespace NetPimpl
     typedef dlib::matrix<dlib::rgb_pixel> image_type;
 #endif
     typedef std::vector<image_type> input_type;
-    typedef dlib::loss_mean_squared_::training_label_type training_label_type;
-    typedef dlib::loss_mean_squared_::output_label_type output_type;
+    typedef dlib::loss_mean_squared_multioutput_::training_label_type training_label_type;
+    typedef dlib::loss_mean_squared_multioutput_::output_label_type output_type;
 #if 0
     typedef dlib::adam solver_type;
     const auto GetDefaultSolver = []() { return dlib::adam(0.001, 0.9, 0.999); };
