@@ -28,7 +28,7 @@ namespace NetPimpl
         TrainingNet();
         virtual ~TrainingNet();
 
-        void Initialize(const dlib::mmod_options& mmod_options, const solver_type& solver = GetDefaultSolver(), double scaler = 1.0, int minFilterCount = 0);
+        void Initialize(const dlib::mmod_options& mmod_options, const solver_type& solver = GetDefaultSolver(), double scaler = 1.0, int minFilterCount = 0, std::vector<int>* extraDevices = nullptr);
 
         void SetLearningRate(double learningRate);
         void SetIterationsWithoutProgressThreshold(unsigned long threshold);

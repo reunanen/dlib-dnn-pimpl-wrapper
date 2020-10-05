@@ -78,7 +78,7 @@ private:
     int minFilterCount;
 };
 
-void TrainingNet::Initialize(const dlib::mmod_options& mmod_options, const solver_type& solver, double scaler, int minFilterCount)
+void TrainingNet::Initialize(const dlib::mmod_options& mmod_options, const solver_type& solver, double scaler, int minFilterCount, std::vector<int>* extraDevices)
 {
     if (pimpl->trainer) {
         pimpl->trainer->get_net(dlib::force_flush_to_disk::no); // may block
@@ -92,7 +92,22 @@ void TrainingNet::Initialize(const dlib::mmod_options& mmod_options, const solve
 
     pimpl->net->subnet().layer_details().set_num_filters(num_filters);
 
-    pimpl->trainer = std::make_unique<dlib::dnn_trainer<bnet_type, solver_type>>(*pimpl->net, solver);
+    std::vector<int> defaultExtraDevices;
+
+    if (!extraDevices) {
+        // By default, use all available devices
+        const auto deviceCount = dlib::cuda::get_num_devices();
+        const auto currentDevice = dlib::cuda::get_device();
+        for (int device = 0; device < deviceCount; ++device) {
+            if (device != currentDevice) {
+                defaultExtraDevices.push_back(device);
+            }
+        }
+
+        extraDevices = &defaultExtraDevices;
+    }
+
+    pimpl->trainer = std::make_unique<dlib::dnn_trainer<bnet_type, solver_type>>(*pimpl->net, solver, *extraDevices);
 }
 
 void TrainingNet::SetLearningRate(double learningRate)
