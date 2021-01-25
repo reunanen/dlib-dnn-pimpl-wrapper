@@ -20,7 +20,7 @@
 #ifdef DLIB_DNN_PIMPL_WRAPPER_GRAYSCALE_INPUT
 #error TODO: implement grayscale input
 #else
-typedef dlib::input_rgb_image_pyramid<dlib::pyramid_down<6>> input_layer_type;
+typedef dlib::input_rgb_image_stack_pyramid<dlib::pyramid_down<6>> input_layer_type;
 #endif
 
 // ----------------------------------------------------------------------------------------
@@ -44,7 +44,7 @@ template <typename SUBNET> using adownsampler = dlib::relu<dlib::affine<con5d<32
 template <typename SUBNET> using brcon3 = dlib::relu<dlib::bn_con<con3<32,SUBNET>>>;
 template <typename SUBNET> using arcon3 = dlib::relu<dlib::affine<con3<32,SUBNET>>>;
 
-// Finally, we define the entire network.   The special input_rgb_image_pyramid
+// Finally, we define the entire network.   The special input_rgb_image_stack_pyramid
 // layer causes the network to operate over a spatial pyramid, making the detector
 // scale invariant.  
 using bnet_type = dlib::loss_mmod<dlib::con<1,6,6,1,1,brcon3<brcon3<brcon3<bdownsampler<input_layer_type>>>>>>;
