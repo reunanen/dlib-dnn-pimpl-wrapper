@@ -37,6 +37,7 @@ namespace NetPimpl
             std::shared_ptr<ThreadPools> threadPools = std::shared_ptr<ThreadPools>()
         );
 
+        void SetOutputCount(unsigned short outputCount);
         void SetLearningRate(double learningRate);
         void SetIterationsWithoutProgressThreshold(unsigned long threshold);
         void SetPreviousLossValuesDumpAmount(unsigned long dump_amount);
