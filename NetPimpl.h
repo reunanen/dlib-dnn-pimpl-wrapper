@@ -100,4 +100,6 @@ namespace NetPimpl
         struct Impl;
         Impl* pimpl;
     };
+
+    int GetLevelCount();
 };

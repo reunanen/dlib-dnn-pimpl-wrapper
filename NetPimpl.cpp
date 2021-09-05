@@ -319,4 +319,9 @@ void RuntimeNet::Deserialize(const std::string& filename)
     Deserialize(in);
 }
 
+int GetLevelCount()
+{
+    return DLIB_DNN_PIMPL_WRAPPER_LEVEL_COUNT;
+}
+
 }
