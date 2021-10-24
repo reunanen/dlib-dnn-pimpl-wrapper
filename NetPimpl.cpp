@@ -11,6 +11,8 @@ struct TrainingNet::Impl
 
 struct RuntimeNet::Impl
 {
+    void SetRandomSeed(unsigned long long randomSeed);
+
     anet_type anet;
     dlib::resizable_tensor temp_input;
 };
@@ -227,8 +229,51 @@ RuntimeNet& RuntimeNet::operator= (const TrainingNet& trainingNet)
     return *this;
 }
 
-output_type RuntimeNet::operator() (const input_type& input) const
+class SetRandomSeedVisitor
 {
+public:
+    SetRandomSeedVisitor(unsigned long long randomSeed)
+        : randomSeed(randomSeed)
+    {}
+
+    template <typename T>
+    void SetRandomSeed(T&) const
+    {
+        // ignore other layer detail types
+    }
+
+    template <>
+    void SetRandomSeed(dlib::dropout_& l) const
+    {
+        l.set_random_seed(randomSeed);
+    }
+
+    template<typename other_layer_type>
+    void operator()(size_t, other_layer_type& l) const
+    {
+        // ignore other layers
+    }
+
+    template <typename T, typename U, typename E>
+    void operator()(size_t, dlib::add_layer<T, U, E>& l) const
+    {
+        SetRandomSeed(l.layer_details());
+    }
+
+private:
+    unsigned long long randomSeed;
+};
+
+void RuntimeNet::Impl::SetRandomSeed(unsigned long long randomSeed)
+{
+    dlib::visit_layers(anet, SetRandomSeedVisitor(randomSeed));
+}
+
+output_type RuntimeNet::operator() (const input_type& input, unsigned long long* optionalRandomSeed) const
+{
+    if (optionalRandomSeed) {
+        pimpl->SetRandomSeed(*optionalRandomSeed);
+    }
     return pimpl->anet.process(input);
 }
 
@@ -237,8 +282,11 @@ const dlib::tensor& RuntimeNet::GetOutput() const
     return pimpl->anet.subnet().get_output();
 }
 
-output_type RuntimeNet::Process(const input_type& input) const
+output_type RuntimeNet::Process(const input_type& input, unsigned long long* optionalRandomSeed) const
 {
+    if (optionalRandomSeed) {
+        pimpl->SetRandomSeed(*optionalRandomSeed);
+    }
     return pimpl->anet.process(input);
 }
 

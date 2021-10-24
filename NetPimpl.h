@@ -81,11 +81,11 @@ namespace NetPimpl
 
         RuntimeNet& operator= (const TrainingNet& trainingNet); // may block
 
-        output_type operator() (const input_type& input) const;
+        output_type operator() (const input_type& input, unsigned long long* optionalRandomSeed = nullptr) const;
 
         const dlib::tensor& GetOutput() const;
 
-        output_type Process(const input_type& input) const;
+        output_type Process(const input_type& input, unsigned long long* optionalRandomSeed = nullptr) const;
 
         const dlib::tensor& Forward(const input_type& input) const;
 
