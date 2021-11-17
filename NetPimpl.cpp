@@ -229,6 +229,18 @@ RuntimeNet& RuntimeNet::operator= (const TrainingNet& trainingNet)
     return *this;
 }
 
+template <typename T>
+void SetRandomSeed(T&, unsigned long long randomSeed)
+{
+    // ignore other layer detail types
+}
+
+template <>
+void SetRandomSeed(dlib::dropout_& l, unsigned long long randomSeed)
+{
+    l.set_random_seed(randomSeed);
+}
+
 class SetRandomSeedVisitor
 {
 public:
@@ -236,19 +248,7 @@ public:
         : randomSeed(randomSeed)
     {}
 
-    template <typename T>
-    void SetRandomSeed(T&) const
-    {
-        // ignore other layer detail types
-    }
-
-    template <>
-    void SetRandomSeed(dlib::dropout_& l) const
-    {
-        l.set_random_seed(randomSeed);
-    }
-
-    template<typename other_layer_type>
+    template <typename other_layer_type>
     void operator()(size_t, other_layer_type& l) const
     {
         // ignore other layers
@@ -257,7 +257,7 @@ public:
     template <typename T, typename U, typename E>
     void operator()(size_t, dlib::add_layer<T, U, E>& l) const
     {
-        SetRandomSeed(l.layer_details());
+        SetRandomSeed(l.layer_details(), randomSeed);
     }
 
 private:
