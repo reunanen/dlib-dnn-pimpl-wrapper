@@ -35,7 +35,7 @@ template <int N, typename SUBNET> using ares_down = dlib::relu<residual_down<blo
 #define DLIB_DNN_PIMPL_WRAPPER_LEVEL_COUNT (6)
 #endif // DLIB_DNN_PIMPL_WRAPPER_LEVEL_COUNT
 
-static_assert(DLIB_DNN_PIMPL_WRAPPER_LEVEL_COUNT >= 1, "If defined, DLIB_DNN_PIMPL_WRAPPER_LEVEL_COUNT must be greater than or equal to 0.");
+static_assert(DLIB_DNN_PIMPL_WRAPPER_LEVEL_COUNT >= 1, "If defined, DLIB_DNN_PIMPL_WRAPPER_LEVEL_COUNT must be greater than or equal to 1.");
 static_assert(DLIB_DNN_PIMPL_WRAPPER_LEVEL_COUNT <= 6, "If defined, DLIB_DNN_PIMPL_WRAPPER_LEVEL_COUNT must be less than or equal to 6.");
 
 template <typename SUBNET> using level1 = res<768,res_down<768,SUBNET>>;
