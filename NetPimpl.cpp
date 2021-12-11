@@ -130,6 +130,45 @@ void TrainingNet::SetNetWidth(double scaler, int minFilterCount)
     dlib::visit_layers(*pimpl->net, SetNetWidthVisitor(scaler, minFilterCount));
 }
 
+class SetDropoutRateVisitor
+{
+public:
+    SetDropoutRateVisitor(double rate)
+        : rate(rate)
+    {}
+
+    template <typename T>
+    void SetDropoutRate(T&) const
+    {
+        // ignore other layer detail types
+    }
+
+    void SetDropoutRate(dlib::dropout_& l) const
+    {
+        l = dlib::dropout_(rate);
+    }
+
+    template<typename input_layer_type>
+    void operator()(size_t, input_layer_type&) const
+    {
+        // ignore other layers
+    }
+
+    template <typename T, typename U, typename E>
+    void operator()(size_t, dlib::add_layer<T, U, E>& l) const
+    {
+        SetDropoutRate(l.layer_details());
+    }
+
+private:
+    double rate;
+};
+
+void TrainingNet::SetDropoutRate(double rate)
+{
+    dlib::visit_layers(*pimpl->net, SetDropoutRateVisitor(rate));
+}
+
 void TrainingNet::BeVerbose()
 {
     pimpl->trainer->be_verbose();

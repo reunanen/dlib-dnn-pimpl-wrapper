@@ -45,6 +45,7 @@ namespace NetPimpl
         void SetLearningRateShrinkFactor(double learningRateShrinkFactor);
         void SetSynchronizationFile(const std::string& filename, std::chrono::seconds time_between_syncs = std::chrono::minutes(15));
         void SetNetWidth(double scaler, int minFilterCount);
+        void SetDropoutRate(double rate);
         void BeVerbose();
 
         void StartTraining(const std::vector<input_type>& inputs, const std::vector<training_label_type>& training_labels);
