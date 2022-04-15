@@ -9,7 +9,7 @@ namespace NetPimpl
 #ifdef DLIB_DNN_PIMPL_WRAPPER_GRAYSCALE_INPUT
     typedef dlib::matrix<uint8_t> image_type;
 #else
-    typedef dlib::matrix<dlib::rgb_pixel> image_type;
+    typedef dlib::matrix<dlib::rgb_alpha_pixel> image_type;
 #endif
     typedef std::vector<image_type> input_type;
     typedef dlib::loss_mean_squared_multioutput_::training_label_type training_label_type;
