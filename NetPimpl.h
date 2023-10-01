@@ -13,9 +13,8 @@ namespace NetPimpl
     typedef dlib::matrix<dlib::rgb_pixel> image_type;
 #endif
     typedef std::vector<image_type> input_type;
-    constexpr int channel_count = 4;
-    typedef dlib::loss_mean_squared_per_channel_and_pixel_<channel_count>::training_label_type training_label_type;
-    typedef dlib::loss_mean_squared_per_channel_and_pixel_<channel_count>::output_label_type output_type;
+    typedef dlib::loss_mean_squared_per_pixel_::training_label_type training_label_type;
+    typedef dlib::loss_mean_squared_per_pixel_::output_label_type output_type;
 #if 0
     typedef dlib::adam solver_type;
     const auto GetDefaultSolver = []() { return dlib::adam(0.001, 0.9, 0.999); };
