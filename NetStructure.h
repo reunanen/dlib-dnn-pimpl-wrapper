@@ -172,7 +172,7 @@ template <typename SUBNET> using alevel6t = adense4<default_level6_feature_count
 
 // training network type
 using net_type = dlib::loss_mean_squared_per_pixel<
-                            dlib::con<1,1,1,1,1,
+                            dlib::sig<dlib::bn_con<dlib::con<1,1,1,1,1,
                             level0t<
 #if DLIB_DNN_PIMPL_WRAPPER_LEVEL_COUNT >= 1
                             level1t<
@@ -233,11 +233,11 @@ using net_type = dlib::loss_mean_squared_per_pixel<
 #endif // DLIB_DNN_PIMPL_WRAPPER_LEVEL_COUNT >= 2
 #endif // DLIB_DNN_PIMPL_WRAPPER_LEVEL_COUNT >= 1
                             > // for the deepest level - let's just put it here
-                            >>>;
+                            >>>>>;
 
 // testing network type (replaced batch normalization with fixed affine transforms)
 using anet_type = dlib::loss_mean_squared_per_pixel<
-                            dlib::con<1,1,1,1,1,
+                            dlib::sig<dlib::affine<dlib::con<1,1,1,1,1,
                             alevel0t<
 #if DLIB_DNN_PIMPL_WRAPPER_LEVEL_COUNT >= 1
                             alevel1t<
@@ -298,7 +298,7 @@ using anet_type = dlib::loss_mean_squared_per_pixel<
 #endif // DLIB_DNN_PIMPL_WRAPPER_LEVEL_COUNT >= 2
 #endif // DLIB_DNN_PIMPL_WRAPPER_LEVEL_COUNT >= 1    
                             > // for the deepest level - let's just put it here
-                            >>>;
+                            >>>>>;
 
 // The definitions below need to match the network architecture above
 template<int W>
