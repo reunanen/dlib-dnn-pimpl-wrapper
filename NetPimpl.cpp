@@ -120,7 +120,7 @@ private:
 
 void TrainingNet::SetNetWidth(double scaler, int minFilterCount)
 {
-    dlib::visit_layers(*pimpl->net, SetNetWidthVisitor(scaler, minFilterCount));
+    dlib::visit_layers(pimpl->net->subnet().subnet().subnet().subnet(), SetNetWidthVisitor(scaler, minFilterCount));
 }
 
 void TrainingNet::BeVerbose()
